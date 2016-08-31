@@ -16,5 +16,9 @@
     "OSM"
   ],
   "author": "Julien Coupey",
-  "license": "BSD-2-Clause"
+  "license": "BSD-2-Clause",
+  "devDependencies": {
+    "browserify": "^13.1.0",
+    "uglify-js": "^2.7.3"
+  }
 }
