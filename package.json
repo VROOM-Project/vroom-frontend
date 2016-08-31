@@ -3,7 +3,8 @@
   "version": "0.1.0",
   "description": "Frontend demo for VROOM",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "build": "browserify -d src/index.js > bundle.raw.js && uglifyjs bundle.raw.js -c -m -o bundle.js"
   },
   "keywords": [
     "VROOM",
