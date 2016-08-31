@@ -1,0 +1,20 @@
+{
+  "name": "vroom-frontend",
+  "version": "0.1.0",
+  "description": "Frontend demo for VROOM",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [
+    "VROOM",
+    "frontend",
+    "optimization",
+    "TSP",
+    "VRP",
+    "routing",
+    "OSRM",
+    "OSM"
+  ],
+  "author": "Julien Coupey",
+  "license": "BSD-2-Clause"
+}
