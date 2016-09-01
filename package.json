@@ -25,5 +25,8 @@
   "repository": {
     "type": "git",
     "url": "https://github.com/VROOM-Project/vroom-frontend.git"
+  },
+  "dependencies": {
+    "leaflet": "^0.7.7"
   }
 }
