@@ -4,6 +4,7 @@ var data = require('../data');
 var address = require('./address');
 var geocoder = require('./geocoder');
 var mapConfig = require('../config/leaflet');
+var clearControl = require('../controls/clear');
 
 var updateJobDescription = function (jobIndex, description){
   data.jobs[jobIndex]['description'] = description;
@@ -48,6 +49,9 @@ var addPlace = function(map, latlng){
     }
   });
 
+  if(!map.clearControl){
+    map.addControl(clearControl);
+  }
 }
 
 module.exports = {

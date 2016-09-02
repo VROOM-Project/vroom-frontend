@@ -21,13 +21,13 @@ var panelControl = L.Control.extend({
     this._div.appendChild(headerDiv);
 
     // Table display.
-    var table = document.createElement('table');
-    table.setAttribute('id', 'panel-list');
+    this._table = document.createElement('table');
+    this._table.setAttribute('id', 'panel-list');
 
     var tableDiv = document.createElement('div');
     tableDiv.setAttribute('class', 'panel-table');
 
-    tableDiv.appendChild(table);
+    tableDiv.appendChild(this._table);
     this._div.appendChild(tableDiv);
 
     // Prevent events on this control to alter the underlying map.
@@ -45,6 +45,13 @@ var panelControl = L.Control.extend({
   onRemove: function (map){
     // Remove reference from map.
     delete map.panelControl;
+  },
+
+  clearDisplay: function(map){
+    // Delete locations display.
+    for(var i = this._table.rows.length; i > 0; i--){
+      this._table.deleteRow(i -1);
+    }
   },
 
   getWidth: function(){
