@@ -15,5 +15,11 @@ var tileLayer = L.tileLayer('http://{s}.tile.osm.org/{z}/{x}/{y}.png',{
 module.exports = {
   initCenter: initCenter,
   initZoom: initZoom,
-  tileLayer: tileLayer
+  tileLayer: tileLayer,
+  jobIcon: L.icon({
+    iconUrl: 'images/job-icon.png',
+    iconSize: [15, 15],
+    iconAnchor: [7.5, 7.5],
+    popupAnchor: [0, 0]
+  })
 };
