@@ -20,6 +20,16 @@ var panelControl = L.Control.extend({
     headerDiv.innerHTML = '<a href="http://vroom-project.org">VROOM</a>';
     this._div.appendChild(headerDiv);
 
+    // Table display.
+    var table = document.createElement('table');
+    table.setAttribute('id', 'panel-list');
+
+    var tableDiv = document.createElement('div');
+    tableDiv.setAttribute('class', 'panel-table');
+
+    tableDiv.appendChild(table);
+    this._div.appendChild(tableDiv);
+
     // Prevent events on this control to alter the underlying map.
     if (!L.Browser.touch) {
       L.DomEvent.disableClickPropagation(this._div);
