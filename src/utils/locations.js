@@ -1,17 +1,11 @@
 'use strict';
 
-var data = require('../data');
-var address = require('./address');
-var geocoder = require('./geocoder');
-var mapConfig = require('../config/leaflet');
 var clearControl = require('../controls/clear');
+var dataHandler = require('./data_handler');
+var geocoder = require('./geocoder');
+var address = require('./address');
 
-var updateJobDescription = function (jobIndex, description){
-  data.jobs[jobIndex]['description'] = description;
-  data.jobsMarkers[jobIndex].bindPopup(description).openPopup();
-}
-
-var panelDisplay = function(name){
+var panelDisplay = function(map, name){
   var panelList = document.getElementById('panel-list');
 
   var nb_rows = panelList.rows.length;
@@ -21,7 +15,11 @@ var panelDisplay = function(name){
   idCell.setAttribute('class', 'delete-location');
   idCell.title = "Click to delete";
   idCell.onclick = function(){
-    console.log('TODO: implement removal');
+    dataHandler.removeJob(map, row.rowIndex);
+    panelList.deleteRow(row.rowIndex);
+    if(dataHandler.getSize() === 0){
+      map.removeControl(clearControl);
+    }
   }
   var nameCell = row.insertCell(1);
   nameCell.title = "Click to center the map";
@@ -33,25 +31,22 @@ var panelDisplay = function(name){
 
 // Add locations.
 var addPlace = function(map, latlng){
-  data.jobs.push({'location': [latlng.lng,latlng.lat]});
-  data.jobsMarkers.push(L.marker(latlng)
-                        .addTo(map)
-                        .setIcon(mapConfig.jobIcon));
+  if(!map.clearControl){
+    map.addControl(clearControl);
+  }
+
+  dataHandler.addJob(map, latlng);
 
   geocoder.nominatim.reverse(latlng, map.options.crs.scale(19), function(results){
     var r = results[0];
     if(r){
       var name = address.display(r);
       // Add description to job and marker.
-      updateJobDescription(data.jobs.length - 1, name);
+      dataHandler.updateJobDescription(dataHandler.getSize() - 1, name);
       // Add description in the right panel display.
-      panelDisplay(name);
+      panelDisplay(map, name);
     }
   });
-
-  if(!map.clearControl){
-    map.addControl(clearControl);
-  }
 }
 
 module.exports = {
