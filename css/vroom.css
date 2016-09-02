@@ -9,3 +9,33 @@
     bottom: 0;
     left: 0;
 }
+
+.panel-header{
+    font-size: 40px;
+    font-weight: bold;
+    padding: 10px;
+    text-align: center;
+}
+
+.panel-header a{
+    text-decoration: none;
+    outline: none;
+}
+
+.panel-control{
+    background-color: #fff;
+    opacity: 0.9;
+    bottom: 20px;
+    overflow-x: auto;
+    padding: 0 20px 40px;
+    position: fixed;
+    right: 0px;
+    top: 0px;
+    z-index: 10;
+    border-radius: 4px;
+    box-shadow: 0 1px 5px rgba(0, 0, 0, 0.65);
+    max-width: 300px;
+    min-width: 200px;
+    width: 33.3333%;
+    margin: 0 !important;
+}
