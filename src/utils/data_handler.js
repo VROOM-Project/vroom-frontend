@@ -3,7 +3,7 @@
 var data = require('../data');
 var mapConfig = require('../config/leaflet');
 
-var getSize = function(){
+var getJobsSize = function(){
   return data.jobs.length;
 }
 
@@ -158,7 +158,7 @@ var showEnd = function(map, center){
 }
 
 module.exports = {
-  getSize: getSize,
+  getJobsSize: getJobsSize,
   getStart: getStart,
   getEnd: getEnd,
   clearData: clearData,

@@ -80,6 +80,10 @@
     background-image: url("../images/fa-icons/trash.svg");
 }
 
+.solve-control{
+    background-image: url("../images/fa-icons/cog-alt.svg");
+}
+
 .vehicle-start{
     border-style: solid;
     border-width: 0px 0px 0px 6px;

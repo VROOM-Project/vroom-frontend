@@ -2,6 +2,7 @@
 
 var dataHandler = require('../utils/data_handler');
 var panelControl = require('./panel');
+var solveControl = require('./solve');
 
 var clearControl = L.Control.extend({
   options: {
@@ -19,8 +20,9 @@ var clearControl = L.Control.extend({
 
       dataHandler.clearData(map);
 
-      // Remove control.
+      // Remove controls.
       map.removeControl(clearControl);
+      map.removeControl(solveControl);
 
       // Delete locations display in the right panel.
       panelControl.clearDisplay();

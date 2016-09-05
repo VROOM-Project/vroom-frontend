@@ -4,6 +4,15 @@ var clearControl = require('../controls/clear');
 var dataHandler = require('./data_handler');
 var geocoder = require('./geocoder');
 var address = require('./address');
+var solveControl = require('../controls/solve');
+
+var addSolveControl = function(map){
+  if(!map.solveControl
+     && (dataHandler.getStart() || dataHandler.getEnd())
+     && (dataHandler.getJobsSize() > 0)){
+    solveControl.addTo(map);
+  }
+}
 
 var setStart = function(map, latlng, name){
   // Add start to dataset.
@@ -20,7 +29,7 @@ var setStart = function(map, latlng, name){
     // Reset start row.
     panelList.deleteRow(0);
     panelList.insertRow(0);
-    if(dataHandler.getSize() === 0
+    if(dataHandler.getJobsSize() === 0
        && !dataHandler.getStart()
        && !dataHandler.getEnd()){
       map.removeControl(clearControl);
@@ -55,7 +64,7 @@ var setEnd = function(map, latlng, name){
     // Reset end row.
     panelList.deleteRow(1);
     panelList.insertRow(1);
-    if(dataHandler.getSize() === 0
+    if(dataHandler.getJobsSize() === 0
        && !dataHandler.getEnd()
        && !dataHandler.getEnd()){
       map.removeControl(clearControl);
@@ -88,7 +97,7 @@ var jobDisplay = function(map, latlng, name){
   var remove = function(){
     dataHandler.removeJob(map, row.rowIndex);
     panelList.deleteRow(row.rowIndex);
-    if(dataHandler.getSize() === 0
+    if(dataHandler.getJobsSize() === 0
        && !dataHandler.getStart()
        && !dataHandler.getEnd()){
       map.removeControl(clearControl);
@@ -115,7 +124,7 @@ var jobDisplay = function(map, latlng, name){
     panelList.deleteRow(row.rowIndex);
   }
   // Add description to job and marker.
-  dataHandler.updateJobDescription(dataHandler.getSize() - 1,
+  dataHandler.updateJobDescription(dataHandler.getJobsSize() - 1,
                                    name,
                                    remove,
                                    setAsStart,
@@ -136,6 +145,7 @@ var addPlace = function(map, latlng){
         // Add description in the right panel display.
         setStart(map, latlng, name);
         setEnd(map, latlng, name);
+        addSolveControl(map);
       }
     });
   }
@@ -147,9 +157,11 @@ var addPlace = function(map, latlng){
         // Add description in the right panel display and create job
         // marker.
         jobDisplay(map, latlng, name);
+        addSolveControl(map);
       }
     });
   }
+
 }
 
 module.exports = {
