@@ -5,8 +5,66 @@ var dataHandler = require('./data_handler');
 var geocoder = require('./geocoder');
 var address = require('./address');
 
-var panelDisplay = function(map, name){
-  var panelList = document.getElementById('panel-list');
+var startDisplay = function(map, name){
+  var panelList = document.getElementById('panel-vehicle');
+
+  panelList.deleteRow(0);
+  var row = panelList.insertRow(0);
+  var idCell = row.insertCell(0);
+
+  idCell.setAttribute('class', 'delete-location');
+  idCell.title = "Click to delete";
+  idCell.onclick = function(){
+    dataHandler.removeStart(map);
+    // Reset start row.
+    panelList.deleteRow(0);
+    panelList.insertRow(0);
+    if(dataHandler.getSize() === 0
+       && !dataHandler.getStart()
+       && !dataHandler.getEnd()){
+      map.removeControl(clearControl);
+    }
+  }
+  var nameCell = row.insertCell(1);
+  nameCell.title = "Click to center the map";
+  nameCell.setAttribute("class", "vehicle-start");
+  nameCell.appendChild(document.createTextNode(name));
+  nameCell.onclick = function(){
+    dataHandler.showStart(map, true);
+  };
+}
+
+var endDisplay = function(map, name){
+  var panelList = document.getElementById('panel-vehicle');
+
+  panelList.deleteRow(1);
+  var row = panelList.insertRow(1);
+  var idCell = row.insertCell(0);
+
+  idCell.setAttribute('class', 'delete-location');
+  idCell.title = "Click to delete";
+  idCell.onclick = function(){
+    dataHandler.removeEnd(map);
+    // Reset end row.
+    panelList.deleteRow(1);
+    panelList.insertRow(1);
+    if(dataHandler.getSize() === 0
+       && !dataHandler.getEnd()
+       && !dataHandler.getEnd()){
+      map.removeControl(clearControl);
+    }
+  }
+  var nameCell = row.insertCell(1);
+  nameCell.title = "Click to center the map";
+  nameCell.setAttribute("class", "vehicle-end");
+  nameCell.appendChild(document.createTextNode(name));
+  nameCell.onclick = function(){
+    dataHandler.showEnd(map, true);
+  };
+}
+
+var jobDisplay = function(map, name){
+  var panelList = document.getElementById('panel-jobs');
 
   var nb_rows = panelList.rows.length;
   var row = panelList.insertRow(nb_rows);
@@ -17,7 +75,9 @@ var panelDisplay = function(map, name){
   idCell.onclick = function(){
     dataHandler.removeJob(map, row.rowIndex);
     panelList.deleteRow(row.rowIndex);
-    if(dataHandler.getSize() === 0){
+    if(dataHandler.getSize() === 0
+       && !dataHandler.getStart()
+       && !dataHandler.getEnd()){
       map.removeControl(clearControl);
     }
   }
@@ -35,18 +95,38 @@ var addPlace = function(map, latlng){
     map.addControl(clearControl);
   }
 
-  dataHandler.addJob(map, latlng);
+  if(!dataHandler.getStart() && !dataHandler.getEnd()){
+    // Add first location, defaults to vehicle start and end.
+    dataHandler.addFirst(map, latlng);
 
-  geocoder.nominatim.reverse(latlng, map.options.crs.scale(19), function(results){
-    var r = results[0];
-    if(r){
-      var name = address.display(r);
-      // Add description to job and marker.
-      dataHandler.updateJobDescription(dataHandler.getSize() - 1, name);
-      // Add description in the right panel display.
-      panelDisplay(map, name);
-    }
-  });
+    geocoder.nominatim.reverse(latlng, map.options.crs.scale(19), function(results){
+      var r = results[0];
+      if(r){
+        var name = address.display(r);
+        // Add description for start and end.
+        dataHandler.updateStartDescription(name);
+        dataHandler.updateEndDescription(name);
+        // Add description in the right panel display.
+        startDisplay(map, name);
+        endDisplay(map, name);
+      }
+    });
+  }
+  else{
+    // Add regular job.
+    dataHandler.addJob(map, latlng);
+
+    geocoder.nominatim.reverse(latlng, map.options.crs.scale(19), function(results){
+      var r = results[0];
+      if(r){
+        var name = address.display(r);
+        // Add description to job and marker.
+        dataHandler.updateJobDescription(dataHandler.getSize() - 1, name);
+        // Add description in the right panel display.
+        jobDisplay(map, name);
+      }
+    });
+  }
 }
 
 module.exports = {

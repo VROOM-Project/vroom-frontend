@@ -20,14 +20,22 @@ var panelControl = L.Control.extend({
     headerDiv.innerHTML = '<a href="http://vroom-project.org">VROOM</a>';
     this._div.appendChild(headerDiv);
 
-    // Table display.
-    this._table = document.createElement('table');
-    this._table.setAttribute('id', 'panel-list');
+    // Table start/end display.
+    this._vehicleTable = document.createElement('table');
+    this._vehicleTable.setAttribute('id', 'panel-vehicle');
+    this._vehicleTable.insertRow(0);
+    this._vehicleTable.insertRow(1);
+
+    // Table jobs display.
+    this._jobTable = document.createElement('table');
+    this._jobTable.setAttribute('id', 'panel-jobs');
 
     var tableDiv = document.createElement('div');
     tableDiv.setAttribute('class', 'panel-table');
 
-    tableDiv.appendChild(this._table);
+    tableDiv.appendChild(this._vehicleTable);
+    tableDiv.appendChild(document.createElement('hr'));
+    tableDiv.appendChild(this._jobTable);
     this._div.appendChild(tableDiv);
 
     // Prevent events on this control to alter the underlying map.
@@ -49,8 +57,8 @@ var panelControl = L.Control.extend({
 
   clearDisplay: function(map){
     // Delete locations display.
-    for(var i = this._table.rows.length; i > 0; i--){
-      this._table.deleteRow(i -1);
+    for(var i = this._jobTable.rows.length; i > 0; i--){
+      this._jobTable.deleteRow(i -1);
     }
   },
 

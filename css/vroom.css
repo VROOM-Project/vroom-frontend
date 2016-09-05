@@ -79,3 +79,15 @@
 .clear-control{
     background-image: url("../images/fa-icons/trash.svg");
 }
+
+.vehicle-start{
+    border-style: solid;
+    border-width: 0px 0px 0px 6px;
+    border-color: #2dbe21;
+}
+
+.vehicle-end{
+    border-style: solid;
+    border-width: 0px 0px 0px 6px;
+    border-color: #e9130a;
+}

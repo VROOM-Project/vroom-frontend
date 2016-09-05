@@ -7,6 +7,14 @@ var getSize = function(){
   return data.jobs.length;
 }
 
+var getStart = function(){
+  return data.vehicles[0].start;
+}
+
+var getEnd = function(){
+  return data.vehicles[0].end;
+}
+
 var clearData = function(map){
   // Clear all data and markers.
   for(var i = 0; i < data.jobsMarkers.length; i++){
@@ -19,9 +27,26 @@ var clearData = function(map){
   data.vehicles = [{'id': 0}];
 }
 
-var updateJobDescription = function (jobIndex, description){
+var updateJobDescription = function(jobIndex, description){
   data.jobs[jobIndex]['description'] = description;
   data.jobsMarkers[jobIndex].bindPopup(description).openPopup();
+}
+
+var updateStartDescription = function(description){
+  data.vehicles[0].startDescription = description;
+  data.startMarker.bindPopup(description).openPopup();
+}
+
+var updateEndDescription = function(description){
+  data.vehicles[0].endDescription = description;
+  data.endMarker.bindPopup(description).openPopup();
+}
+
+var addFirst = function(map, latlng){
+  data.vehicles[0].start = [latlng.lng,latlng.lat];
+  data.vehicles[0].end = [latlng.lng,latlng.lat];
+  data.startMarker = L.marker(latlng).addTo(map).setIcon(mapConfig.startIcon);
+  data.endMarker = L.marker(latlng).addTo(map).setIcon(mapConfig.endIcon);
 }
 
 var addJob = function(map, latlng){
@@ -35,7 +60,20 @@ var removeJob = function(map, jobIndex){
   map.removeLayer(data.jobsMarkers[jobIndex]);
   data.jobs.splice(jobIndex, 1);
   data.jobsMarkers.splice(jobIndex, 1);
+}
 
+var removeStart = function(map){
+  map.removeLayer(data.startMarker);
+  delete data.vehicles[0].startDescription;
+  delete data.vehicles[0].start;
+  data.startMarker = undefined;
+}
+
+var removeEnd = function(map){
+  map.removeLayer(data.endMarker);
+  delete data.vehicles[0].endDescription;
+  delete data.vehicles[0].end;
+  data.endMarker = undefined;
 }
 
 var showMarker = function(map, markerIndex, center){
@@ -45,11 +83,34 @@ var showMarker = function(map, markerIndex, center){
   }
 }
 
+var showStart = function(map, center){
+  data.startMarker.openPopup();
+  if(center){
+    map.panTo(data.startMarker.getLatLng());
+  }
+}
+
+var showEnd = function(map, center){
+  data.endMarker.openPopup();
+  if(center){
+    map.panTo(data.endMarker.getLatLng());
+  }
+}
+
 module.exports = {
   getSize: getSize,
+  getStart: getStart,
+  getEnd: getEnd,
   clearData: clearData,
+  addFirst: addFirst,
   addJob: addJob,
   updateJobDescription: updateJobDescription,
+  updateStartDescription: updateStartDescription,
+  updateEndDescription: updateEndDescription,
   removeJob: removeJob,
-  showMarker: showMarker
+  removeStart: removeStart,
+  removeEnd: removeEnd,
+  showMarker: showMarker,
+  showStart: showStart,
+  showEnd: showEnd
 };

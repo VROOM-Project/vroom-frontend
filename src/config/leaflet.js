@@ -21,5 +21,17 @@ module.exports = {
     iconSize: [15, 15],
     iconAnchor: [7.5, 7.5],
     popupAnchor: [0, 0]
+  }),
+  startIcon: L.icon({
+    iconUrl: 'images/start-icon.png',
+    iconSize: [15, 15],
+    iconAnchor: [7.5, 7.5],
+    popupAnchor: [0, 0]
+  }),
+  endIcon: L.icon({
+    iconUrl: 'images/end-icon.png',
+    iconSize: [15, 15],
+    iconAnchor: [7.5, 7.5],
+    popupAnchor: [0, 0]
   })
 };
