@@ -3,6 +3,14 @@
 var data = require('../data');
 var mapConfig = require('../config/leaflet');
 
+var getJobs = function(){
+  return data.jobs;
+}
+
+var getVehicles = function(){
+  return data.vehicles;
+}
+
 var getJobsSize = function(){
   return data.jobs.length;
 }
@@ -180,7 +188,17 @@ var showEnd = function(map, center){
   }
 }
 
+var setOutput = function(output){
+  data.output = output;
+}
+
+var getOutput = function(){
+  return data.output;
+}
+
 module.exports = {
+  getJobs: getJobs,
+  getVehicles: getVehicles,
   getJobsSize: getJobsSize,
   getStart: getStart,
   getEnd: getEnd,
@@ -196,5 +214,7 @@ module.exports = {
   removeEnd: removeEnd,
   showMarker: showMarker,
   showStart: showStart,
-  showEnd: showEnd
+  showEnd: showEnd,
+  setOutput: setOutput,
+  getOutput: getOutput
 };

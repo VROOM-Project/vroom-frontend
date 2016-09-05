@@ -1,5 +1,7 @@
 'use strict';
 
+var solutionHandler = require('../utils/solution_handler');
+
 var solveControl = L.Control.extend({
   options: {
     position: 'topleft'
@@ -14,7 +16,7 @@ var solveControl = L.Control.extend({
       L.DomEvent.stopPropagation(e);
       map.removeControl(solveControl);
 
-      console.log("Solving!");
+      solutionHandler.solve();
     };
     return this._div;
   },
