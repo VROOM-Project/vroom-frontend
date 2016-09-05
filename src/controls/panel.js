@@ -56,10 +56,16 @@ var panelControl = L.Control.extend({
   },
 
   clearDisplay: function(map){
-    // Delete locations display.
+    // Delete jobs display.
     for(var i = this._jobTable.rows.length; i > 0; i--){
       this._jobTable.deleteRow(i -1);
     }
+    // Reset vehicle start/end display.
+    for(var i = this._vehicleTable.rows.length; i > 0; i--){
+      this._vehicleTable.deleteRow(i -1);
+    }
+    this._vehicleTable.insertRow(0);
+    this._vehicleTable.insertRow(1);
   },
 
   getWidth: function(){

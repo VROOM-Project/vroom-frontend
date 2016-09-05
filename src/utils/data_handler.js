@@ -20,6 +20,8 @@ var clearData = function(map){
   for(var i = 0; i < data.jobsMarkers.length; i++){
     map.removeLayer(data.jobsMarkers[i]);
   }
+  removeStart(map);
+  removeEnd(map);
 
   // Init dataset.
   data.jobs = [];
@@ -117,17 +119,21 @@ var removeJob = function(map, jobIndex){
 }
 
 var removeStart = function(map){
-  map.removeLayer(data.startMarker);
-  delete data.vehicles[0].startDescription;
-  delete data.vehicles[0].start;
-  data.startMarker = undefined;
+  if(data.startMarker){
+    map.removeLayer(data.startMarker);
+    delete data.vehicles[0].startDescription;
+    delete data.vehicles[0].start;
+    data.startMarker = undefined;
+  }
 }
 
 var removeEnd = function(map){
-  map.removeLayer(data.endMarker);
-  delete data.vehicles[0].endDescription;
-  delete data.vehicles[0].end;
-  data.endMarker = undefined;
+  if(data.endMarker){
+    map.removeLayer(data.endMarker);
+    delete data.vehicles[0].endDescription;
+    delete data.vehicles[0].end;
+    data.endMarker = undefined;
+  }
 }
 
 var showMarker = function(map, markerIndex, center){
