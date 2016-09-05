@@ -25,7 +25,7 @@ var panelDisplay = function(map, name){
   nameCell.title = "Click to center the map";
   nameCell.appendChild(document.createTextNode(name));
   nameCell.onclick = function(){
-    console.log('TODO: implement marker pop-up');
+    dataHandler.showMarker(map, row.rowIndex, true);
   };
 }
 

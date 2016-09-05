@@ -38,10 +38,18 @@ var removeJob = function(map, jobIndex){
 
 }
 
+var showMarker = function(map, markerIndex, center){
+  data.jobsMarkers[markerIndex].openPopup();
+  if(center){
+    map.panTo(data.jobsMarkers[markerIndex].getLatLng());
+  }
+}
+
 module.exports = {
   getSize: getSize,
   clearData: clearData,
   addJob: addJob,
   updateJobDescription: updateJobDescription,
-  removeJob: removeJob
+  removeJob: removeJob,
+  showMarker: showMarker
 };
