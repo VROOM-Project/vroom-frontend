@@ -15,13 +15,31 @@ var getEnd = function(){
   return data.vehicles[0].end;
 }
 
+var resetStart = function(map){
+  if(data.startMarker){
+    map.removeLayer(data.startMarker);
+    delete data.vehicles[0].startDescription;
+    delete data.vehicles[0].start;
+    data.startMarker = undefined;
+  }
+}
+
+var resetEnd = function(map){
+  if(data.endMarker){
+    map.removeLayer(data.endMarker);
+    delete data.vehicles[0].endDescription;
+    delete data.vehicles[0].end;
+    data.endMarker = undefined;
+  }
+}
+
 var clearData = function(map){
   // Clear all data and markers.
   for(var i = 0; i < data.jobsMarkers.length; i++){
     map.removeLayer(data.jobsMarkers[i]);
   }
-  removeStart(map);
-  removeEnd(map);
+  resetStart(map);
+  resetEnd(map);
 
   // Init dataset.
   data.jobs = [];
@@ -119,22 +137,27 @@ var removeJob = function(map, jobIndex){
 }
 
 var removeStart = function(map){
-  if(data.startMarker){
-    map.removeLayer(data.startMarker);
-    delete data.vehicles[0].startDescription;
-    delete data.vehicles[0].start;
-    data.startMarker = undefined;
+  var allowRemoval = getEnd();
+  if(allowRemoval){
+    resetStart(map);
   }
+  else{
+    alert("Can't delete both start and end.");
+  }
+  return allowRemoval;
 }
 
 var removeEnd = function(map){
-  if(data.endMarker){
-    map.removeLayer(data.endMarker);
-    delete data.vehicles[0].endDescription;
-    delete data.vehicles[0].end;
-    data.endMarker = undefined;
+  var allowRemoval = getStart();
+  if(allowRemoval){
+    resetEnd(map);
   }
+  else{
+    alert("Can't delete both start and end.");
+  }
+  return allowRemoval;
 }
+
 
 var showMarker = function(map, markerIndex, center){
   data.jobsMarkers[markerIndex].openPopup();

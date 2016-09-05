@@ -25,14 +25,15 @@ var setStart = function(map, latlng, name){
   var idCell = row.insertCell(0);
 
   var remove = function(){
-    dataHandler.removeStart(map);
-    // Reset start row.
-    panelList.deleteRow(0);
-    panelList.insertRow(0);
-    if(dataHandler.getJobsSize() === 0
-       && !dataHandler.getStart()
-       && !dataHandler.getEnd()){
-      map.removeControl(clearControl);
+    if(dataHandler.removeStart(map)){
+      // Reset start row when removing is ok.
+      panelList.deleteRow(0);
+      panelList.insertRow(0);
+      if(dataHandler.getJobsSize() === 0
+         && !dataHandler.getStart()
+         && !dataHandler.getEnd()){
+        map.removeControl(clearControl);
+      }
     }
   }
   idCell.setAttribute('class', 'delete-location');
@@ -60,14 +61,15 @@ var setEnd = function(map, latlng, name){
   var idCell = row.insertCell(0);
 
   var remove = function(){
-    dataHandler.removeEnd(map);
-    // Reset end row.
-    panelList.deleteRow(1);
-    panelList.insertRow(1);
-    if(dataHandler.getJobsSize() === 0
-       && !dataHandler.getEnd()
-       && !dataHandler.getEnd()){
-      map.removeControl(clearControl);
+    if(dataHandler.removeEnd(map)){
+      // Reset end row when removing is ok.
+      panelList.deleteRow(1);
+      panelList.insertRow(1);
+      if(dataHandler.getJobsSize() === 0
+         && !dataHandler.getEnd()
+         && !dataHandler.getEnd()){
+        map.removeControl(clearControl);
+      }
     }
   }
   idCell.setAttribute('class', 'delete-location');
