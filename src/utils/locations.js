@@ -70,9 +70,7 @@ var jobDisplay = function(map, name){
   var row = panelList.insertRow(nb_rows);
   var idCell = row.insertCell(0);
 
-  idCell.setAttribute('class', 'delete-location');
-  idCell.title = "Click to delete";
-  idCell.onclick = function(){
+  var removeCallback = function(){
     dataHandler.removeJob(map, row.rowIndex);
     panelList.deleteRow(row.rowIndex);
     if(dataHandler.getSize() === 0
@@ -81,12 +79,19 @@ var jobDisplay = function(map, name){
       map.removeControl(clearControl);
     }
   }
+  idCell.setAttribute('class', 'delete-location');
+  idCell.title = "Click to delete";
+  idCell.onclick = removeCallback;
   var nameCell = row.insertCell(1);
   nameCell.title = "Click to center the map";
   nameCell.appendChild(document.createTextNode(name));
   nameCell.onclick = function(){
     dataHandler.showMarker(map, row.rowIndex, true);
   };
+  // Add description to job and marker.
+  dataHandler.updateJobDescription(dataHandler.getSize() - 1,
+                                   name,
+                                   removeCallback);
 }
 
 // Add locations.
@@ -120,9 +125,8 @@ var addPlace = function(map, latlng){
       var r = results[0];
       if(r){
         var name = address.display(r);
-        // Add description to job and marker.
-        dataHandler.updateJobDescription(dataHandler.getSize() - 1, name);
-        // Add description in the right panel display.
+        // Add description in the right panel display and create job
+        // marker.
         jobDisplay(map, name);
       }
     });

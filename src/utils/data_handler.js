@@ -27,9 +27,17 @@ var clearData = function(map){
   data.vehicles = [{'id': 0}];
 }
 
-var updateJobDescription = function(jobIndex, description){
+var updateJobDescription = function(jobIndex, description, removeCallback){
   data.jobs[jobIndex]['description'] = description;
-  data.jobsMarkers[jobIndex].bindPopup(description).openPopup();
+  var popupDiv = document.createElement('div');
+  var par = document.createElement('p');
+  par.innerHTML = description;
+  var btn = document.createElement('button');
+  btn.innerHTML = 'Delete';
+  btn.onclick = removeCallback;
+  popupDiv.appendChild(par);
+  popupDiv.appendChild(btn);
+  data.jobsMarkers[jobIndex].bindPopup(popupDiv).openPopup();
 }
 
 var updateStartDescription = function(description){
