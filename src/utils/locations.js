@@ -12,9 +12,7 @@ var startDisplay = function(map, name){
   var row = panelList.insertRow(0);
   var idCell = row.insertCell(0);
 
-  idCell.setAttribute('class', 'delete-location');
-  idCell.title = "Click to delete";
-  idCell.onclick = function(){
+  var removeCallback = function(){
     dataHandler.removeStart(map);
     // Reset start row.
     panelList.deleteRow(0);
@@ -25,6 +23,9 @@ var startDisplay = function(map, name){
       map.removeControl(clearControl);
     }
   }
+  idCell.setAttribute('class', 'delete-location');
+  idCell.title = "Click to delete";
+  idCell.onclick = removeCallback;
   var nameCell = row.insertCell(1);
   nameCell.title = "Click to center the map";
   nameCell.setAttribute("class", "vehicle-start");
@@ -32,6 +33,8 @@ var startDisplay = function(map, name){
   nameCell.onclick = function(){
     dataHandler.showStart(map, true);
   };
+  // Add description.
+  dataHandler.updateStartDescription(name, removeCallback);
 }
 
 var endDisplay = function(map, name){
@@ -41,9 +44,7 @@ var endDisplay = function(map, name){
   var row = panelList.insertRow(1);
   var idCell = row.insertCell(0);
 
-  idCell.setAttribute('class', 'delete-location');
-  idCell.title = "Click to delete";
-  idCell.onclick = function(){
+  var removeCallback = function(){
     dataHandler.removeEnd(map);
     // Reset end row.
     panelList.deleteRow(1);
@@ -54,6 +55,9 @@ var endDisplay = function(map, name){
       map.removeControl(clearControl);
     }
   }
+  idCell.setAttribute('class', 'delete-location');
+  idCell.title = "Click to delete";
+  idCell.onclick = removeCallback;
   var nameCell = row.insertCell(1);
   nameCell.title = "Click to center the map";
   nameCell.setAttribute("class", "vehicle-end");
@@ -61,6 +65,8 @@ var endDisplay = function(map, name){
   nameCell.onclick = function(){
     dataHandler.showEnd(map, true);
   };
+  // Add description.
+  dataHandler.updateEndDescription(name, removeCallback);
 }
 
 var jobDisplay = function(map, name){
@@ -108,9 +114,6 @@ var addPlace = function(map, latlng){
       var r = results[0];
       if(r){
         var name = address.display(r);
-        // Add description for start and end.
-        dataHandler.updateStartDescription(name);
-        dataHandler.updateEndDescription(name);
         // Add description in the right panel display.
         startDisplay(map, name);
         endDisplay(map, name);

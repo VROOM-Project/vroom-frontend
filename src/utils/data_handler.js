@@ -40,14 +40,30 @@ var updateJobDescription = function(jobIndex, description, removeCallback){
   data.jobsMarkers[jobIndex].bindPopup(popupDiv).openPopup();
 }
 
-var updateStartDescription = function(description){
+var updateStartDescription = function(description, removeCallback){
   data.vehicles[0].startDescription = description;
-  data.startMarker.bindPopup(description).openPopup();
+  var popupDiv = document.createElement('div');
+  var par = document.createElement('p');
+  par.innerHTML = description;
+  var btn = document.createElement('button');
+  btn.innerHTML = 'Delete start';
+  btn.onclick = removeCallback;
+  popupDiv.appendChild(par);
+  popupDiv.appendChild(btn);
+  data.startMarker.bindPopup(popupDiv).openPopup();
 }
 
-var updateEndDescription = function(description){
+var updateEndDescription = function(description, removeCallback){
   data.vehicles[0].endDescription = description;
-  data.endMarker.bindPopup(description).openPopup();
+  var popupDiv = document.createElement('div');
+  var par = document.createElement('p');
+  par.innerHTML = description;
+  var btn = document.createElement('button');
+  btn.innerHTML = 'Delete end';
+  btn.onclick = removeCallback;
+  popupDiv.appendChild(par);
+  popupDiv.appendChild(btn);
+  data.endMarker.bindPopup(popupDiv).openPopup();
 }
 
 var addFirst = function(map, latlng){
