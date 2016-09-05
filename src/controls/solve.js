@@ -16,7 +16,7 @@ var solveControl = L.Control.extend({
       L.DomEvent.stopPropagation(e);
       map.removeControl(solveControl);
 
-      solutionHandler.solve();
+      solutionHandler.solve(map);
     };
     return this._div;
   },

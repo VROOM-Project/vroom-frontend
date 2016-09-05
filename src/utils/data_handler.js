@@ -1,7 +1,12 @@
 'use strict';
 
+var L = require('leaflet');
+var polyUtil = require('polyline-encoded');
 var data = require('../data');
 var mapConfig = require('../config/leaflet');
+var panelControl = require('../controls/panel');
+
+var routes = [];
 
 var getJobs = function(){
   return data.jobs;
@@ -41,6 +46,14 @@ var resetEnd = function(map){
   }
 }
 
+var clearRoutes = function(map){
+  // Only one route so far to remove.
+  if(routes.length > 0){
+    map.removeLayer(routes[0]);
+    routes = [];
+  }
+}
+
 var clearData = function(map){
   // Clear all data and markers.
   for(var i = 0; i < data.jobsMarkers.length; i++){
@@ -53,6 +66,20 @@ var clearData = function(map){
   data.jobs = [];
   data.jobsMarkers = [];
   data.vehicles = [{'id': 0}];
+
+  clearRoutes(map);
+}
+
+var closeAllPopups = function(){
+  for(var i = 0; i < data.jobsMarkers.length; i++){
+    data.jobsMarkers[i].closePopup();
+  }
+  if(data.startMarker){
+    data.startMarker.closePopup();
+  }
+  if(data.endMarker){
+    data.endMarker.closePopup();
+  }
 }
 
 var updateJobDescription = function(jobIndex,
@@ -116,6 +143,7 @@ var updateEndDescription = function(description, remove){
 }
 
 var addStart = function(map, latlng){
+  clearRoutes(map);
   if(data.startMarker){
     map.removeLayer(data.startMarker);
   }
@@ -124,6 +152,7 @@ var addStart = function(map, latlng){
 }
 
 var addEnd = function(map, latlng){
+  clearRoutes(map);
   if(data.endMarker){
     map.removeLayer(data.endMarker);
   }
@@ -132,6 +161,7 @@ var addEnd = function(map, latlng){
 }
 
 var addJob = function(map, latlng){
+  clearRoutes(map);
   data.jobs.push({'location': [latlng.lng,latlng.lat]});
   data.jobsMarkers.push(L.marker(latlng)
                         .addTo(map)
@@ -139,6 +169,7 @@ var addJob = function(map, latlng){
 }
 
 var removeJob = function(map, jobIndex){
+  clearRoutes(map);
   map.removeLayer(data.jobsMarkers[jobIndex]);
   data.jobs.splice(jobIndex, 1);
   data.jobsMarkers.splice(jobIndex, 1);
@@ -147,6 +178,7 @@ var removeJob = function(map, jobIndex){
 var removeStart = function(map){
   var allowRemoval = getEnd();
   if(allowRemoval){
+    clearRoutes(map);
     resetStart(map);
   }
   else{
@@ -158,6 +190,7 @@ var removeStart = function(map){
 var removeEnd = function(map){
   var allowRemoval = getStart();
   if(allowRemoval){
+    clearRoutes(map);
     resetEnd(map);
   }
   else{
@@ -196,6 +229,18 @@ var getOutput = function(){
   return data.output;
 }
 
+var addRoute = function(map, route){
+  var latlngs = polyUtil.decode(route['geometry']);
+
+  routes.push(new L.Polyline(latlngs,
+                             {opacity: mapConfig.opacity,
+                              weight: mapConfig.weight}
+                            ).addTo(map));
+  map.fitBounds(latlngs, {
+    paddingBottomRight: [panelControl.getWidth(), 0]
+  });
+}
+
 module.exports = {
   getJobs: getJobs,
   getVehicles: getVehicles,
@@ -203,6 +248,7 @@ module.exports = {
   getStart: getStart,
   getEnd: getEnd,
   clearData: clearData,
+  closeAllPopups: closeAllPopups,
   addStart: addStart,
   addEnd: addEnd,
   addJob: addJob,
@@ -216,5 +262,6 @@ module.exports = {
   showStart: showStart,
   showEnd: showEnd,
   setOutput: setOutput,
-  getOutput: getOutput
+  getOutput: getOutput,
+  addRoute: addRoute
 };

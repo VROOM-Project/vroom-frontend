@@ -34,6 +34,7 @@ var setStart = function(map, latlng, name){
          && !dataHandler.getEnd()){
         map.removeControl(clearControl);
       }
+      addSolveControl(map);
     }
   }
   idCell.setAttribute('class', 'delete-location');
@@ -70,6 +71,7 @@ var setEnd = function(map, latlng, name){
          && !dataHandler.getEnd()){
         map.removeControl(clearControl);
       }
+      addSolveControl(map);
     }
   }
   idCell.setAttribute('class', 'delete-location');
@@ -104,6 +106,7 @@ var jobDisplay = function(map, latlng, name){
        && !dataHandler.getEnd()){
       map.removeControl(clearControl);
     }
+    addSolveControl(map);
   }
   idCell.setAttribute('class', 'delete-location');
   idCell.title = "Click to delete";

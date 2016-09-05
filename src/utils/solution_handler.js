@@ -3,7 +3,7 @@
 var dataHandler = require('./data_handler');
 var api = require('../config/api');
 
-var solve = function(){
+var solve = function(map){
   // Format json input for solving.
   var input = {
     jobs: dataHandler.getJobs(),
@@ -21,7 +21,7 @@ var solve = function(){
   xhttp.onreadystatechange = function() {
     if (xhttp.readyState == 4 && xhttp.status == 200) {
       dataHandler.setOutput(JSON.parse(xhttp.response));
-      plotSolution();
+      plotSolution(map);
     }
   };
   var target = api.host;
@@ -31,19 +31,19 @@ var solve = function(){
   xhttp.open('POST', target, false);
   xhttp.setRequestHeader('Content-type', 'application/json');
   xhttp.send(JSON.stringify(input));
+  dataHandler.closeAllPopups();
 }
 
-var plotSolution = function(){
+var plotSolution = function(map){
   var result = dataHandler.getOutput();
   if(result['code'] !== 0){
     alert(result['error']);
     return;
   }
 
-  console.log(result);
+  dataHandler.addRoute(map, result.routes[0]);
 }
 
 module.exports = {
-  solve: solve,
-  plotSolution: plotSolution
+  solve: solve
 };

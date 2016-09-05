@@ -16,6 +16,8 @@ module.exports = {
   initCenter: initCenter,
   initZoom: initZoom,
   tileLayer: tileLayer,
+  opacity: 0.6,
+  weight: 8,
   jobIcon: L.icon({
     iconUrl: 'images/job-icon.png',
     iconSize: [15, 15],
