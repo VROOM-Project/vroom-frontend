@@ -5,14 +5,17 @@ var dataHandler = require('./data_handler');
 var geocoder = require('./geocoder');
 var address = require('./address');
 
-var startDisplay = function(map, name){
+var setStart = function(map, latlng, name){
+  // Add start to dataset.
+  dataHandler.addStart(map, latlng);
+
   var panelList = document.getElementById('panel-vehicle');
 
   panelList.deleteRow(0);
   var row = panelList.insertRow(0);
   var idCell = row.insertCell(0);
 
-  var removeCallback = function(){
+  var remove = function(){
     dataHandler.removeStart(map);
     // Reset start row.
     panelList.deleteRow(0);
@@ -25,7 +28,7 @@ var startDisplay = function(map, name){
   }
   idCell.setAttribute('class', 'delete-location');
   idCell.title = "Click to delete";
-  idCell.onclick = removeCallback;
+  idCell.onclick = remove;
   var nameCell = row.insertCell(1);
   nameCell.title = "Click to center the map";
   nameCell.setAttribute("class", "vehicle-start");
@@ -34,17 +37,20 @@ var startDisplay = function(map, name){
     dataHandler.showStart(map, true);
   };
   // Add description.
-  dataHandler.updateStartDescription(name, removeCallback);
+  dataHandler.updateStartDescription(name, remove);
 }
 
-var endDisplay = function(map, name){
+var setEnd = function(map, latlng, name){
+  // Add end to dataset.
+  dataHandler.addEnd(map, latlng);
+
   var panelList = document.getElementById('panel-vehicle');
 
   panelList.deleteRow(1);
   var row = panelList.insertRow(1);
   var idCell = row.insertCell(0);
 
-  var removeCallback = function(){
+  var remove = function(){
     dataHandler.removeEnd(map);
     // Reset end row.
     panelList.deleteRow(1);
@@ -57,7 +63,7 @@ var endDisplay = function(map, name){
   }
   idCell.setAttribute('class', 'delete-location');
   idCell.title = "Click to delete";
-  idCell.onclick = removeCallback;
+  idCell.onclick = remove;
   var nameCell = row.insertCell(1);
   nameCell.title = "Click to center the map";
   nameCell.setAttribute("class", "vehicle-end");
@@ -66,17 +72,20 @@ var endDisplay = function(map, name){
     dataHandler.showEnd(map, true);
   };
   // Add description.
-  dataHandler.updateEndDescription(name, removeCallback);
+  dataHandler.updateEndDescription(name, remove);
 }
 
-var jobDisplay = function(map, name){
+var jobDisplay = function(map, latlng, name){
+  // Add job in dataset.
+  dataHandler.addJob(map, latlng);
+
   var panelList = document.getElementById('panel-jobs');
 
   var nb_rows = panelList.rows.length;
   var row = panelList.insertRow(nb_rows);
   var idCell = row.insertCell(0);
 
-  var removeCallback = function(){
+  var remove = function(){
     dataHandler.removeJob(map, row.rowIndex);
     panelList.deleteRow(row.rowIndex);
     if(dataHandler.getSize() === 0
@@ -87,17 +96,30 @@ var jobDisplay = function(map, name){
   }
   idCell.setAttribute('class', 'delete-location');
   idCell.title = "Click to delete";
-  idCell.onclick = removeCallback;
+  idCell.onclick = remove;
   var nameCell = row.insertCell(1);
   nameCell.title = "Click to center the map";
   nameCell.appendChild(document.createTextNode(name));
   nameCell.onclick = function(){
     dataHandler.showMarker(map, row.rowIndex, true);
   };
+  // Callbacks to replace current start or end by this job.
+  var setAsStart = function(){
+    setStart(map, latlng, name);
+    dataHandler.removeJob(map, row.rowIndex);
+    panelList.deleteRow(row.rowIndex);
+  }
+  var setAsEnd = function(){
+    setEnd(map, latlng, name);
+    dataHandler.removeJob(map, row.rowIndex);
+    panelList.deleteRow(row.rowIndex);
+  }
   // Add description to job and marker.
   dataHandler.updateJobDescription(dataHandler.getSize() - 1,
                                    name,
-                                   removeCallback);
+                                   remove,
+                                   setAsStart,
+                                   setAsEnd);
 }
 
 // Add locations.
@@ -107,30 +129,24 @@ var addPlace = function(map, latlng){
   }
 
   if(!dataHandler.getStart() && !dataHandler.getEnd()){
-    // Add first location, defaults to vehicle start and end.
-    dataHandler.addFirst(map, latlng);
-
     geocoder.nominatim.reverse(latlng, map.options.crs.scale(19), function(results){
       var r = results[0];
       if(r){
         var name = address.display(r);
         // Add description in the right panel display.
-        startDisplay(map, name);
-        endDisplay(map, name);
+        setStart(map, latlng, name);
+        setEnd(map, latlng, name);
       }
     });
   }
   else{
-    // Add regular job.
-    dataHandler.addJob(map, latlng);
-
     geocoder.nominatim.reverse(latlng, map.options.crs.scale(19), function(results){
       var r = results[0];
       if(r){
         var name = address.display(r);
         // Add description in the right panel display and create job
         // marker.
-        jobDisplay(map, name);
+        jobDisplay(map, latlng, name);
       }
     });
   }

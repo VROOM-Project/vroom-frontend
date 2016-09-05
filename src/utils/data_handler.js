@@ -27,49 +27,79 @@ var clearData = function(map){
   data.vehicles = [{'id': 0}];
 }
 
-var updateJobDescription = function(jobIndex, description, removeCallback){
+var updateJobDescription = function(jobIndex,
+                                    description,
+                                    remove,
+                                    setAsStart,
+                                    setAsEnd){
   data.jobs[jobIndex]['description'] = description;
+
+  // Marker popup.
   var popupDiv = document.createElement('div');
   var par = document.createElement('p');
   par.innerHTML = description;
-  var btn = document.createElement('button');
-  btn.innerHTML = 'Delete';
-  btn.onclick = removeCallback;
+  var deleteButton = document.createElement('button');
+  deleteButton.innerHTML = 'Delete';
+  deleteButton.onclick = remove;
+  var asStartButton = document.createElement('button');
+  asStartButton.innerHTML = 'Set as start';
+  asStartButton.onclick = setAsStart;
+  var asEndButton = document.createElement('button');
+  asEndButton.innerHTML = 'Set as end';
+  asEndButton.onclick = setAsEnd;
   popupDiv.appendChild(par);
-  popupDiv.appendChild(btn);
+  popupDiv.appendChild(asStartButton);
+  popupDiv.appendChild(asEndButton);
+  popupDiv.appendChild(deleteButton);
+
   data.jobsMarkers[jobIndex].bindPopup(popupDiv).openPopup();
 }
 
-var updateStartDescription = function(description, removeCallback){
+var updateStartDescription = function(description, remove){
   data.vehicles[0].startDescription = description;
+
+  // Marker popup.
   var popupDiv = document.createElement('div');
   var par = document.createElement('p');
   par.innerHTML = description;
-  var btn = document.createElement('button');
-  btn.innerHTML = 'Delete start';
-  btn.onclick = removeCallback;
+  var deleteButton = document.createElement('button');
+  deleteButton.innerHTML = 'Delete start';
+  deleteButton.onclick = remove;
   popupDiv.appendChild(par);
-  popupDiv.appendChild(btn);
+  popupDiv.appendChild(deleteButton);
+
   data.startMarker.bindPopup(popupDiv).openPopup();
 }
 
-var updateEndDescription = function(description, removeCallback){
+var updateEndDescription = function(description, remove){
   data.vehicles[0].endDescription = description;
+
+  // Marker popup.
   var popupDiv = document.createElement('div');
   var par = document.createElement('p');
   par.innerHTML = description;
-  var btn = document.createElement('button');
-  btn.innerHTML = 'Delete end';
-  btn.onclick = removeCallback;
+  var deleteButton = document.createElement('button');
+  deleteButton.innerHTML = 'Delete end';
+  deleteButton.onclick = remove;
   popupDiv.appendChild(par);
-  popupDiv.appendChild(btn);
+  popupDiv.appendChild(deleteButton);
+
   data.endMarker.bindPopup(popupDiv).openPopup();
 }
 
-var addFirst = function(map, latlng){
+var addStart = function(map, latlng){
+  if(data.startMarker){
+    map.removeLayer(data.startMarker);
+  }
   data.vehicles[0].start = [latlng.lng,latlng.lat];
-  data.vehicles[0].end = [latlng.lng,latlng.lat];
   data.startMarker = L.marker(latlng).addTo(map).setIcon(mapConfig.startIcon);
+}
+
+var addEnd = function(map, latlng){
+  if(data.endMarker){
+    map.removeLayer(data.endMarker);
+  }
+  data.vehicles[0].end = [latlng.lng,latlng.lat];
   data.endMarker = L.marker(latlng).addTo(map).setIcon(mapConfig.endIcon);
 }
 
@@ -126,7 +156,8 @@ module.exports = {
   getStart: getStart,
   getEnd: getEnd,
   clearData: clearData,
-  addFirst: addFirst,
+  addStart: addStart,
+  addEnd: addEnd,
   addJob: addJob,
   updateJobDescription: updateJobDescription,
   updateStartDescription: updateStartDescription,
