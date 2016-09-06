@@ -21,6 +21,7 @@ var solve = function(map){
   xhttp.onreadystatechange = function() {
     if (xhttp.readyState == 4 && xhttp.status == 200) {
       dataHandler.setOutput(JSON.parse(xhttp.response));
+      document.getElementById('wait-icon').removeAttribute('class');
       plotSolution(map);
     }
   };

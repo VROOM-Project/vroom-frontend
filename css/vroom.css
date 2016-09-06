@@ -95,3 +95,19 @@
     border-width: 0px 0px 0px 6px;
     border-color: #e9130a;
 }
+
+.wait-display{
+    text-align: center;
+}
+
+i.wait-icon{
+    margin: auto;
+    display: block;
+    background-repeat: no-repeat;
+    background-size: contain;
+    background-position: center;
+    padding: 0px 5px 0px 5px;
+    background-image: url("../images/throbber.gif");
+    width: 48px;
+    height: 48px;
+}

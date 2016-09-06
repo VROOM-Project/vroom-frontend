@@ -15,6 +15,7 @@ var solveControl = L.Control.extend({
     this._div.onclick = function(e){
       L.DomEvent.stopPropagation(e);
       map.removeControl(solveControl);
+      document.getElementById('wait-icon').setAttribute('class', 'wait-icon');
 
       solutionHandler.solve(map);
     };

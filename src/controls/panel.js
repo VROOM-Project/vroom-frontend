@@ -20,6 +20,13 @@ var panelControl = L.Control.extend({
     headerDiv.innerHTML = '<a href="http://vroom-project.org">VROOM</a>';
     this._div.appendChild(headerDiv);
 
+    // Wait icon displayed while solving.
+    this._waitDisplayDiv = document.createElement('div');
+    this._waitDisplayDiv.setAttribute('class', 'wait-display');
+    var waitIcon = document.createElement('i');
+    waitIcon.setAttribute('id', 'wait-icon');
+    this._waitDisplayDiv.appendChild(waitIcon);
+
     // Table start/end display.
     this._vehicleTable = document.createElement('table');
     this._vehicleTable.setAttribute('id', 'panel-vehicle');
@@ -33,6 +40,7 @@ var panelControl = L.Control.extend({
     var tableDiv = document.createElement('div');
     tableDiv.setAttribute('class', 'panel-table');
 
+    tableDiv.appendChild(this._waitDisplayDiv);
     tableDiv.appendChild(this._vehicleTable);
     tableDiv.appendChild(document.createElement('hr'));
     tableDiv.appendChild(this._jobTable);
