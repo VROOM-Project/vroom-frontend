@@ -122,11 +122,13 @@ var jobDisplay = function(map, latlng, name){
     setStart(map, latlng, name);
     dataHandler.removeJob(map, row.rowIndex);
     panelList.deleteRow(row.rowIndex);
+    addSolveControl(map);
   }
   var setAsEnd = function(){
     setEnd(map, latlng, name);
     dataHandler.removeJob(map, row.rowIndex);
     panelList.deleteRow(row.rowIndex);
+    addSolveControl(map);
   }
   // Add description to job and marker.
   dataHandler.updateJobDescription(dataHandler.getJobsSize() - 1,
