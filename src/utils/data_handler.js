@@ -5,11 +5,16 @@ var polyUtil = require('polyline-encoded');
 var data = require('../data');
 var mapConfig = require('../config/leaflet');
 var panelControl = require('../controls/panel');
+var clearControl = require('../controls/clear');
 
 var routes = [];
 
 var getJobs = function(){
   return data.jobs;
+}
+
+var getJobsMarkers = function(){
+  return data.jobsMarkers;
 }
 
 var getVehicles = function(){
@@ -46,15 +51,20 @@ var resetEnd = function(map){
   }
 }
 
+var hasSolution = function(){
+  return routes.length > 0;
+}
+
 var clearSolution = function(map){
-  // Only one route so far to remove.
-  if(routes.length > 0){
+  if(hasSolution()){
     map.removeLayer(routes[0]);
     routes = [];
     // Remove all numbered tooltips.
     for(var i = 0; i < data.jobsMarkers.length; i++){
       map.removeLayer(data.jobsMarkers[i].getTooltip());
     }
+    // Remove query output for this solution.
+    delete data.output;
   }
 }
 
@@ -146,30 +156,149 @@ var updateEndDescription = function(description, remove){
   data.endMarker.bindPopup(popupDiv).openPopup();
 }
 
-var addStart = function(map, latlng){
+var _setStart = function(map, latlng, name){
+  var panelList = document.getElementById('panel-vehicle');
+
+  panelList.deleteRow(0);
+  var row = panelList.insertRow(0);
+  var idCell = row.insertCell(0);
+
+  var remove = function(){
+    if(removeStart(map)){
+      // Reset start row when removing is ok.
+      panelList.deleteRow(0);
+      panelList.insertRow(0);
+      if(getJobsSize() === 0
+         && !getStart()
+         && !getEnd()){
+        map.removeControl(clearControl);
+      }
+    }
+  }
+  idCell.setAttribute('class', 'delete-location');
+  idCell.title = "Click to delete";
+  idCell.onclick = remove;
+  var nameCell = row.insertCell(1);
+  nameCell.title = "Click to center the map";
+  nameCell.setAttribute("class", "vehicle-start");
+  nameCell.appendChild(document.createTextNode(name));
+  nameCell.onclick = function(){
+    showStart(map, true);
+  };
+  // Add description.
+  updateStartDescription(name, remove);
+}
+
+var addStart = function(map, latlng, name){
   clearSolution(map);
   if(data.startMarker){
     map.removeLayer(data.startMarker);
   }
   data.vehicles[0].start = [latlng.lng,latlng.lat];
   data.startMarker = L.marker(latlng).addTo(map).setIcon(mapConfig.startIcon);
+  // Handle display stuff.
+  _setStart(map, latlng, name);
 }
 
-var addEnd = function(map, latlng){
+var _setEnd = function(map, latlng, name){
+  var panelList = document.getElementById('panel-vehicle');
+
+  panelList.deleteRow(1);
+  var row = panelList.insertRow(1);
+  var idCell = row.insertCell(0);
+
+  var remove = function(){
+    if(removeEnd(map)){
+      // Reset end row when removing is ok.
+      panelList.deleteRow(1);
+      panelList.insertRow(1);
+      if(getJobsSize() === 0
+         && !getStart()
+         && !getEnd()){
+        map.removeControl(clearControl);
+      }
+    }
+  }
+  idCell.setAttribute('class', 'delete-location');
+  idCell.title = "Click to delete";
+  idCell.onclick = remove;
+  var nameCell = row.insertCell(1);
+  nameCell.title = "Click to center the map";
+  nameCell.setAttribute("class", "vehicle-end");
+  nameCell.appendChild(document.createTextNode(name));
+  nameCell.onclick = function(){
+    showEnd(map, true);
+  };
+  // Add description.
+  updateEndDescription(name, remove);
+}
+
+var addEnd = function(map, latlng, name){
   clearSolution(map);
   if(data.endMarker){
     map.removeLayer(data.endMarker);
   }
   data.vehicles[0].end = [latlng.lng,latlng.lat];
   data.endMarker = L.marker(latlng).addTo(map).setIcon(mapConfig.endIcon);
+  // Handle display stuff.
+  _setEnd(map, latlng, name)
 }
 
-var addJob = function(map, latlng){
+var _jobDisplay = function(map, latlng, name, removeCB){
+  var panelList = document.getElementById('panel-jobs');
+
+  var nb_rows = panelList.rows.length;
+  var row = panelList.insertRow(nb_rows);
+  var idCell = row.insertCell(0);
+
+  var remove = function(){
+    removeJob(map, row.rowIndex);
+    panelList.deleteRow(row.rowIndex);
+    if(getJobsSize() === 0
+       && !getStart()
+       && !getEnd()){
+      map.removeControl(clearControl);
+    }
+    removeCB(map);
+  }
+  idCell.setAttribute('class', 'delete-location');
+  idCell.title = "Click to delete";
+  idCell.onclick = remove;
+  var nameCell = row.insertCell(1);
+  nameCell.title = "Click to center the map";
+  nameCell.appendChild(document.createTextNode(name));
+  nameCell.onclick = function(){
+    showMarker(map, row.rowIndex, true);
+  };
+  // Callbacks to replace current start or end by this job.
+  var setAsStart = function(){
+    addStart(map, latlng, name);
+    removeJob(map, row.rowIndex);
+    panelList.deleteRow(row.rowIndex);
+    removeCB(map);
+  }
+  var setAsEnd = function(){
+    addEnd(map, latlng, name);
+    removeJob(map, row.rowIndex);
+    panelList.deleteRow(row.rowIndex);
+    removeCB(map);
+  }
+  // Add description to job and marker.
+  updateJobDescription(getJobsSize() - 1,
+                       name,
+                       remove,
+                       setAsStart,
+                       setAsEnd);
+}
+
+var addJob = function(map, latlng, name, removeCB){
   clearSolution(map);
   data.jobs.push({'location': [latlng.lng,latlng.lat]});
   data.jobsMarkers.push(L.marker(latlng)
                         .addTo(map)
                         .setIcon(mapConfig.jobIcon));
+  // Handle display stuff.
+  _jobDisplay(map, latlng, name, removeCB);
 }
 
 var removeJob = function(map, jobIndex){
@@ -236,13 +365,19 @@ var getOutput = function(){
 var addRoute = function(map, route){
   var latlngs = polyUtil.decode(route['geometry']);
 
-  routes.push(new L.Polyline(latlngs,
-                             {opacity: mapConfig.opacity,
-                              weight: mapConfig.weight}
-                            ).addTo(map));
+  var path = new L.Polyline(latlngs, {
+    opacity: mapConfig.opacity,
+    weight: mapConfig.weight}).addTo(map);
+
   map.fitBounds(latlngs, {
     paddingBottomRight: [panelControl.getWidth(), 0]
   });
+
+  // Clear current job display.
+  panelControl.clearJobDisplay();
+
+  // Add tooltips to markers for visit rank and remember the ordering.
+  var ordering = [];
 
   for(var i = 0; i < route.steps.length; i++){
     var step = route.steps[i];
@@ -252,12 +387,28 @@ var addRoute = function(map, route){
         permanent: true,
         opacity: 0.9
       }).openTooltip();
+
+      ordering.push(step.job);
     }
   }
+
+  // Reorder jobs and marker according to the solution ordering.
+  var solutionOrdering = function(a, b){
+    return (ordering.indexOf(a.id) - ordering.indexOf(b.id));
+  }
+  data.jobs.sort(solutionOrdering);
+  data.jobsMarkers.sort(solutionOrdering);
+
+  for(var i = 0; i < data.jobs.length; i++){
+    console.log(data.jobs[i].id + ' ' + data.jobs[i]["description"]);
+  }
+
+  routes.push(path);
 }
 
 module.exports = {
   getJobs: getJobs,
+  getJobsMarkers: getJobsMarkers,
   getVehicles: getVehicles,
   getJobsSize: getJobsSize,
   getStart: getStart,
