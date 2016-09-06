@@ -111,3 +111,13 @@ i.wait-icon{
     width: 48px;
     height: 48px;
 }
+
+.rank{
+    font-weight: bold;
+}
+
+.solution-display{
+    border-style: solid;
+    border-width: 2px;
+    padding: 2px 5px;
+}

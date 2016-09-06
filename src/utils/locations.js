@@ -32,8 +32,8 @@ var addPlace = function(map, latlng){
       if(r){
         var name = address.display(r);
         // Add description in the right panel display.
-        dataHandler.addStart(map, latlng, name);
-        dataHandler.addEnd(map, latlng, name);
+        dataHandler.addStart(map, latlng, name, checkSolveControl);
+        dataHandler.addEnd(map, latlng, name, checkSolveControl);
       }
     });
   }

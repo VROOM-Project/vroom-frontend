@@ -27,15 +27,19 @@ var panelControl = L.Control.extend({
     waitIcon.setAttribute('id', 'wait-icon');
     this._waitDisplayDiv.appendChild(waitIcon);
 
-    // Table start/end display.
+    // Table for start/end display.
     this._vehicleTable = document.createElement('table');
     this._vehicleTable.setAttribute('id', 'panel-vehicle');
     this._vehicleTable.insertRow(0);
     this._vehicleTable.insertRow(1);
 
-    // Table jobs display.
+    // Table for jobs display.
     this._jobTable = document.createElement('table');
     this._jobTable.setAttribute('id', 'panel-jobs');
+
+    // Table for job-ordered solution display.
+    this._solutionTable = document.createElement('table');
+    this._solutionTable.setAttribute('id', 'panel-solution');
 
     var tableDiv = document.createElement('div');
     tableDiv.setAttribute('class', 'panel-table');
@@ -44,6 +48,7 @@ var panelControl = L.Control.extend({
     tableDiv.appendChild(this._vehicleTable);
     tableDiv.appendChild(document.createElement('hr'));
     tableDiv.appendChild(this._jobTable);
+    tableDiv.appendChild(this._solutionTable);
     this._div.appendChild(tableDiv);
 
     // Prevent events on this control to alter the underlying map.
@@ -82,6 +87,20 @@ var panelControl = L.Control.extend({
   clearDisplay: function(map){
     this.clearJobDisplay();
     this.clearStartEndDisplay();
+  },
+
+  clearSolutionDisplay: function(map){
+    for(var i = this._solutionTable.rows.length; i > 0; i--){
+      this._solutionTable.deleteRow(i -1);
+    }
+  },
+
+  hideJobDisplay: function(){
+    this._jobTable.style.display = 'none';
+  },
+
+  showJobDisplay: function(){
+    this._jobTable.style.display = 'block';
   },
 
   getWidth: function(){
