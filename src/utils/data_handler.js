@@ -46,11 +46,15 @@ var resetEnd = function(map){
   }
 }
 
-var clearRoutes = function(map){
+var clearSolution = function(map){
   // Only one route so far to remove.
   if(routes.length > 0){
     map.removeLayer(routes[0]);
     routes = [];
+    // Remove all numbered tooltips.
+    for(var i = 0; i < data.jobsMarkers.length; i++){
+      map.removeLayer(data.jobsMarkers[i].getTooltip());
+    }
   }
 }
 
@@ -67,7 +71,7 @@ var clearData = function(map){
   data.jobsMarkers = [];
   data.vehicles = [{'id': 0}];
 
-  clearRoutes(map);
+  clearSolution(map);
 }
 
 var closeAllPopups = function(){
@@ -143,7 +147,7 @@ var updateEndDescription = function(description, remove){
 }
 
 var addStart = function(map, latlng){
-  clearRoutes(map);
+  clearSolution(map);
   if(data.startMarker){
     map.removeLayer(data.startMarker);
   }
@@ -152,7 +156,7 @@ var addStart = function(map, latlng){
 }
 
 var addEnd = function(map, latlng){
-  clearRoutes(map);
+  clearSolution(map);
   if(data.endMarker){
     map.removeLayer(data.endMarker);
   }
@@ -161,7 +165,7 @@ var addEnd = function(map, latlng){
 }
 
 var addJob = function(map, latlng){
-  clearRoutes(map);
+  clearSolution(map);
   data.jobs.push({'location': [latlng.lng,latlng.lat]});
   data.jobsMarkers.push(L.marker(latlng)
                         .addTo(map)
@@ -169,7 +173,7 @@ var addJob = function(map, latlng){
 }
 
 var removeJob = function(map, jobIndex){
-  clearRoutes(map);
+  clearSolution(map);
   map.removeLayer(data.jobsMarkers[jobIndex]);
   data.jobs.splice(jobIndex, 1);
   data.jobsMarkers.splice(jobIndex, 1);
@@ -178,7 +182,7 @@ var removeJob = function(map, jobIndex){
 var removeStart = function(map){
   var allowRemoval = getEnd();
   if(allowRemoval){
-    clearRoutes(map);
+    clearSolution(map);
     resetStart(map);
   }
   else{
@@ -190,7 +194,7 @@ var removeStart = function(map){
 var removeEnd = function(map){
   var allowRemoval = getStart();
   if(allowRemoval){
-    clearRoutes(map);
+    clearSolution(map);
     resetEnd(map);
   }
   else{
@@ -239,6 +243,17 @@ var addRoute = function(map, route){
   map.fitBounds(latlngs, {
     paddingBottomRight: [panelControl.getWidth(), 0]
   });
+
+  for(var i = 0; i < route.steps.length; i++){
+    var step = route.steps[i];
+    if(step.type === "job"){
+      data.jobsMarkers[step.job].bindTooltip(i.toString(),{
+        direction: 'auto',
+        permanent: true,
+        opacity: 0.9
+      }).openTooltip();
+    }
+  }
 }
 
 module.exports = {
