@@ -55,7 +55,21 @@ var hasSolution = function(){
   return routes.length > 0;
 }
 
-var clearSolution = function(map){
+// Used on addition to distinguish between start/end or job
+// addition. Relying on getStart / getEnd is not enough as the start
+// and end are only set after the geocoding request is completed. See
+// #12.
+var _firstPlace = true;
+
+var isFirstPlace = function(){
+  return _firstPlace;
+}
+
+var firstPlaceSet = function(){
+  _firstPlace = false;
+}
+
+var _clearSolution = function(map){
   if(hasSolution()){
     // Back to input mode.
     panelControl.clearSolutionDisplay();
@@ -73,6 +87,9 @@ var clearSolution = function(map){
 }
 
 var clearData = function(map){
+  // Back to adding a start/end for next place.
+  _firstPlace = true;
+
   // Clear all data and markers.
   for(var i = 0; i < data.jobsMarkers.length; i++){
     map.removeLayer(data.jobsMarkers[i]);
@@ -85,7 +102,7 @@ var clearData = function(map){
   data.jobsMarkers = [];
   data.vehicles = [{'id': 0}];
 
-  clearSolution(map);
+  _clearSolution(map);
 }
 
 var closeAllPopups = function(){
@@ -195,7 +212,7 @@ var _setStart = function(map, latlng, name, removeCB){
 }
 
 var addStart = function(map, latlng, name, removeCB){
-  clearSolution(map);
+  _clearSolution(map);
   if(data.startMarker){
     map.removeLayer(data.startMarker);
   }
@@ -240,7 +257,7 @@ var _setEnd = function(map, latlng, name, removeCB){
 }
 
 var addEnd = function(map, latlng, name, removeCB){
-  clearSolution(map);
+  _clearSolution(map);
   if(data.endMarker){
     map.removeLayer(data.endMarker);
   }
@@ -298,7 +315,7 @@ var _jobDisplay = function(map, latlng, name, removeCB){
 }
 
 var addJob = function(map, latlng, name, removeCB){
-  clearSolution(map);
+  _clearSolution(map);
   data.jobs.push({'location': [latlng.lng,latlng.lat]});
   data.jobsMarkers.push(L.marker(latlng)
                         .addTo(map)
@@ -308,7 +325,7 @@ var addJob = function(map, latlng, name, removeCB){
 }
 
 var _removeJob = function(map, jobIndex){
-  clearSolution(map);
+  _clearSolution(map);
   map.removeLayer(data.jobsMarkers[jobIndex]);
   data.jobs.splice(jobIndex, 1);
   data.jobsMarkers.splice(jobIndex, 1);
@@ -317,7 +334,7 @@ var _removeJob = function(map, jobIndex){
 var _removeStart = function(map){
   var allowRemoval = getEnd();
   if(allowRemoval){
-    clearSolution(map);
+    _clearSolution(map);
     _resetStart(map);
   }
   else{
@@ -329,7 +346,7 @@ var _removeStart = function(map){
 var _removeEnd = function(map){
   var allowRemoval = getStart();
   if(allowRemoval){
-    clearSolution(map);
+    _clearSolution(map);
     _resetEnd(map);
   }
   else{
@@ -437,6 +454,8 @@ module.exports = {
   getStart: getStart,
   getEnd: getEnd,
   closeAllPopups: closeAllPopups,
+  isFirstPlace: isFirstPlace,
+  firstPlaceSet: firstPlaceSet,
   addStart: addStart,
   addEnd: addEnd,
   addJob: addJob

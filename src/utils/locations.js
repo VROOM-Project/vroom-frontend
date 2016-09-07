@@ -25,8 +25,9 @@ var addPlace = function(map, latlng){
   if(!map.clearControl){
     map.addControl(clearControl);
   }
-
-  if(!dataHandler.getStart() && !dataHandler.getEnd()){
+  if(dataHandler.isFirstPlace()){
+    // Add vehicle start/end.
+    dataHandler.firstPlaceSet();
     geocoder.nominatim.reverse(latlng, map.options.crs.scale(19), function(results){
       var r = results[0];
       if(r){
@@ -38,6 +39,7 @@ var addPlace = function(map, latlng){
     });
   }
   else{
+    // Add regular job.
     geocoder.nominatim.reverse(latlng, map.options.crs.scale(19), function(results){
       var r = results[0];
       if(r){
