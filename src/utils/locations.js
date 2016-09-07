@@ -21,35 +21,49 @@ var checkSolveControl = function(map){
 }
 
 // Add locations.
-var addPlace = function(map, latlng){
+var addPlace = function(map, latlng, name){
   if(!map.clearControl){
     map.addControl(clearControl);
   }
   if(dataHandler.isFirstPlace()){
     // Add vehicle start/end.
     dataHandler.firstPlaceSet();
-    geocoder.nominatim.reverse(latlng, map.options.crs.scale(19), function(results){
-      var r = results[0];
-      if(r){
-        var name = address.display(r);
-        // Add description in the right panel display.
-        dataHandler.addStart(map, latlng, name, checkSolveControl);
-        dataHandler.addEnd(map, latlng, name, checkSolveControl);
-      }
-    });
+
+    if(name){
+      // Add start with provided name.
+      dataHandler.addStart(map, latlng, name, checkSolveControl);
+      dataHandler.addEnd(map, latlng, name, checkSolveControl);
+    }
+    else{
+      geocoder.nominatim.reverse(latlng, map.options.crs.scale(19), function(results){
+        var r = results[0];
+        if(r){
+          name = address.display(r);
+          // Add start based on geocoding result.
+          dataHandler.addStart(map, latlng, name, checkSolveControl);
+          dataHandler.addEnd(map, latlng, name, checkSolveControl);
+        }
+      });
+    }
   }
   else{
     // Add regular job.
-    geocoder.nominatim.reverse(latlng, map.options.crs.scale(19), function(results){
-      var r = results[0];
-      if(r){
-        var name = address.display(r);
-        // Add job in dataset. This also adds description in the right
-        // panel display and creates job marker.
-        dataHandler.addJob(map, latlng, name, checkSolveControl);
-        checkSolveControl(map);
-      }
-    });
+    if(name){
+      // Add job with provided name.
+      dataHandler.addJob(map, latlng, name, checkSolveControl);
+      checkSolveControl(map);
+    }
+    else{
+      geocoder.nominatim.reverse(latlng, map.options.crs.scale(19), function(results){
+        var r = results[0];
+        if(r){
+          name = address.display(r);
+          // Add job based on geocoding result.
+          dataHandler.addJob(map, latlng, name, checkSolveControl);
+          checkSolveControl(map);
+        }
+      });
+    }
   }
 }
 

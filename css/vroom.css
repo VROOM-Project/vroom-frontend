@@ -121,3 +121,7 @@ i.wait-icon{
     border-width: 2px;
     padding: 2px 5px;
 }
+
+.leaflet-control-geocoder{
+    clear: none;
+}
