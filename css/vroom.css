@@ -84,6 +84,11 @@
     background-image: url("../images/fa-icons/cog-alt.svg");
 }
 
+.summary-control{
+    padding: 0px 5px;
+    font-size: 14px;
+}
+
 .vehicle-start{
     border-style: solid;
     border-width: 0px 0px 0px 6px;

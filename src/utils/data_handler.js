@@ -6,6 +6,7 @@ var data = require('../data');
 var mapConfig = require('../config/leaflet');
 var panelControl = require('../controls/panel');
 var clearControl = require('../controls/clear');
+var summaryControl = require('../controls/summary');
 
 var routes = [];
 
@@ -76,6 +77,8 @@ var _clearSolution = function(map){
     panelControl.showJobDisplay();
 
     map.removeLayer(routes[0]);
+    map.removeControl(summaryControl);
+
     routes = [];
     // Remove all numbered tooltips.
     for(var i = 0; i < data.jobsMarkers.length; i++){

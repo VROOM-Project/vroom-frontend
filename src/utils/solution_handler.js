@@ -2,6 +2,7 @@
 
 var dataHandler = require('./data_handler');
 var api = require('../config/api');
+var summaryControl = require('../controls/summary');
 
 var solve = function(map){
   // Format json input for solving.
@@ -46,6 +47,8 @@ var plotSolution = function(map){
     return;
   }
 
+  summaryControl.addTo(map);
+  summaryControl.update(result);
   dataHandler.addRoute(map, result.routes[0]);
 }
 
