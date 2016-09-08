@@ -32,10 +32,6 @@ var panelControl = L.Control.extend({
     this._initDiv = document.createElement('div');
     this._initDiv.setAttribute('id', 'init-display');
 
-    this._fileInput = document.createElement('input');
-    this._fileInput.setAttribute('type', 'file');
-    this._fileInput.setAttribute('id', 'user-file');
-
     var header = document.createElement('p');
     header.innerHTML = '<b>Add locations either by:</b>'
 
@@ -45,7 +41,12 @@ var panelControl = L.Control.extend({
     list.appendChild(clickEl);
     var uploadEl = document.createElement('li');
     uploadEl.innerHTML = 'using a file with one address (or Lat,Lng coord) on each line.';
-    uploadEl.appendChild(this._fileInput);
+
+    var fileInput = document.createElement('input');
+    fileInput.setAttribute('type', 'file');
+    fileInput.setAttribute('id', 'user-file');
+
+    uploadEl.appendChild(fileInput);
     list.appendChild(uploadEl);
 
     this._initDiv.appendChild(header);

@@ -6,10 +6,12 @@ var panelControl = require('./controls/panel');
 var locationsHandler = require('./utils/locations');
 var geocoder = require('./utils/geocoder');
 var address = require('./utils/address');
+var fileHandler = require('./utils/file_handler');
 
 L.Icon.Default.imagePath = 'node_modules/leaflet/dist/images';
 
 panelControl.addTo(LSetup.map);
+fileHandler.setFile();
 
 LSetup.map.on('click', function(e){
   locationsHandler.addPlace(e.latlng);
