@@ -1,6 +1,7 @@
 'use strict';
 
 var solutionHandler = require('../utils/solution_handler');
+var snakeControl = require('./snake');
 
 var solveControl = L.Control.extend({
   options: {
@@ -18,6 +19,7 @@ var solveControl = L.Control.extend({
       document.getElementById('wait-icon').setAttribute('class', 'wait-icon');
 
       solutionHandler.solve(map);
+      snakeControl.addTo(map);
     };
     return this._div;
   },

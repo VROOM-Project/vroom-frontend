@@ -1,6 +1,7 @@
 'use strict';
 
 var L = require('leaflet');
+require('leaflet.polyline.snakeanim');
 var polyUtil = require('polyline-encoded');
 var data = require('../data');
 var mapConfig = require('../config/leaflet');
@@ -392,7 +393,8 @@ var addRoute = function(map, route){
 
   var path = new L.Polyline(latlngs, {
     opacity: mapConfig.opacity,
-    weight: mapConfig.weight}).addTo(map);
+    weight: mapConfig.weight,
+    snakingSpeed: mapConfig.snakingSpeed}).addTo(map);
 
   map.fitBounds(latlngs, {
     paddingBottomRight: [panelControl.getWidth(), 0]
@@ -445,6 +447,10 @@ var addRoute = function(map, route){
   routes.push(path);
 }
 
+var animateRoute = function(){
+  routes[0].snakeIn();
+}
+
 module.exports = {
   clearData: clearData,
   getJobs: getJobs,
@@ -461,5 +467,6 @@ module.exports = {
   firstPlaceSet: firstPlaceSet,
   addStart: addStart,
   addEnd: addEnd,
-  addJob: addJob
+  addJob: addJob,
+  animateRoute: animateRoute
 };

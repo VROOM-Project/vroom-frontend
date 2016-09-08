@@ -84,6 +84,10 @@
     background-image: url("../images/fa-icons/cog-alt.svg");
 }
 
+.snake-control{
+    background-image: url("../images/fa-icons/play-circled.svg");
+}
+
 .summary-control{
     padding: 0px 5px;
     font-size: 14px;
