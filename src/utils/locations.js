@@ -7,6 +7,7 @@ var geocoder = require('./geocoder');
 var address = require('./address');
 var solveControl = require('../controls/solve');
 var panelControl = require('../controls/panel');
+var fitControl = require('../controls/fit');
 
 var checkSolveControl = function(){
   if(!LSetup.map.solveControl){
@@ -26,6 +27,9 @@ var checkSolveControl = function(){
 var addPlace = function(latlng, name){
   panelControl.hideInitDiv();
 
+  if(!LSetup.map.fitControl){
+    LSetup.map.addControl(fitControl);
+  }
   if(!LSetup.map.clearControl){
     LSetup.map.addControl(clearControl);
   }

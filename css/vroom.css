@@ -76,6 +76,10 @@
     cursor: pointer;
 }
 
+.fit-control{
+    background-image: url("../images/fa-icons/resize-small.svg");
+}
+
 .clear-control{
     background-image: url("../images/fa-icons/trash.svg");
 }

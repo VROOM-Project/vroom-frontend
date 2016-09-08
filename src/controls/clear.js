@@ -4,6 +4,7 @@ var dataHandler = require('../utils/data_handler');
 var panelControl = require('./panel');
 var solveControl = require('./solve');
 var summaryControl = require('./summary');
+var fitControl = require('./fit');
 
 var clearControl = L.Control.extend({
   options: {
@@ -25,6 +26,7 @@ var clearControl = L.Control.extend({
       map.removeControl(clearControl);
       map.removeControl(solveControl);
       map.removeControl(summaryControl);
+      map.removeControl(fitControl);
 
       // Delete locations display in the right panel.
       panelControl.clearDisplay();

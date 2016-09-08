@@ -54,6 +54,24 @@ var _resetEnd = function(){
   }
 }
 
+var _pushToBounds = function(latlng){
+  if(data.bounds){
+    data.bounds.extend(latlng);
+  }
+  else{
+    data.bounds = L.latLngBounds(latlng, latlng);
+  }
+}
+
+var fitView = function(){
+  if(data.bounds){
+    LSetup.map.fitBounds(data.bounds, {
+      paddingBottomRight: [panelControl.getWidth(), 0],
+      paddingTopLeft: [50, 0],
+    });
+  }
+}
+
 var hasSolution = function(){
   return routes.length > 0;
 }
@@ -88,6 +106,9 @@ var _clearSolution = function(){
     }
     // Remove query output for this solution.
     delete data.output;
+
+    // Remove problem bounds.
+    delete data.bounds;
   }
 }
 
@@ -218,6 +239,8 @@ var _setStart = function(latlng, name, removeCB){
 
 var addStart = function(latlng, name, removeCB){
   _clearSolution();
+  _pushToBounds(latlng);
+
   if(data.startMarker){
     LSetup.map.removeLayer(data.startMarker);
   }
@@ -263,6 +286,8 @@ var _setEnd = function(latlng, name, removeCB){
 
 var addEnd = function(latlng, name, removeCB){
   _clearSolution();
+  _pushToBounds(latlng);
+
   if(data.endMarker){
     LSetup.map.removeLayer(data.endMarker);
   }
@@ -326,6 +351,8 @@ var addJob = function(latlng, name, removeCB){
   }
 
   _clearSolution();
+  _pushToBounds(latlng);
+
   data.jobs.push({'location': [latlng.lng,latlng.lat]});
   data.jobsMarkers.push(L.marker(latlng)
                         .addTo(LSetup.map)
@@ -401,9 +428,8 @@ var addRoute = function(route){
     opacity: LSetup.opacity,
     weight: LSetup.weight}).addTo(LSetup.map);
 
-  LSetup.map.fitBounds(latlngs, {
-    paddingBottomRight: [panelControl.getWidth(), 0]
-  });
+  data.bounds.extend(latlngs);
+  fitView();
 
   // Hide input job display.
   panelControl.hideJobDisplay();
@@ -453,6 +479,7 @@ var addRoute = function(route){
 }
 
 module.exports = {
+  fitView: fitView,
   clearData: clearData,
   getJobs: getJobs,
   getJobsMarkers: getJobsMarkers,
