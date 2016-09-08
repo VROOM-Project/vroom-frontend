@@ -5,6 +5,7 @@ var dataHandler = require('./data_handler');
 var geocoder = require('./geocoder');
 var address = require('./address');
 var solveControl = require('../controls/solve');
+var panelControl = require('../controls/panel');
 
 var checkSolveControl = function(map){
   if(!map.solveControl){
@@ -22,6 +23,8 @@ var checkSolveControl = function(map){
 
 // Add locations.
 var addPlace = function(map, latlng, name){
+  panelControl.hideInitDiv();
+
   if(!map.clearControl){
     map.addControl(clearControl);
   }

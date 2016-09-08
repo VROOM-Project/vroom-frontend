@@ -26,6 +26,31 @@ var panelControl = L.Control.extend({
     var waitIcon = document.createElement('i');
     waitIcon.setAttribute('id', 'wait-icon');
     this._waitDisplayDiv.appendChild(waitIcon);
+    this._div.appendChild(this._waitDisplayDiv);
+
+    // Initial displayed message.
+    this._initDiv = document.createElement('div');
+    this._initDiv.setAttribute('id', 'init-display');
+
+    this._fileInput = document.createElement('input');
+    this._fileInput.setAttribute('type', 'file');
+    this._fileInput.setAttribute('id', 'user-file');
+
+    var header = document.createElement('p');
+    header.innerHTML = '<b>Add locations either by:</b>'
+
+    var list = document.createElement('ul');
+    var clickEl = document.createElement('li');
+    clickEl.innerHTML = 'clicking on the map;';
+    list.appendChild(clickEl);
+    var uploadEl = document.createElement('li');
+    uploadEl.innerHTML = 'using a file with one address (or Lat,Lng coord) on each line.';
+    uploadEl.appendChild(this._fileInput);
+    list.appendChild(uploadEl);
+
+    this._initDiv.appendChild(header);
+    this._initDiv.appendChild(list);
+    this._div.appendChild(this._initDiv);
 
     // Table for start/end display.
     this._vehicleTable = document.createElement('table');
@@ -44,7 +69,6 @@ var panelControl = L.Control.extend({
     var tableDiv = document.createElement('div');
     tableDiv.setAttribute('class', 'panel-table');
 
-    tableDiv.appendChild(this._waitDisplayDiv);
     tableDiv.appendChild(this._vehicleTable);
     tableDiv.appendChild(document.createElement('hr'));
     tableDiv.appendChild(this._jobTable);
@@ -63,7 +87,7 @@ var panelControl = L.Control.extend({
     return this._div;
   },
 
-  onRemove: function (map){
+  onRemove: function(map){
     // Remove reference from map.
     delete map.panelControl;
   },
@@ -87,6 +111,7 @@ var panelControl = L.Control.extend({
   clearDisplay: function(map){
     this.clearJobDisplay();
     this.clearStartEndDisplay();
+    this.showInitDiv();
   },
 
   clearSolutionDisplay: function(map){
@@ -101,6 +126,14 @@ var panelControl = L.Control.extend({
 
   showJobDisplay: function(){
     this._jobTable.style.display = 'block';
+  },
+
+  hideInitDiv: function(){
+    this._initDiv.style.display = 'none';
+  },
+
+  showInitDiv: function(){
+    this._initDiv.style.display = 'block';
   },
 
   getWidth: function(){
