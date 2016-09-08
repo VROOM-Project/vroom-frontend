@@ -1,5 +1,6 @@
 'use strict';
 
+var api = require('../config/api');
 var geocoder = require('./geocoder');
 var address = require('./address');
 var locationHandler = require('./locations');
@@ -21,7 +22,9 @@ reader.onload = function(event){
   // Used to report after parsing the whole file.
   var context = {
     locNumber: 0,
-    targetLocNumber: lines.length,
+    // The '1 +' accounts for the first job being actually the
+    // start/end.
+    targetLocNumber: Math.min(lines.length, 1 + api.maxJobNumber),
     totalLocNumber: lines.length,
     unfoundLocs: []
   };
