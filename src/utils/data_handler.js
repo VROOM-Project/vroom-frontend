@@ -8,6 +8,7 @@ var LSetup = require('../config/leaflet_setup');
 var panelControl = require('../controls/panel');
 var clearControl = require('../controls/clear');
 var summaryControl = require('../controls/summary');
+var solveControl = require('../controls/solve');
 
 var routes = [];
 
@@ -55,6 +56,19 @@ var _resetEnd = function(){
 
 var hasSolution = function(){
   return routes.length > 0;
+}
+
+var _checkSolveControl = function(){
+  if(!LSetup.map.solveControl){
+    if((getStart() || getEnd()) && (getJobsSize() > 0)){
+      solveControl.addTo(LSetup.map);
+    }
+  }
+  else{
+    if(getJobsSize() === 0){
+      LSetup.map.removeControl(solveControl);
+    }
+  }
 }
 
 // Used on addition to distinguish between start/end or job
@@ -181,7 +195,7 @@ var _updateEndDescription = function(description, remove){
   data.endMarker.bindPopup(popupDiv).openPopup();
 }
 
-var _setStart = function(latlng, name, removeCB){
+var _setStart = function(latlng, name){
   var panelList = document.getElementById('panel-vehicle');
 
   panelList.deleteRow(0);
@@ -198,7 +212,7 @@ var _setStart = function(latlng, name, removeCB){
          && !getEnd()){
         LSetup.map.removeControl(clearControl);
       }
-      removeCB();
+      _checkSolveControl();
     }
   }
   idCell.setAttribute('class', 'delete-location');
@@ -215,7 +229,7 @@ var _setStart = function(latlng, name, removeCB){
   _updateStartDescription(name, remove);
 }
 
-var addStart = function(latlng, name, removeCB){
+var addStart = function(latlng, name){
   _clearSolution();
   if(data.startMarker){
     LSetup.map.removeLayer(data.startMarker);
@@ -223,10 +237,10 @@ var addStart = function(latlng, name, removeCB){
   data.vehicles[0].start = [latlng.lng,latlng.lat];
   data.startMarker = L.marker(latlng).addTo(LSetup.map).setIcon(LSetup.startIcon);
   // Handle display stuff.
-  _setStart(latlng, name, removeCB);
+  _setStart(latlng, name);
 }
 
-var _setEnd = function(latlng, name, removeCB){
+var _setEnd = function(latlng, name){
   var panelList = document.getElementById('panel-vehicle');
 
   panelList.deleteRow(1);
@@ -243,7 +257,7 @@ var _setEnd = function(latlng, name, removeCB){
          && !getEnd()){
         LSetup.map.removeControl(clearControl);
       }
-      removeCB();
+      _checkSolveControl();
     }
   }
   idCell.setAttribute('class', 'delete-location');
@@ -260,7 +274,7 @@ var _setEnd = function(latlng, name, removeCB){
   _updateEndDescription(name, remove);
 }
 
-var addEnd = function(latlng, name, removeCB){
+var addEnd = function(latlng, name){
   _clearSolution();
   if(data.endMarker){
     LSetup.map.removeLayer(data.endMarker);
@@ -268,10 +282,10 @@ var addEnd = function(latlng, name, removeCB){
   data.vehicles[0].end = [latlng.lng,latlng.lat];
   data.endMarker = L.marker(latlng).addTo(LSetup.map).setIcon(LSetup.endIcon);
   // Handle display stuff.
-  _setEnd(latlng, name, removeCB);
+  _setEnd(latlng, name);
 }
 
-var _jobDisplay = function(latlng, name, removeCB){
+var _jobDisplay = function(latlng, name){
   var panelList = document.getElementById('panel-jobs');
 
   var nb_rows = panelList.rows.length;
@@ -286,7 +300,7 @@ var _jobDisplay = function(latlng, name, removeCB){
        && !getEnd()){
       LSetup.map.removeControl(clearControl);
     }
-    removeCB();
+    _checkSolveControl();
   }
   idCell.setAttribute('class', 'delete-location');
   idCell.title = "Click to delete";
@@ -299,16 +313,16 @@ var _jobDisplay = function(latlng, name, removeCB){
   };
   // Callbacks to replace current start or end by this job.
   var setAsStart = function(){
-    addStart(latlng, name, removeCB);
+    addStart(latlng, name);
     _removeJob(row.rowIndex);
     panelList.deleteRow(row.rowIndex);
-    removeCB();
+    _checkSolveControl();
   }
   var setAsEnd = function(){
-    addEnd(latlng, name, removeCB);
+    addEnd(latlng, name);
     _removeJob(row.rowIndex);
     panelList.deleteRow(row.rowIndex);
-    removeCB();
+    _checkSolveControl();
   }
   // Add description to job and marker.
   _updateJobDescription(getJobsSize() - 1,
@@ -318,14 +332,15 @@ var _jobDisplay = function(latlng, name, removeCB){
                         setAsEnd);
 }
 
-var addJob = function(latlng, name, removeCB){
+var addJob = function(latlng, name){
   _clearSolution();
   data.jobs.push({'location': [latlng.lng,latlng.lat]});
   data.jobsMarkers.push(L.marker(latlng)
                         .addTo(LSetup.map)
                         .setIcon(LSetup.jobIcon));
   // Handle display stuff.
-  _jobDisplay(latlng, name, removeCB);
+  _jobDisplay(latlng, name);
+  _checkSolveControl();
 }
 
 var _removeJob = function(jobIndex){
