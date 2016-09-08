@@ -12,7 +12,10 @@ var tileLayer = L.tileLayer(api.tileLayer, {
     + ' | &copy; <a href="http://osm.org/copyright">OpenStreetMap</a> contributors'
 });
 
+var map = L.map('map', {layers: [tileLayer]}).setView(initCenter, initZoom);
+
 module.exports = {
+  map: map,
   initCenter: initCenter,
   initZoom: initZoom,
   tileLayer: tileLayer,

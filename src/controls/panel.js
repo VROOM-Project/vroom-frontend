@@ -92,14 +92,14 @@ var panelControl = L.Control.extend({
     delete map.panelControl;
   },
 
-  clearJobDisplay: function(map){
+  clearJobDisplay: function(){
     // Delete jobs display.
     for(var i = this._jobTable.rows.length; i > 0; i--){
       this._jobTable.deleteRow(i -1);
     }
   },
 
-  clearStartEndDisplay: function(map){
+  clearStartEndDisplay: function(){
     // Reset vehicle start/end display.
     for(var i = this._vehicleTable.rows.length; i > 0; i--){
       this._vehicleTable.deleteRow(i -1);
@@ -108,13 +108,13 @@ var panelControl = L.Control.extend({
     this._vehicleTable.insertRow(1);
   },
 
-  clearDisplay: function(map){
+  clearDisplay: function(){
     this.clearJobDisplay();
     this.clearStartEndDisplay();
     this.showInitDiv();
   },
 
-  clearSolutionDisplay: function(map){
+  clearSolutionDisplay: function(){
     for(var i = this._solutionTable.rows.length; i > 0; i--){
       this._solutionTable.deleteRow(i -1);
     }

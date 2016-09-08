@@ -3,8 +3,9 @@
 var dataHandler = require('./data_handler');
 var api = require('../config/api');
 var summaryControl = require('../controls/summary');
+var LSetup = require('../config/leaflet_setup');
 
-var solve = function(map){
+var solve = function(){
   // Format json input for solving.
   var input = {
     jobs: dataHandler.getJobs(),
@@ -27,7 +28,7 @@ var solve = function(map){
     if (xhttp.readyState == 4 && xhttp.status == 200) {
       dataHandler.setOutput(JSON.parse(xhttp.response));
       document.getElementById('wait-icon').removeAttribute('class');
-      plotSolution(map);
+      plotSolution();
     }
   };
   var target = api.host;
@@ -40,16 +41,16 @@ var solve = function(map){
   dataHandler.closeAllPopups();
 }
 
-var plotSolution = function(map){
+var plotSolution = function(){
   var result = dataHandler.getOutput();
   if(result['code'] !== 0){
     alert(result['error']);
     return;
   }
 
-  summaryControl.addTo(map);
+  summaryControl.addTo(LSetup.map);
   summaryControl.update(result);
-  dataHandler.addRoute(map, result.routes[0]);
+  dataHandler.addRoute(result.routes[0]);
 }
 
 module.exports = {

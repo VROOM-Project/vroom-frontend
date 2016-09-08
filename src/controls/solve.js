@@ -17,7 +17,7 @@ var solveControl = L.Control.extend({
       map.removeControl(solveControl);
       document.getElementById('wait-icon').setAttribute('class', 'wait-icon');
 
-      solutionHandler.solve(map);
+      solutionHandler.solve();
     };
     return this._div;
   },
