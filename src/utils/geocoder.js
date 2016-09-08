@@ -2,15 +2,15 @@
 
 require('leaflet-control-geocoder');
 
-var nominatim = L.Control.Geocoder.nominatim();
+var defaultGeocoder = L.Control.Geocoder.nominatim();
 
 var control = L.Control.geocoder({
-  geocoder: nominatim,
+  geocoder: defaultGeocoder,
   collapsed: false,
   position: 'topleft'
 });
 
 module.exports = {
-  nominatim: nominatim,
+  defaultGeocoder: defaultGeocoder,
   control: control
 };

@@ -19,7 +19,7 @@ map.on('click', function(e){
   locationsHandler.addPlace(map, e.latlng);
 });
 
-geocoder.control.markGeocode = function(result) {
+geocoder.control.markGeocode = function(result){
   locationsHandler.addPlace(map,
                             result.geocode.center,
                             address.display(result.geocode));

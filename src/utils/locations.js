@@ -35,7 +35,7 @@ var addPlace = function(map, latlng, name){
       dataHandler.addEnd(map, latlng, name, checkSolveControl);
     }
     else{
-      geocoder.nominatim.reverse(latlng, map.options.crs.scale(19), function(results){
+      geocoder.defaultGeocoder.reverse(latlng, map.options.crs.scale(19), function(results){
         var r = results[0];
         if(r){
           name = address.display(r);
@@ -54,7 +54,7 @@ var addPlace = function(map, latlng, name){
       checkSolveControl(map);
     }
     else{
-      geocoder.nominatim.reverse(latlng, map.options.crs.scale(19), function(results){
+      geocoder.defaultGeocoder.reverse(latlng, map.options.crs.scale(19), function(results){
         var r = results[0];
         if(r){
           name = address.display(r);
