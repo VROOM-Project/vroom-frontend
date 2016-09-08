@@ -2,6 +2,7 @@
 
 var L = require('leaflet');
 var LSetup = require('../config/leaflet_setup');
+var api = require('../config/api');
 var polyUtil = require('polyline-encoded');
 var data = require('../data');
 var LSetup = require('../config/leaflet_setup');
@@ -333,6 +334,10 @@ var _jobDisplay = function(latlng, name){
 }
 
 var addJob = function(latlng, name){
+  if(getJobsSize() >= api.maxJobNumber){
+    alert('Number of jobs can\'t exceed ' + api.maxJobNumber + '.');
+    return;
+  }
   _clearSolution();
   data.jobs.push({'location': [latlng.lng,latlng.lat]});
   data.jobsMarkers.push(L.marker(latlng)
