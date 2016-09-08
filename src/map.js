@@ -30,7 +30,3 @@ geocoder.control.markGeocode = function(result) {
 // is solved
 
 // geocoder.control.addTo(map);
-
-module.exports = {
-  map: map
-};
