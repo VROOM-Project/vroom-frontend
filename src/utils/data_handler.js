@@ -63,6 +63,25 @@ var _pushToBounds = function(latlng){
   }
 }
 
+var _recomputeBounds = function(){
+  // Problem bounds are extended upon additions but they need to be
+  // recalculated when a deletion might reduce the bounds.
+  delete data.bounds;
+
+  var start = data.vehicles[0].start;
+  if(start){
+    _pushToBounds([start[1], start[0]]);
+  }
+  var end = data.vehicles[0].end;
+  if(end){
+    _pushToBounds([end[1], end[0]]);
+  }
+  for(var i = 0; i < data.jobs.length; i++){
+    var loc = data.jobs[i].location;
+    _pushToBounds([loc[1], loc[0]]);
+  }
+}
+
 var fitView = function(){
   if(data.bounds){
     LSetup.map.fitBounds(data.bounds, {
@@ -366,6 +385,7 @@ var _removeJob = function(jobIndex){
   LSetup.map.removeLayer(data.jobsMarkers[jobIndex]);
   data.jobs.splice(jobIndex, 1);
   data.jobsMarkers.splice(jobIndex, 1);
+  _recomputeBounds();
 }
 
 var _removeStart = function(){
@@ -373,6 +393,7 @@ var _removeStart = function(){
   if(allowRemoval){
     _clearSolution();
     _resetStart();
+    _recomputeBounds();
   }
   else{
     alert("Can't delete both start and end.");
@@ -385,6 +406,7 @@ var _removeEnd = function(){
   if(allowRemoval){
     _clearSolution();
     _resetEnd();
+    _recomputeBounds();
   }
   else{
     alert("Can't delete both start and end.");
