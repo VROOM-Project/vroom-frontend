@@ -8,7 +8,7 @@ var geocoder = require('./utils/geocoder');
 var address = require('./utils/address');
 var fileHandler = require('./utils/file_handler');
 
-L.Icon.Default.imagePath = 'node_modules/leaflet/dist/images';
+L.Icon.Default.imagePath = 'css/images';
 
 panelControl.addTo(LSetup.map);
 fileHandler.setFile();
