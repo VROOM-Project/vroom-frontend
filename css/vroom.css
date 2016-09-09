@@ -129,6 +129,7 @@ i.wait-icon{
     border-style: solid;
     border-width: 2px;
     padding: 2px 5px;
+    text-align: right;
 }
 
 .leaflet-control-geocoder{
