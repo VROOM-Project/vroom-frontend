@@ -38,6 +38,10 @@ var checkControls = function(){
 
 // Add locations.
 var addPlace = function(latlng, name){
+  if(LSetup.maxBoundingBox && !LSetup.maxBoundingBox.contains(latlng)){
+    alert('Sorry, unsupported location. :-(');
+    return;
+  }
   panelControl.hideInitDiv();
 
   if(dataHandler.isFirstPlace()){
