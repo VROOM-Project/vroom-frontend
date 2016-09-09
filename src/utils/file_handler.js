@@ -4,6 +4,7 @@ var api = require('../config/api');
 var geocoder = require('./geocoder');
 var address = require('./address');
 var locationHandler = require('./locations');
+var dataHandler = require('./data_handler');
 
 var reader = new FileReader();
 
@@ -59,6 +60,8 @@ var _batchGeocodeAdd = function(query, context){
           msg += '- ' + context.unfoundLocs[i] + '\n';
         }
       }
+      dataHandler.fitView();
+
       if(msg.length > 0){
         alert(msg);
       }
