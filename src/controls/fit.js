@@ -1,7 +1,6 @@
 'use strict';
 
 var L = require('leaflet');
-var dataHandler = require('../utils/data_handler');
 
 var fitControl = L.Control.extend({
   options: {
@@ -15,7 +14,7 @@ var fitControl = L.Control.extend({
     this._div.title = 'Show all places';
     this._div.onclick = function(e){
       L.DomEvent.stopPropagation(e);
-      dataHandler.fitView();
+      map.fireEvent('fit');
     };
 
     return this._div;

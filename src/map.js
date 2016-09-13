@@ -7,6 +7,7 @@ var locationsHandler = require('./utils/locations');
 var geocoder = require('./utils/geocoder');
 var address = require('./utils/address');
 var fileHandler = require('./utils/file_handler');
+var solutionHandler = require('./utils/solution_handler');
 
 L.Icon.Default.imagePath = 'css/images';
 
@@ -16,6 +17,8 @@ fileHandler.setFile();
 LSetup.map.on('click', function(e){
   locationsHandler.addPlace(e.latlng);
 });
+
+LSetup.map.on('solve', solutionHandler.solve);
 
 geocoder.control.markGeocode = function(result){
   locationsHandler.addPlace(result.geocode.center,

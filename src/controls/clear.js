@@ -1,11 +1,5 @@
 'use strict';
 
-var dataHandler = require('../utils/data_handler');
-var panelControl = require('./panel');
-var solveControl = require('./solve');
-var summaryControl = require('./summary');
-var fitControl = require('./fit');
-
 var clearControl = L.Control.extend({
   options: {
     position: 'topleft'
@@ -19,17 +13,7 @@ var clearControl = L.Control.extend({
 
     this._div.onclick = function(e){
       L.DomEvent.stopPropagation(e);
-
-      dataHandler.clearData(map);
-
-      // Remove controls.
-      map.removeControl(clearControl);
-      map.removeControl(solveControl);
-      map.removeControl(summaryControl);
-      map.removeControl(fitControl);
-
-      // Delete locations display in the right panel.
-      panelControl.clearDisplay();
+      map.fireEvent('clear');
     };
     return this._div;
   },

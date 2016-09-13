@@ -1,7 +1,5 @@
 'use strict';
 
-var solutionHandler = require('../utils/solution_handler');
-
 var solveControl = L.Control.extend({
   options: {
     position: 'topleft'
@@ -16,8 +14,7 @@ var solveControl = L.Control.extend({
       L.DomEvent.stopPropagation(e);
       map.removeControl(solveControl);
       document.getElementById('wait-icon').setAttribute('class', 'wait-icon');
-
-      solutionHandler.solve();
+      map.fireEvent('solve');
     };
     return this._div;
   },

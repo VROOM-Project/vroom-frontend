@@ -5,9 +5,10 @@ var LSetup = require('../config/leaflet_setup');
 var api = require('../config/api');
 var polyUtil = require('polyline-encoded');
 var data = require('../data');
-var LSetup = require('../config/leaflet_setup');
 var panelControl = require('../controls/panel');
+var fitControl = require('../controls/fit');
 var clearControl = require('../controls/clear');
+var solveControl = require('../controls/solve');
 var summaryControl = require('../controls/summary');
 
 var routes = [];
@@ -34,6 +35,33 @@ var getStart = function(){
 
 var getEnd = function(){
   return data.vehicles[0].end;
+}
+
+var checkControls = function(){
+  var hasJobs = getJobsSize() > 0;
+  var hasStart = getStart();
+  var hasEnd = getEnd();
+  if(hasJobs || hasStart || hasEnd){
+    // Fit and clear controls as soon as we have a location.
+    if(!LSetup.map.fitControl){
+      LSetup.map.addControl(fitControl);
+    }
+    if(!LSetup.map.clearControl){
+      LSetup.map.addControl(clearControl);
+    }
+  }
+  if(!LSetup.map.solveControl){
+    // Solve control appears only when there's enough input to fire a
+    // solving query.
+    if((hasStart || hasEnd) && hasJobs){
+      solveControl.addTo(LSetup.map);
+    }
+  }
+  else{
+    if(getJobsSize() === 0){
+      LSetup.map.removeControl(solveControl);
+    }
+  }
 }
 
 var _resetStart = function(){
@@ -222,7 +250,7 @@ var _updateEndDescription = function(description, remove){
   data.endMarker.bindPopup(popupDiv).openPopup();
 }
 
-var _setStart = function(latlng, name, removeCB){
+var _setStart = function(latlng, name){
   var panelList = document.getElementById('panel-vehicle');
 
   panelList.deleteRow(0);
@@ -239,7 +267,7 @@ var _setStart = function(latlng, name, removeCB){
          && !getEnd()){
         LSetup.map.removeControl(clearControl);
       }
-      removeCB();
+      checkControls();
     }
   }
   idCell.setAttribute('class', 'delete-location');
@@ -256,7 +284,7 @@ var _setStart = function(latlng, name, removeCB){
   _updateStartDescription(name, remove);
 }
 
-var addStart = function(latlng, name, removeCB){
+var addStart = function(latlng, name){
   _clearSolution();
   _pushToBounds(latlng);
 
@@ -266,10 +294,10 @@ var addStart = function(latlng, name, removeCB){
   data.vehicles[0].start = [latlng.lng,latlng.lat];
   data.startMarker = L.marker(latlng).addTo(LSetup.map).setIcon(LSetup.startIcon);
   // Handle display stuff.
-  _setStart(latlng, name, removeCB);
+  _setStart(latlng, name);
 }
 
-var _setEnd = function(latlng, name, removeCB){
+var _setEnd = function(latlng, name){
   var panelList = document.getElementById('panel-vehicle');
 
   panelList.deleteRow(1);
@@ -286,7 +314,7 @@ var _setEnd = function(latlng, name, removeCB){
          && !getEnd()){
         LSetup.map.removeControl(clearControl);
       }
-      removeCB();
+      checkControls();
     }
   }
   idCell.setAttribute('class', 'delete-location');
@@ -303,7 +331,7 @@ var _setEnd = function(latlng, name, removeCB){
   _updateEndDescription(name, remove);
 }
 
-var addEnd = function(latlng, name, removeCB){
+var addEnd = function(latlng, name){
   _clearSolution();
   _pushToBounds(latlng);
 
@@ -313,10 +341,10 @@ var addEnd = function(latlng, name, removeCB){
   data.vehicles[0].end = [latlng.lng,latlng.lat];
   data.endMarker = L.marker(latlng).addTo(LSetup.map).setIcon(LSetup.endIcon);
   // Handle display stuff.
-  _setEnd(latlng, name, removeCB);
+  _setEnd(latlng, name);
 }
 
-var _jobDisplay = function(latlng, name, removeCB){
+var _jobDisplay = function(latlng, name){
   var panelList = document.getElementById('panel-jobs');
 
   var nb_rows = panelList.rows.length;
@@ -331,7 +359,7 @@ var _jobDisplay = function(latlng, name, removeCB){
        && !getEnd()){
       LSetup.map.removeControl(clearControl);
     }
-    removeCB();
+    checkControls();
   }
   idCell.setAttribute('class', 'delete-location');
   idCell.title = "Click to delete";
@@ -344,16 +372,16 @@ var _jobDisplay = function(latlng, name, removeCB){
   };
   // Callbacks to replace current start or end by this job.
   var setAsStart = function(){
-    addStart(latlng, name, removeCB);
+    addStart(latlng, name);
     _removeJob(row.rowIndex);
     panelList.deleteRow(row.rowIndex);
-    removeCB();
+    checkControls();
   }
   var setAsEnd = function(){
-    addEnd(latlng, name, removeCB);
+    addEnd(latlng, name);
     _removeJob(row.rowIndex);
     panelList.deleteRow(row.rowIndex);
-    removeCB();
+    checkControls();
   }
   // Add description to job and marker.
   _updateJobDescription(getJobsSize() - 1,
@@ -363,7 +391,7 @@ var _jobDisplay = function(latlng, name, removeCB){
                         setAsEnd);
 }
 
-var addJob = function(latlng, name, removeCB){
+var addJob = function(latlng, name){
   if(getJobsSize() >= api.maxJobNumber){
     alert('Number of jobs can\'t exceed ' + api.maxJobNumber + '.');
     return;
@@ -377,7 +405,7 @@ var addJob = function(latlng, name, removeCB){
                         .addTo(LSetup.map)
                         .setIcon(LSetup.jobIcon));
   // Handle display stuff.
-  _jobDisplay(latlng, name, removeCB);
+  _jobDisplay(latlng, name);
 }
 
 var _removeJob = function(jobIndex){
@@ -500,6 +528,34 @@ var addRoute = function(route){
   routes.push(path);
 }
 
+/*** Events ***/
+
+// Fit event.
+LSetup.map.on('fit', fitView);
+
+// Clear event.
+LSetup.map.on('clear', function(){
+  // Remove controls.
+  if(LSetup.map.fitControl){
+    LSetup.map.removeControl(LSetup.map.fitControl);
+  }
+  if(LSetup.map.clearControl){
+    LSetup.map.removeControl(LSetup.map.clearControl);
+  }
+  if(LSetup.map.solveControl){
+    LSetup.map.removeControl(LSetup.map.solveControl);
+  }
+  if(LSetup.map.summaryControl){
+    LSetup.map.removeControl(LSetup.map.summaryControl);
+  }
+  clearData();
+
+  // Delete locations display in the right panel.
+  LSetup.map.panelControl.clearDisplay();
+});
+
+/*** end Events ***/
+
 module.exports = {
   fitView: fitView,
   clearData: clearData,
@@ -517,5 +573,6 @@ module.exports = {
   firstPlaceSet: firstPlaceSet,
   addStart: addStart,
   addEnd: addEnd,
-  addJob: addJob
+  addJob: addJob,
+  checkControls: checkControls
 };
