@@ -1,13 +1,10 @@
 'use strict';
 
 var LSetup = require('../config/leaflet_setup');
-var clearControl = require('../controls/clear');
 var dataHandler = require('./data_handler');
 var geocoder = require('./geocoder');
 var address = require('./address');
-var solveControl = require('../controls/solve');
 var panelControl = require('../controls/panel');
-var fitControl = require('../controls/fit');
 
 // Add locations.
 var addPlace = function(latlng, name){
