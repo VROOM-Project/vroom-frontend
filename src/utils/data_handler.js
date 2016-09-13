@@ -153,9 +153,6 @@ var _clearSolution = function(){
     }
     // Remove query output for this solution.
     delete data.output;
-
-    // Remove problem bounds.
-    delete data.bounds;
   }
 }
 
@@ -174,6 +171,9 @@ var clearData = function(){
   data.jobs = [];
   data.jobsMarkers = [];
   data.vehicles = [{'id': 0}];
+
+  // Reset bounds.
+  delete data.bounds;
 
   _clearSolution();
 }
