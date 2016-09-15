@@ -35,8 +35,7 @@ var summaryControl = L.Control.extend({
 
     // Computing time stuff.
     var CTLoading = output['solution']['computing_times']['loading'];
-    var CTSolving = output['solution']['computing_times']['solving']['heuristic']
-        + output['solution']['computing_times']['solving']['local_search'];
+    var CTSolving = output['solution']['computing_times']['solving'];
     var CTRouting =  output['solution']['computing_times']['routing'];
 
     var CTDisplay = document.createElement('p');
