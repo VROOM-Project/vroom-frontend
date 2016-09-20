@@ -8,7 +8,7 @@ var panelControl = require('../controls/panel');
 
 // Add locations.
 var addPlace = function(latlng, name){
-  if(LSetup.maxBoundingBox && !LSetup.maxBoundingBox.contains(latlng)){
+  if(LSetup.maxBounds && !LSetup.maxBounds.contains(latlng)){
     alert('Sorry, unsupported location. :-(');
     return;
   }

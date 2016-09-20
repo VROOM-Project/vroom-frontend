@@ -1,6 +1,5 @@
 'use strict';
 
-var L = require('leaflet');
 var LSetup = require('./config/leaflet_setup');
 var panelControl = require('./controls/panel');
 var locationsHandler = require('./utils/locations');
@@ -8,8 +7,6 @@ var geocoder = require('./utils/geocoder');
 var address = require('./utils/address');
 var fileHandler = require('./utils/file_handler');
 var solutionHandler = require('./utils/solution_handler');
-
-L.Icon.Default.imagePath = 'css/images';
 
 panelControl.addTo(LSetup.map);
 fileHandler.setFile();
