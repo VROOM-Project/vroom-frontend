@@ -1,0 +1,34 @@
+{
+  "name": "vroom-frontend",
+  "version": "0.1.0",
+  "description": "Frontend demo for VROOM",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "build": "sh ./scripts/build.sh"
+  },
+  "keywords": [
+    "VROOM",
+    "frontend",
+    "optimization",
+    "TSP",
+    "VRP",
+    "routing",
+    "OSRM",
+    "OSM"
+  ],
+  "author": "Julien Coupey",
+  "license": "BSD-2-Clause",
+  "devDependencies": {
+    "browserify": "^13.1.0",
+    "uglify-js": "^2.7.3"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/VROOM-Project/vroom-frontend.git"
+  },
+  "dependencies": {
+    "leaflet": "^1.0.0-rc.3",
+    "leaflet-control-geocoder": "^1.5.1",
+    "polyline-encoded": "0.0.8"
+  }
+}

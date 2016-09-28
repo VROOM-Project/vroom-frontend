@@ -1,0 +1,151 @@
+#map{
+    font-family: 'Open Sans';
+    background: #eee;
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    top: 0;
+    right: 0;
+    bottom: 0;
+    left: 0;
+}
+
+.panel-header{
+    font-size: 40px;
+    font-weight: bold;
+    padding: 10px;
+    text-align: center;
+}
+
+.panel-header a{
+    text-decoration: none;
+    outline: none;
+}
+
+.panel-control{
+    background-color: #fff;
+    opacity: 0.9;
+    bottom: 20px;
+    overflow-x: auto;
+    padding: 0 20px 40px;
+    position: fixed;
+    right: 0px;
+    top: 0px;
+    z-index: 10;
+    border-radius: 4px;
+    box-shadow: 0 1px 5px rgba(0, 0, 0, 0.65);
+    max-width: 300px;
+    min-width: 200px;
+    width: 33.3333%;
+    margin: 0 !important;
+}
+
+.panel-table{
+    font-size: 14px;
+    cursor: pointer;
+    top: 0;
+    right: 0;
+    overflow: auto;
+}
+
+.delete-location{
+    background-repeat: no-repeat;
+    background-size: auto auto;
+    background-position: center;
+    width: 24px;
+    height: 18px;
+    margin-top: 0;
+    padding: 0px 0px;
+    background-image: url("../images/fa-icons/delete.svg");
+}
+
+.custom-control{
+    background: rgba(255,255,255,0.8);
+    box-shadow: 0 0 15px rgba(0,0,0,0.2);
+    border-radius: 5px;
+}
+
+.icon-control{
+    background-repeat: no-repeat;
+    background-size: auto auto;
+    background-position: center;
+    width: 40px;
+    height: 40px;
+    margin-top: 0;
+    padding: 5px 5px;
+    cursor: pointer;
+}
+
+.fit-control{
+    background-image: url("../images/fa-icons/resize-small.svg");
+}
+
+.clear-control{
+    background-image: url("../images/fa-icons/trash.svg");
+}
+
+.solve-control{
+    background-image: url("../images/fa-icons/cog-alt.svg");
+}
+
+.summary-control{
+    padding: 0px 5px;
+    font-size: 14px;
+}
+
+.vehicle-start{
+    border-style: solid;
+    border-width: 0px 0px 0px 6px;
+    border-color: #2dbe21;
+}
+
+.vehicle-end{
+    border-style: solid;
+    border-width: 0px 0px 0px 6px;
+    border-color: #e9130a;
+}
+
+.wait-display{
+    text-align: center;
+}
+
+i.wait-icon{
+    margin: auto;
+    display: block;
+    background-repeat: no-repeat;
+    background-size: contain;
+    background-position: center;
+    padding: 0px 5px 0px 5px;
+    background-image: url("../images/throbber.gif");
+    width: 48px;
+    height: 48px;
+}
+
+.rank{
+    font-weight: bold;
+}
+
+.solution-display{
+    border-style: solid;
+    border-width: 2px;
+    padding: 2px 5px;
+    text-align: right;
+}
+
+.leaflet-control-geocoder{
+    clear: none;
+}
+
+#init-display{
+    font-size: 14px;
+    border-style: solid;
+    border-width: 2px;
+    position: absolute;
+    top: 35%;
+    width: 80%;
+    padding: 5px;
+}
+
+input[type='file'] {
+  color: transparent;
+}
