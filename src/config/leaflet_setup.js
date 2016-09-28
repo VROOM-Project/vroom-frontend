@@ -8,11 +8,14 @@ L.Icon.Default.imagePath = 'css/images';
 var initCenter = L.latLng(48.8579,2.3494);
 var initZoom = 13;
 
-var tileLayer = L.tileLayer(api.tileLayer, {
-  attribution: 'Demo solver hosted by '
+var attribution = '&copy; <a href="http://osm.org/copyright">OpenStreetMap</a> contributors';
+if(api.description){
+  attribution = 'Demo solver hosted by '
     + api.description
-    + ' | &copy; <a href="http://osm.org/copyright">OpenStreetMap</a> contributors'
-});
+    + ' | ' + attribution;
+}
+
+var tileLayer = L.tileLayer(api.tileLayer, {attribution: attribution});
 
 var map = L.map('map', {layers: [tileLayer]}).setView(initCenter, initZoom);
 
