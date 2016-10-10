@@ -27,8 +27,8 @@
     "url": "https://github.com/VROOM-Project/vroom-frontend.git"
   },
   "dependencies": {
-    "leaflet": "^1.0.0-rc.3",
-    "leaflet-control-geocoder": "^1.5.1",
+    "leaflet": "^1.0.1",
+    "leaflet-control-geocoder": "^1.5.2",
     "polyline-encoded": "0.0.8"
   }
 }
