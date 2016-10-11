@@ -3,7 +3,7 @@
 var L = require('leaflet');
 var api = require('./api');
 
-L.Icon.Default.imagePath = 'css/images';
+L.Icon.Default.imagePath = 'css/images/';
 
 var initCenter = L.latLng(48.8579,2.3494);
 var initZoom = 13;
