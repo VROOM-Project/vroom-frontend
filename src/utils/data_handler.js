@@ -531,6 +531,11 @@ var addRoute = function(route){
   routes.push(path);
 }
 
+var animateRoute = function(){
+  closeAllPopups();
+  routes[0].snakeIn();
+}
+
 /*** Events ***/
 
 // Fit event.
@@ -557,11 +562,9 @@ LSetup.map.on('clear', function(){
   LSetup.map.panelControl.clearDisplay();
 });
 
-/*** end Events ***/
+LSetup.map.on('animate', animateRoute);
 
-var animateRoute = function(){
-  routes[0].snakeIn();
-}
+/*** end Events ***/
 
 module.exports = {
   fitView: fitView,

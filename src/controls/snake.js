@@ -1,7 +1,5 @@
 'use strict';
 
-var dataHandler = require('../utils/data_handler');
-
 var snakeControl = L.Control.extend({
   options: {
     position: 'topleft'
@@ -14,8 +12,8 @@ var snakeControl = L.Control.extend({
     this._div.title = 'Animate';
     this._div.onclick = function(e){
       L.DomEvent.stopPropagation(e);
-      dataHandler.closeAllPopups();
-      dataHandler.animateRoute();
+
+      map.fireEvent('animate');
     };
     return this._div;
   },
