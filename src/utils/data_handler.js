@@ -12,6 +12,7 @@ var fitControl = require('../controls/fit');
 var clearControl = require('../controls/clear');
 var solveControl = require('../controls/solve');
 var summaryControl = require('../controls/summary');
+var snakeControl = require('../controls/snake');
 
 var routes = [];
 
@@ -63,6 +64,11 @@ var checkControls = function(){
     if(getJobsSize() === 0){
       LSetup.map.removeControl(solveControl);
     }
+  }
+  if(hasSolution()){
+    LSetup.map.removeControl(solveControl);
+    LSetup.map.addControl(summaryControl);
+    LSetup.map.addControl(snakeControl);
   }
 }
 
@@ -147,6 +153,7 @@ var _clearSolution = function(){
 
     LSetup.map.removeLayer(routes[0]);
     LSetup.map.removeControl(summaryControl);
+    LSetup.map.removeControl(snakeControl);
 
     routes = [];
     // Remove all numbered tooltips.
@@ -555,6 +562,9 @@ LSetup.map.on('clear', function(){
   }
   if(LSetup.map.summaryControl){
     LSetup.map.removeControl(LSetup.map.summaryControl);
+  }
+  if(LSetup.map.snakeControl){
+    LSetup.map.removeControl(LSetup.map.snakeControl);
   }
   clearData();
 

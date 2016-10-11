@@ -48,9 +48,9 @@ var plotSolution = function(){
     return;
   }
 
-  summaryControl.addTo(LSetup.map);
-  summaryControl.update(result);
   dataHandler.addRoute(result.routes[0]);
+  dataHandler.checkControls();
+  summaryControl.update(result);
 }
 
 module.exports = {

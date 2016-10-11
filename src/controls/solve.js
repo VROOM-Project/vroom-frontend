@@ -1,7 +1,5 @@
 'use strict';
 
-var snakeControl = require('./snake');
-
 var solveControl = L.Control.extend({
   options: {
     position: 'topleft'
@@ -18,8 +16,6 @@ var solveControl = L.Control.extend({
       document.getElementById('wait-icon').setAttribute('class', 'wait-icon');
 
       map.fireEvent('solve');
-
-      snakeControl.addTo(map);
     };
     return this._div;
   },
