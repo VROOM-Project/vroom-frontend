@@ -30,6 +30,7 @@ module.exports = {
   tileLayer: tileLayer,
   opacity: 0.6,
   weight: 8,
+  snakingSpeed: 400,
   jobIcon: L.icon({
     iconUrl: 'images/job-icon.png',
     iconSize: [15, 15],

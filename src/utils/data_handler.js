@@ -3,6 +3,8 @@
 var L = require('leaflet');
 var LSetup = require('../config/leaflet_setup');
 var api = require('../config/api');
+require('leaflet.polyline.snakeanim');
+
 var polyUtil = require('polyline-encoded');
 var data = require('../data');
 var panelControl = require('../controls/panel');
@@ -476,7 +478,8 @@ var addRoute = function(route){
 
   var path = new L.Polyline(latlngs, {
     opacity: LSetup.opacity,
-    weight: LSetup.weight}).addTo(LSetup.map);
+    weight: LSetup.weight,
+    snakingSpeed: LSetup.snakingSpeed}).addTo(LSetup.map);
 
   data.bounds.extend(latlngs);
   fitView();
@@ -556,6 +559,10 @@ LSetup.map.on('clear', function(){
 
 /*** end Events ***/
 
+var animateRoute = function(){
+  routes[0].snakeIn();
+}
+
 module.exports = {
   fitView: fitView,
   clearData: clearData,
@@ -574,5 +581,6 @@ module.exports = {
   addStart: addStart,
   addEnd: addEnd,
   addJob: addJob,
-  checkControls: checkControls
+  checkControls: checkControls,
+  animateRoute: animateRoute
 };

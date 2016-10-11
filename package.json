@@ -29,6 +29,7 @@
   "dependencies": {
     "leaflet": "^1.0.1",
     "leaflet-control-geocoder": ">=1.5.3",
+    "leaflet.polyline.snakeanim": "^0.1.1",
     "polyline-encoded": "0.0.8"
   }
 }
