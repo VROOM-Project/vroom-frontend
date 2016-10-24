@@ -21,7 +21,13 @@ var tileLayer = L.tileLayer(api.tileLayer, {attribution: attribution});
 // place definition.
 var maxBounds = undefined;
 
-var map = L.map('map', {layers: [tileLayer]}).setView(initCenter, initZoom);
+// Optional minZoom value.
+var minZoom = undefined;
+
+var map = L.map('map', {layers: [tileLayer]})
+    .setView(initCenter, initZoom)
+    .setMaxBounds(maxBounds)
+    .setMinZoom(minZoom);
 
 module.exports = {
   map: map,
