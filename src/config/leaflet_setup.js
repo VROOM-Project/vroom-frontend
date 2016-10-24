@@ -17,14 +17,15 @@ if(api.description){
 
 var tileLayer = L.tileLayer(api.tileLayer, {attribution: attribution});
 
-var map = L.map('map', {layers: [tileLayer]}).setView(initCenter, initZoom);
-
 // Define a valid bounding box here in order to restrict map view and
 // place definition.
-// map.maxBounds = ...
+var maxBounds = undefined;
+
+var map = L.map('map', {layers: [tileLayer]}).setView(initCenter, initZoom);
 
 module.exports = {
   map: map,
+  maxBounds: maxBounds,
   initCenter: initCenter,
   initZoom: initZoom,
   tileLayer: tileLayer,

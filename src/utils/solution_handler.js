@@ -3,7 +3,6 @@
 var dataHandler = require('./data_handler');
 var api = require('../config/api');
 var summaryControl = require('../controls/summary');
-var LSetup = require('../config/leaflet_setup');
 
 var solve = function(){
   // Format json input for solving.
