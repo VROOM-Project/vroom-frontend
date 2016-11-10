@@ -24,10 +24,15 @@ var solve = function(){
 
   var xhttp = new XMLHttpRequest();
   xhttp.onreadystatechange = function() {
-    if (xhttp.readyState == 4 && xhttp.status == 200) {
-      dataHandler.setOutput(JSON.parse(xhttp.response));
+    if (xhttp.readyState == 4){
       document.getElementById('wait-icon').removeAttribute('class');
-      plotSolution();
+      if(xhttp.status == 200){
+        dataHandler.setOutput(JSON.parse(xhttp.response));
+        plotSolution();
+      }
+      else{
+        alert('Error: ' + xhttp.status);
+      }
     }
   };
   var target = api.host;
