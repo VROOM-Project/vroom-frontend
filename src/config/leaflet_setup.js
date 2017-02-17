@@ -8,7 +8,9 @@ L.Icon.Default.imagePath = 'css/images/';
 var initCenter = L.latLng(48.8579,2.3494);
 var initZoom = 13;
 
-var attribution = '&copy; <a href="http://osm.org/copyright">OpenStreetMap</a> contributors';
+var attribution = 'Routes computed using <a href="http://project-osrm.org/">OSRM</a>'
+    + ' | '
+    + '&copy; <a href="http://osm.org/copyright">OpenStreetMap</a> contributors';
 if(api.description){
   attribution = 'Demo solver hosted by '
     + api.description
