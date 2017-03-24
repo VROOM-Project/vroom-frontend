@@ -38,6 +38,7 @@ module.exports = {
   initZoom: initZoom,
   tileLayer: tileLayer,
   opacity: 0.6,
+  labelOpacity: 0.9,
   weight: 8,
   snakingSpeed: 800,
   jobIcon: L.icon({

@@ -1,6 +1,5 @@
 'use strict';
 
-var L = require('leaflet');
 var LSetup = require('../config/leaflet_setup');
 var api = require('../config/api');
 require('leaflet.polyline.snakeanim');
@@ -13,6 +12,7 @@ var clearControl = require('../controls/clear');
 var solveControl = require('../controls/solve');
 var summaryControl = require('../controls/summary');
 var snakeControl = require('../controls/snake');
+var labelgunWrapper = require('./labelgun_wrapper');
 
 var routes = [];
 
@@ -497,7 +497,8 @@ var addRoute = function(route){
   var solutionList = document.getElementById('panel-solution');
 
   var jobRank = 0;
-  for(var i = 0; i < route.steps.length; i++){
+  var totalRank = route.steps.length
+  for(var i = 0; i < totalRank; i++){
     var step = route.steps[i];
     if(step.type === "job"){
       jobRank++;
@@ -507,9 +508,11 @@ var addRoute = function(route){
       data.jobsMarkers[jobIndex].bindTooltip(jobRank.toString(),{
         direction: 'auto',
         permanent: true,
-        opacity: 0.9,
+        opacity: LSetup.labelOpacity,
         className: 'rank'
       }).openTooltip();
+
+      labelgunWrapper.addLabel(data.jobsMarkers[jobIndex], jobRank, totalRank);
 
       // Add to solution display
       var nb_rows = solutionList.rows.length;
@@ -522,7 +525,6 @@ var addRoute = function(route){
       }
       row.onclick = showCallback(jobIndex);
 
-
       var idCell = row.insertCell(0);
       idCell.setAttribute('class', 'rank solution-display');
       idCell.innerHTML = jobRank;
@@ -533,6 +535,7 @@ var addRoute = function(route){
       );
     }
   }
+  labelgunWrapper.update();
 
   // Remember the path. This will cause hasSolution() to return true.
   routes.push(path);
@@ -573,6 +576,26 @@ LSetup.map.on('clear', function(){
 });
 
 LSetup.map.on('animate', animateRoute);
+
+var resetLabels = function(){
+  labelgunWrapper.destroy();
+
+  var total = data.jobsMarkers.length;
+  for(var i = 0; i < total; i++){
+    var jobRank = parseInt(data.jobsMarkers[i].getTooltip()._content);
+    labelgunWrapper.addLabel(data.jobsMarkers[i], jobRank, total);
+  }
+
+  labelgunWrapper.update();
+}
+
+LSetup.map.on({
+  zoomend: function(){
+    if(hasSolution()){
+      resetLabels();
+    }
+  }
+});
 
 /*** end Events ***/
 
