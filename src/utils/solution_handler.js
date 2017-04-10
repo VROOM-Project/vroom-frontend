@@ -3,7 +3,6 @@
 var dataHandler = require('./data_handler');
 var api = require('../config/api');
 var summaryControl = require('../controls/summary');
-var LSetup = require('../config/leaflet_setup');
 
 var solve = function(){
   // Format json input for solving.
@@ -25,10 +24,15 @@ var solve = function(){
 
   var xhttp = new XMLHttpRequest();
   xhttp.onreadystatechange = function() {
-    if (xhttp.readyState == 4 && xhttp.status == 200) {
-      dataHandler.setOutput(JSON.parse(xhttp.response));
+    if (xhttp.readyState == 4){
       document.getElementById('wait-icon').removeAttribute('class');
-      plotSolution();
+      if(xhttp.status == 200){
+        dataHandler.setOutput(JSON.parse(xhttp.response));
+        plotSolution();
+      }
+      else{
+        alert('Error: ' + xhttp.status);
+      }
     }
   };
   var target = api.host;
@@ -48,9 +52,9 @@ var plotSolution = function(){
     return;
   }
 
-  summaryControl.addTo(LSetup.map);
-  summaryControl.update(result);
   dataHandler.addRoute(result.routes[0]);
+  dataHandler.checkControls();
+  summaryControl.update(result);
 }
 
 module.exports = {

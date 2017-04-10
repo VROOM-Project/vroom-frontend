@@ -1,8 +1,9 @@
 'use strict';
 
-var L = require('leaflet');
 var LSetup = require('../config/leaflet_setup');
 var api = require('../config/api');
+require('leaflet.polyline.snakeanim');
+
 var polyUtil = require('polyline-encoded');
 var data = require('../data');
 var panelControl = require('../controls/panel');
@@ -10,6 +11,8 @@ var fitControl = require('../controls/fit');
 var clearControl = require('../controls/clear');
 var solveControl = require('../controls/solve');
 var summaryControl = require('../controls/summary');
+var snakeControl = require('../controls/snake');
+var labelgunWrapper = require('./labelgun_wrapper');
 
 var routes = [];
 
@@ -61,6 +64,11 @@ var checkControls = function(){
     if(getJobsSize() === 0){
       LSetup.map.removeControl(solveControl);
     }
+  }
+  if(hasSolution()){
+    LSetup.map.removeControl(solveControl);
+    LSetup.map.addControl(summaryControl);
+    LSetup.map.addControl(snakeControl);
   }
 }
 
@@ -145,6 +153,7 @@ var _clearSolution = function(){
 
     LSetup.map.removeLayer(routes[0]);
     LSetup.map.removeControl(summaryControl);
+    LSetup.map.removeControl(snakeControl);
 
     routes = [];
     // Remove all numbered tooltips.
@@ -476,7 +485,8 @@ var addRoute = function(route){
 
   var path = new L.Polyline(latlngs, {
     opacity: LSetup.opacity,
-    weight: LSetup.weight}).addTo(LSetup.map);
+    weight: LSetup.weight,
+    snakingSpeed: LSetup.snakingSpeed}).addTo(LSetup.map);
 
   data.bounds.extend(latlngs);
   fitView();
@@ -487,7 +497,8 @@ var addRoute = function(route){
   var solutionList = document.getElementById('panel-solution');
 
   var jobRank = 0;
-  for(var i = 0; i < route.steps.length; i++){
+  var totalRank = route.steps.length
+  for(var i = 0; i < totalRank; i++){
     var step = route.steps[i];
     if(step.type === "job"){
       jobRank++;
@@ -497,9 +508,11 @@ var addRoute = function(route){
       data.jobsMarkers[jobIndex].bindTooltip(jobRank.toString(),{
         direction: 'auto',
         permanent: true,
-        opacity: 0.9,
+        opacity: LSetup.labelOpacity,
         className: 'rank'
       }).openTooltip();
+
+      labelgunWrapper.addLabel(data.jobsMarkers[jobIndex], jobRank);
 
       // Add to solution display
       var nb_rows = solutionList.rows.length;
@@ -512,7 +525,6 @@ var addRoute = function(route){
       }
       row.onclick = showCallback(jobIndex);
 
-
       var idCell = row.insertCell(0);
       idCell.setAttribute('class', 'rank solution-display');
       idCell.innerHTML = jobRank;
@@ -523,9 +535,15 @@ var addRoute = function(route){
       );
     }
   }
+  labelgunWrapper.update();
 
   // Remember the path. This will cause hasSolution() to return true.
   routes.push(path);
+}
+
+var animateRoute = function(){
+  closeAllPopups();
+  routes[0].snakeIn();
 }
 
 /*** Events ***/
@@ -548,10 +566,35 @@ LSetup.map.on('clear', function(){
   if(LSetup.map.summaryControl){
     LSetup.map.removeControl(LSetup.map.summaryControl);
   }
+  if(LSetup.map.snakeControl){
+    LSetup.map.removeControl(LSetup.map.snakeControl);
+  }
   clearData();
 
   // Delete locations display in the right panel.
   LSetup.map.panelControl.clearDisplay();
+});
+
+LSetup.map.on('animate', animateRoute);
+
+var resetLabels = function(){
+  labelgunWrapper.destroy();
+
+  var total = data.jobsMarkers.length;
+  for(var i = 0; i < total; i++){
+    var jobRank = parseInt(data.jobsMarkers[i].getTooltip()._content);
+    labelgunWrapper.addLabel(data.jobsMarkers[i], jobRank);
+  }
+
+  labelgunWrapper.update();
+}
+
+LSetup.map.on({
+  zoomend: function(){
+    if(hasSolution()){
+      resetLabels();
+    }
+  }
 });
 
 /*** end Events ***/
@@ -574,5 +617,6 @@ module.exports = {
   addStart: addStart,
   addEnd: addEnd,
   addJob: addJob,
-  checkControls: checkControls
+  checkControls: checkControls,
+  animateRoute: animateRoute
 };

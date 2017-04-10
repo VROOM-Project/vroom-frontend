@@ -22,8 +22,4 @@ geocoder.control.markGeocode = function(result){
                             address.display(result.geocode));
 };
 
-// TODO: switch on when
-// https://github.com/perliedman/leaflet-control-geocoder/issues/142
-// is solved
-
-// geocoder.control.addTo(LSetup.map);
+geocoder.control.addTo(LSetup.map);

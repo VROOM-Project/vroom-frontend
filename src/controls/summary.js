@@ -24,19 +24,19 @@ var summaryControl = L.Control.extend({
 
     var displayDuration = document.createElement('p');
     displayDuration.innerHTML = '<b>Trip duration:</b> '
-      + time.format(output['solution']['duration']);
+      + time.format(output['summary']['duration']);
     this._div.appendChild(displayDuration);
 
     var displayDistance = document.createElement('p');
-    var distance = (output['solution']['distance'] / 1000).toFixed(1);
+    var distance = (output['summary']['distance'] / 1000).toFixed(1);
     displayDistance.innerHTML = '<b>Trip distance:</b> '
       + distance.toString() + ' km';
     this._div.appendChild(displayDistance);
 
     // Computing time stuff.
-    var CTLoading = output['solution']['computing_times']['loading'];
-    var CTSolving = output['solution']['computing_times']['solving'];
-    var CTRouting =  output['solution']['computing_times']['routing'];
+    var CTLoading = output['summary']['computing_times']['loading'];
+    var CTSolving = output['summary']['computing_times']['solving'];
+    var CTRouting =  output['summary']['computing_times']['routing'];
 
     var CTDisplay = document.createElement('p');
     CTDisplay.title = 'Loading: ' + CTLoading + ' ms / Solving: '
