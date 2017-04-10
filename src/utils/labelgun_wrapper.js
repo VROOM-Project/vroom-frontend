@@ -13,7 +13,7 @@ var showLabel = function(label){
 
 var labelEngine = new labelgun.default(hideLabel, showLabel);
 
-var addLabel = function(layer, rank, total){
+var addLabel = function(layer, rank){
   var label = layer.getTooltip()._source._tooltip._container;
   if (label){
     var rect = label.getBoundingClientRect();
@@ -28,7 +28,7 @@ var addLabel = function(layer, rank, total){
 
     labelEngine.ingestLabel(bb,
                             rank,
-                            total + 1 - rank, // Prioritizing lower ranks.
+                            1, // Same priority for all.
                             label,
                             rank.toString(),
                             false);

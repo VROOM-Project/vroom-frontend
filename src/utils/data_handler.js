@@ -512,7 +512,7 @@ var addRoute = function(route){
         className: 'rank'
       }).openTooltip();
 
-      labelgunWrapper.addLabel(data.jobsMarkers[jobIndex], jobRank, totalRank);
+      labelgunWrapper.addLabel(data.jobsMarkers[jobIndex], jobRank);
 
       // Add to solution display
       var nb_rows = solutionList.rows.length;
@@ -583,7 +583,7 @@ var resetLabels = function(){
   var total = data.jobsMarkers.length;
   for(var i = 0; i < total; i++){
     var jobRank = parseInt(data.jobsMarkers[i].getTooltip()._content);
-    labelgunWrapper.addLabel(data.jobsMarkers[i], jobRank, total);
+    labelgunWrapper.addLabel(data.jobsMarkers[i], jobRank);
   }
 
   labelgunWrapper.update();
