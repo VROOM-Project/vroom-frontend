@@ -5,6 +5,7 @@ var geocoder = require('./geocoder');
 var address = require('./address');
 var locationHandler = require('./locations');
 var dataHandler = require('./data_handler');
+var panelControl = require('../controls/panel');
 
 var reader = new FileReader();
 
@@ -13,25 +14,43 @@ reader.onerror = function(event){
 };
 
 reader.onload = function(event){
-  var lines = event.target.result.split("\n");
-
-  // Strip blank lines from file.
-  while(lines.indexOf("") > -1){
-    lines.splice(lines.indexOf(""), 1);
+  // We first try parsing the input to determine if the file contains
+  // a valid json object with the expected keys.
+  var validJsonInput = false;
+  try{
+    var data = JSON.parse(event.target.result);
+    validJsonInput = ('jobs' in data) && ('vehicles' in data);
   }
+  catch(e){}
 
-  // Used to report after parsing the whole file.
-  var context = {
-    locNumber: 0,
-    // The '1 +' accounts for the first job being actually the
-    // start/end.
-    targetLocNumber: Math.min(lines.length, 1 + api.maxJobNumber),
-    totalLocNumber: lines.length,
-    unfoundLocs: []
-  };
+  if(validJsonInput){
+    dataHandler.setData(data);
+    panelControl.hideInitDiv();
+    dataHandler.checkControls();
+    dataHandler.fitView();
+  }
+  else{
+    // Start line by line parsing.
+    var lines = event.target.result.split("\n");
 
-  for(var i = 0; i < context.targetLocNumber; ++i){
-    _batchGeocodeAdd(lines[i], context);
+    // Strip blank lines from file.
+    while(lines.indexOf("") > -1){
+      lines.splice(lines.indexOf(""), 1);
+    }
+
+    // Used to report after parsing the whole file.
+    var context = {
+      locNumber: 0,
+      // The '1 +' accounts for the first job being actually the
+      // start/end.
+      targetLocNumber: Math.min(lines.length, 1 + api.maxJobNumber),
+      totalLocNumber: lines.length,
+      unfoundLocs: []
+    };
+
+    for(var i = 0; i < context.targetLocNumber; ++i){
+      _batchGeocodeAdd(lines[i], context);
+    }
   }
 };
 

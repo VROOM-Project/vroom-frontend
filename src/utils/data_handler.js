@@ -599,6 +599,36 @@ LSetup.map.on({
 
 /*** end Events ***/
 
+var setData = function(data){
+  clearData();
+
+  var start = data.vehicles[0].start;
+  if(start){
+    addStart(L.latLng(start[1], start[0]), data.vehicles[0].startDescription);
+  }
+
+  var end = data.vehicles[0].end;
+  if(end){
+    addEnd(L.latLng(end[1], end[0]), data.vehicles[0].endDescription);
+  }
+
+  for(var i = 0; i < data.jobs.length; i++){
+    var job = data.jobs[i];
+    addJob(L.latLng(job.location[1], job.location[0]),
+           job.description,
+           true);
+  }
+
+  // Next user input should be a job.
+  firstPlaceSet();
+}
+
+var setSolution = function(data){
+  if('output' in data){
+    setOutput(data.output);
+  }
+}
+
 module.exports = {
   fitView: fitView,
   clearData: clearData,
@@ -618,5 +648,7 @@ module.exports = {
   addEnd: addEnd,
   addJob: addJob,
   checkControls: checkControls,
-  animateRoute: animateRoute
+  animateRoute: animateRoute,
+  setData: setData,
+  setSolution: setSolution
 };

@@ -41,13 +41,17 @@ var panelControl = L.Control.extend({
     list.appendChild(clickEl);
     var uploadEl = document.createElement('li');
     uploadEl.innerHTML = 'using a file with one address (or Lat,Lng coord) on each line.';
+    list.appendChild(uploadEl);
+
+    var jsonUploadEl = document.createElement('li');
+    jsonUploadEl.innerHTML = 'using a <a href="https://github.com/VROOM-Project/vroom/blob/master/docs/API.md">json-formatted</a> file.';
 
     var fileInput = document.createElement('input');
     fileInput.setAttribute('type', 'file');
     fileInput.setAttribute('id', 'user-file');
 
-    uploadEl.appendChild(fileInput);
-    list.appendChild(uploadEl);
+    jsonUploadEl.appendChild(fileInput);
+    list.appendChild(jsonUploadEl);
 
     this._initDiv.appendChild(header);
     this._initDiv.appendChild(list);
