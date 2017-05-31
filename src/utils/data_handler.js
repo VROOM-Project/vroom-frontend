@@ -282,6 +282,12 @@ var _setStart = function(latlng, name){
   idCell.setAttribute('class', 'delete-location');
   idCell.title = "Click to delete";
   idCell.onclick = remove;
+
+  // Required when parsing json files with no start description.
+  if(!name){
+    name = "Start";
+  }
+
   var nameCell = row.insertCell(1);
   nameCell.title = "Click to center the map";
   nameCell.setAttribute("class", "vehicle-start");
@@ -329,6 +335,12 @@ var _setEnd = function(latlng, name){
   idCell.setAttribute('class', 'delete-location');
   idCell.title = "Click to delete";
   idCell.onclick = remove;
+
+  // Required when parsing json files with no end description.
+  if(!name){
+    name = "End";
+  }
+
   var nameCell = row.insertCell(1);
   nameCell.title = "Click to center the map";
   nameCell.setAttribute("class", "vehicle-end");
@@ -373,6 +385,13 @@ var _jobDisplay = function(latlng, name){
   idCell.setAttribute('class', 'delete-location');
   idCell.title = "Click to delete";
   idCell.onclick = remove;
+
+  // Required when parsing json files containing jobs with no
+  // description.
+  if(!name){
+    name = "No description";
+  }
+
   var nameCell = row.insertCell(1);
   nameCell.title = "Click to center the map";
   nameCell.appendChild(document.createTextNode(name));
