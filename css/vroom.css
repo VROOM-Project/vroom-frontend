@@ -11,10 +11,7 @@
 }
 
 .panel-header{
-    font-size: 40px;
-    font-weight: bold;
-    padding: 10px;
-    text-align: center;
+    padding: 20px 10px;
 }
 
 .panel-header a{

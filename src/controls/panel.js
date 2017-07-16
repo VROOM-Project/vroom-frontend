@@ -17,7 +17,7 @@ var panelControl = L.Control.extend({
     // Header for panel control.
     var headerDiv = document.createElement('div');
     headerDiv.setAttribute('class', 'panel-header');
-    headerDiv.innerHTML = '<a href="http://vroom-project.org">VROOM</a>';
+    headerDiv.innerHTML = '<a href="http://vroom-project.org"><img src="../../images/vroom.svg" alt="Vroom" /></a>';
     this._div.appendChild(headerDiv);
 
     // Wait icon displayed while solving.
