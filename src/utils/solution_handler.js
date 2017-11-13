@@ -58,5 +58,6 @@ var plotSolution = function(){
 }
 
 module.exports = {
-  solve: solve
+  solve: solve,
+  plotSolution: plotSolution
 };

@@ -5,6 +5,7 @@ var geocoder = require('./geocoder');
 var address = require('./address');
 var locationHandler = require('./locations');
 var dataHandler = require('./data_handler');
+var solutionHandler = require('./solution_handler');
 var panelControl = require('../controls/panel');
 
 var reader = new FileReader();
@@ -24,9 +25,17 @@ reader.onload = function(event){
   catch(e){}
 
   if(validJsonInput){
-    dataHandler.setData(data);
     panelControl.hideInitDiv();
+    dataHandler.setData(data);
+    dataHandler.closeAllPopups();
     dataHandler.checkControls();
+
+    // Plot solution if current file contains one.
+    if(('output' in data) && ('code' in data['output'])){
+      dataHandler.setSolution(data);
+      solutionHandler.plotSolution();
+    }
+
     dataHandler.fitView();
   }
   else{
