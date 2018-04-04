@@ -7,19 +7,19 @@ var summaryControl = L.Control.extend({
     position: 'bottomleft'
   },
 
-  onAdd: function (map){
+  onAdd: function (map) {
     // Add reference to map.
     map.summaryControl = this;
     this._div = L.DomUtil.create('div', 'custom-control summary-control');
     return this._div;
   },
 
-  onRemove: function (map){
+  onRemove: function (map) {
     // Remove reference from map.
     delete map.summaryControl;
   },
 
-  update: function(output){
+  update: function(output) {
     this._div.innerHTML = '';
 
     var displayDuration = document.createElement('p');

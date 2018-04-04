@@ -3,19 +3,19 @@
 var LSetup = require('../config/leaflet_setup');
 var labelgun = require('labelgun');
 
-var hideLabel = function(label){
+var hideLabel = function(label) {
   label.labelObject.style.opacity = 0;
 };
 
-var showLabel = function(label){
+var showLabel = function(label) {
   label.labelObject.style.opacity = LSetup.labelOpacity;
 };
 
 var labelEngine = new labelgun.default(hideLabel, showLabel);
 
-var addLabel = function(layer, rank){
+var addLabel = function(layer, rank) {
   var label = layer.getTooltip()._source._tooltip._container;
-  if (label){
+  if (label) {
     var rect = label.getBoundingClientRect();
 
     var bottomLeft = LSetup.map.containerPointToLatLng([rect.left, rect.bottom]);
@@ -37,10 +37,10 @@ var addLabel = function(layer, rank){
 
 module.exports = {
   addLabel: addLabel,
-  destroy: function(){
+  destroy: function() {
     labelEngine.destroy();
   },
-  update: function(){
+  update: function() {
     labelEngine.update()
   }
 }

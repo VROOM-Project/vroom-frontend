@@ -7,12 +7,12 @@ var fitControl = L.Control.extend({
     position: 'topleft'
   },
 
-  onAdd: function (map){
+  onAdd: function (map) {
     // Add reference to map.
     map.fitControl = this;
     this._div = L.DomUtil.create('div', 'custom-control icon-control fit-control');
     this._div.title = 'Show all places';
-    this._div.onclick = function(e){
+    this._div.onclick = function(e) {
       L.DomEvent.stopPropagation(e);
       map.fireEvent('fit');
     };
@@ -20,7 +20,7 @@ var fitControl = L.Control.extend({
     return this._div;
   },
 
-  onRemove: function (map){
+  onRemove: function (map) {
     // Remove reference from map.
     delete map.fitControl;
   }

@@ -16,64 +16,63 @@ var labelgunWrapper = require('./labelgun_wrapper');
 
 var routes = [];
 
-var getJobs = function(){
+var getJobs = function() {
   return data.jobs;
 }
 
-var getJobsMarkers = function(){
+var getJobsMarkers = function() {
   return data.jobsMarkers;
 }
 
-var getVehicles = function(){
+var getVehicles = function() {
   return data.vehicles;
 }
 
-var getJobsSize = function(){
+var getJobsSize = function() {
   return data.jobs.length;
 }
 
-var getStart = function(){
+var getStart = function() {
   return data.vehicles[0].start;
 }
 
-var getEnd = function(){
+var getEnd = function() {
   return data.vehicles[0].end;
 }
 
-var checkControls = function(){
+var checkControls = function() {
   var hasJobs = getJobsSize() > 0;
   var hasStart = getStart();
   var hasEnd = getEnd();
-  if(hasJobs || hasStart || hasEnd){
+  if (hasJobs || hasStart || hasEnd) {
     // Fit and clear controls as soon as we have a location.
-    if(!LSetup.map.fitControl){
+    if (!LSetup.map.fitControl) {
       LSetup.map.addControl(fitControl);
     }
-    if(!LSetup.map.clearControl){
+    if (!LSetup.map.clearControl) {
       LSetup.map.addControl(clearControl);
     }
   }
-  if(!LSetup.map.solveControl){
+  if (!LSetup.map.solveControl) {
     // Solve control appears only when there's enough input to fire a
     // solving query.
-    if((hasStart || hasEnd) && hasJobs){
+    if ((hasStart || hasEnd) && hasJobs) {
       solveControl.addTo(LSetup.map);
     }
-  }
-  else{
-    if(getJobsSize() === 0){
+  } else {
+    if (getJobsSize() === 0) {
       LSetup.map.removeControl(solveControl);
     }
   }
-  if(hasSolution()){
+  if (hasSolution()) {
     LSetup.map.removeControl(solveControl);
     LSetup.map.addControl(summaryControl);
     LSetup.map.addControl(snakeControl);
   }
 }
 
-var _resetStart = function(){
-  if(data.startMarker){
+var _resetStart = function() {
+  if (data.startMarker) {
     LSetup.map.removeLayer(data.startMarker);
     delete data.vehicles[0].startDescription;
     delete data.vehicles[0].start;
@@ -81,8 +80,8 @@ var _resetStart = function(){
   }
 }
 
-var _resetEnd = function(){
-  if(data.endMarker){
+var _resetEnd = function() {
+  if (data.endMarker) {
     LSetup.map.removeLayer(data.endMarker);
     delete data.vehicles[0].endDescription;
     delete data.vehicles[0].end;
@@ -90,36 +89,35 @@ var _resetEnd = function(){
   }
 }
 
-var _pushToBounds = function(latlng){
-  if(data.bounds){
+var _pushToBounds = function(latlng) {
+  if (data.bounds) {
     data.bounds.extend(latlng);
-  }
-  else{
+  } else {
     data.bounds = L.latLngBounds(latlng, latlng);
   }
 }
 
-var _recomputeBounds = function(){
+var _recomputeBounds = function() {
   // Problem bounds are extended upon additions but they need to be
   // recalculated when a deletion might reduce the bounds.
   delete data.bounds;
 
   var start = data.vehicles[0].start;
-  if(start){
+  if (start) {
     _pushToBounds([start[1], start[0]]);
   }
   var end = data.vehicles[0].end;
-  if(end){
+  if (end) {
     _pushToBounds([end[1], end[0]]);
   }
-  for(var i = 0; i < data.jobs.length; i++){
+  for (var i = 0; i < data.jobs.length; i++) {
     var loc = data.jobs[i].location;
     _pushToBounds([loc[1], loc[0]]);
   }
 }
 
-var fitView = function(){
-  if(data.bounds){
+var fitView = function() {
+  if (data.bounds) {
     LSetup.map.fitBounds(data.bounds, {
       paddingBottomRight: [panelControl.getWidth(), 0],
       paddingTopLeft: [50, 0],
@@ -127,7 +125,7 @@ var fitView = function(){
   }
 }
 
-var hasSolution = function(){
+var hasSolution = function() {
   return routes.length > 0;
 }
 
@@ -137,16 +135,16 @@ var hasSolution = function(){
 // #12.
 var _firstPlace = true;
 
-var isFirstPlace = function(){
+var isFirstPlace = function() {
   return _firstPlace;
 }
 
-var firstPlaceSet = function(){
+var firstPlaceSet = function() {
   _firstPlace = false;
 }
 
-var _clearSolution = function(){
-  if(hasSolution()){
+var _clearSolution = function() {
+  if (hasSolution()) {
     // Back to input mode.
     panelControl.clearSolutionDisplay();
     panelControl.showJobDisplay();
@@ -157,7 +155,7 @@ var _clearSolution = function(){
 
     routes = [];
     // Remove all numbered tooltips.
-    for(var i = 0; i < data.jobsMarkers.length; i++){
+    for (var i = 0; i < data.jobsMarkers.length; i++) {
       LSetup.map.removeLayer(data.jobsMarkers[i].getTooltip());
     }
     // Remove query output for this solution.
@@ -165,12 +163,12 @@ var _clearSolution = function(){
   }
 }
 
-var clearData = function(){
+var clearData = function() {
   // Back to adding a start/end for next place.
   _firstPlace = true;
 
   // Clear all data and markers.
-  for(var i = 0; i < data.jobsMarkers.length; i++){
+  for (var i = 0; i < data.jobsMarkers.length; i++) {
     LSetup.map.removeLayer(data.jobsMarkers[i]);
   }
   _resetStart();
@@ -187,14 +185,14 @@ var clearData = function(){
   _clearSolution();
 }
 
-var closeAllPopups = function(){
-  for(var i = 0; i < data.jobsMarkers.length; i++){
+var closeAllPopups = function() {
+  for (var i = 0; i < data.jobsMarkers.length; i++) {
     data.jobsMarkers[i].closePopup();
   }
-  if(data.startMarker){
+  if (data.startMarker) {
     data.startMarker.closePopup();
   }
-  if(data.endMarker){
+  if (data.endMarker) {
     data.endMarker.closePopup();
   }
 }
@@ -203,7 +201,7 @@ var _updateJobDescription = function(jobIndex,
                                      description,
                                      remove,
                                      setAsStart,
-                                     setAsEnd){
+                                     setAsEnd) {
   data.jobs[jobIndex]['description'] = description;
 
   // Marker popup.
@@ -227,7 +225,7 @@ var _updateJobDescription = function(jobIndex,
   data.jobsMarkers[jobIndex].bindPopup(popupDiv).openPopup();
 }
 
-var _updateStartDescription = function(description, remove){
+var _updateStartDescription = function(description, remove) {
   data.vehicles[0].startDescription = description;
 
   // Marker popup.
@@ -243,7 +241,7 @@ var _updateStartDescription = function(description, remove){
   data.startMarker.bindPopup(popupDiv).openPopup();
 }
 
-var _updateEndDescription = function(description, remove){
+var _updateEndDescription = function(description, remove) {
   data.vehicles[0].endDescription = description;
 
   // Marker popup.
@@ -259,21 +257,21 @@ var _updateEndDescription = function(description, remove){
   data.endMarker.bindPopup(popupDiv).openPopup();
 }
 
-var _setStart = function(latlng, name){
+var _setStart = function(latlng, name) {
   var panelList = document.getElementById('panel-vehicle');
 
   panelList.deleteRow(0);
   var row = panelList.insertRow(0);
   var idCell = row.insertCell(0);
 
-  var remove = function(){
-    if(_removeStart()){
+  var remove = function() {
+    if (_removeStart()) {
       // Reset start row when removing is ok.
       panelList.deleteRow(0);
       panelList.insertRow(0);
-      if(getJobsSize() === 0
+      if (getJobsSize() === 0
          && !getStart()
-         && !getEnd()){
+         && !getEnd()) {
         LSetup.map.removeControl(clearControl);
       }
       checkControls();
@@ -284,7 +282,7 @@ var _setStart = function(latlng, name){
   idCell.onclick = remove;
 
   // Required when parsing json files with no start description.
-  if(!name){
+  if (!name) {
     name = "Start";
   }
 
@@ -292,18 +290,18 @@ var _setStart = function(latlng, name){
   nameCell.title = "Click to center the map";
   nameCell.setAttribute("class", "vehicle-start");
   nameCell.appendChild(document.createTextNode(name));
-  nameCell.onclick = function(){
+  nameCell.onclick = function() {
     _showStart(true);
   };
   // Add description.
   _updateStartDescription(name, remove);
 }
 
-var addStart = function(latlng, name){
+var addStart = function(latlng, name) {
   _clearSolution();
   _pushToBounds(latlng);
 
-  if(data.startMarker){
+  if (data.startMarker) {
     LSetup.map.removeLayer(data.startMarker);
   }
   data.vehicles[0].start = [latlng.lng,latlng.lat];
@@ -312,21 +310,21 @@ var addStart = function(latlng, name){
   _setStart(latlng, name);
 }
 
-var _setEnd = function(latlng, name){
+var _setEnd = function(latlng, name) {
   var panelList = document.getElementById('panel-vehicle');
 
   panelList.deleteRow(1);
   var row = panelList.insertRow(1);
   var idCell = row.insertCell(0);
 
-  var remove = function(){
-    if(_removeEnd()){
+  var remove = function() {
+    if (_removeEnd()) {
       // Reset end row when removing is ok.
       panelList.deleteRow(1);
       panelList.insertRow(1);
-      if(getJobsSize() === 0
+      if (getJobsSize() === 0
          && !getStart()
-         && !getEnd()){
+         && !getEnd()) {
         LSetup.map.removeControl(clearControl);
       }
       checkControls();
@@ -337,7 +335,7 @@ var _setEnd = function(latlng, name){
   idCell.onclick = remove;
 
   // Required when parsing json files with no end description.
-  if(!name){
+  if (!name) {
     name = "End";
   }
 
@@ -345,18 +343,18 @@ var _setEnd = function(latlng, name){
   nameCell.title = "Click to center the map";
   nameCell.setAttribute("class", "vehicle-end");
   nameCell.appendChild(document.createTextNode(name));
-  nameCell.onclick = function(){
+  nameCell.onclick = function() {
     _showEnd(true);
   };
   // Add description.
   _updateEndDescription(name, remove);
 }
 
-var addEnd = function(latlng, name){
+var addEnd = function(latlng, name) {
   _clearSolution();
   _pushToBounds(latlng);
 
-  if(data.endMarker){
+  if (data.endMarker) {
     LSetup.map.removeLayer(data.endMarker);
   }
   data.vehicles[0].end = [latlng.lng,latlng.lat];
@@ -365,19 +363,19 @@ var addEnd = function(latlng, name){
   _setEnd(latlng, name);
 }
 
-var _jobDisplay = function(latlng, name){
+var _jobDisplay = function(latlng, name) {
   var panelList = document.getElementById('panel-jobs');
 
   var nb_rows = panelList.rows.length;
   var row = panelList.insertRow(nb_rows);
   var idCell = row.insertCell(0);
 
-  var remove = function(){
+  var remove = function() {
     _removeJob(row.rowIndex);
     panelList.deleteRow(row.rowIndex);
-    if(getJobsSize() === 0
+    if (getJobsSize() === 0
        && !getStart()
-       && !getEnd()){
+       && !getEnd()) {
       LSetup.map.removeControl(clearControl);
     }
     checkControls();
@@ -388,24 +386,24 @@ var _jobDisplay = function(latlng, name){
 
   // Required when parsing json files containing jobs with no
   // description.
-  if(!name){
+  if (!name) {
     name = "No description";
   }
 
   var nameCell = row.insertCell(1);
   nameCell.title = "Click to center the map";
   nameCell.appendChild(document.createTextNode(name));
-  nameCell.onclick = function(){
+  nameCell.onclick = function() {
     _showMarker(row.rowIndex, true);
   };
   // Callbacks to replace current start or end by this job.
-  var setAsStart = function(){
+  var setAsStart = function() {
     addStart(latlng, name);
     _removeJob(row.rowIndex);
     panelList.deleteRow(row.rowIndex);
     checkControls();
   }
-  var setAsEnd = function(){
+  var setAsEnd = function() {
     addEnd(latlng, name);
     _removeJob(row.rowIndex);
     panelList.deleteRow(row.rowIndex);
@@ -419,8 +417,8 @@ var _jobDisplay = function(latlng, name){
                         setAsEnd);
 }
 
-var addJob = function(latlng, name){
-  if(getJobsSize() >= api.maxJobNumber){
+var addJob = function(latlng, name) {
+  if (getJobsSize() >= api.maxJobNumber) {
     alert('Number of jobs can\'t exceed ' + api.maxJobNumber + '.');
     return;
   }
@@ -436,7 +434,7 @@ var addJob = function(latlng, name){
   _jobDisplay(latlng, name);
 }
 
-var _removeJob = function(jobIndex){
+var _removeJob = function(jobIndex) {
   _clearSolution();
   LSetup.map.removeLayer(data.jobsMarkers[jobIndex]);
   data.jobs.splice(jobIndex, 1);
@@ -444,62 +442,60 @@ var _removeJob = function(jobIndex){
   _recomputeBounds();
 }
 
-var _removeStart = function(){
+var _removeStart = function() {
   var allowRemoval = getEnd();
-  if(allowRemoval){
+  if (allowRemoval) {
     _clearSolution();
     _resetStart();
     _recomputeBounds();
-  }
-  else{
+  } else {
     alert("Can't delete both start and end.");
   }
   return allowRemoval;
 }
 
-var _removeEnd = function(){
+var _removeEnd = function() {
   var allowRemoval = getStart();
-  if(allowRemoval){
+  if (allowRemoval) {
     _clearSolution();
     _resetEnd();
     _recomputeBounds();
-  }
-  else{
+  } else {
     alert("Can't delete both start and end.");
   }
   return allowRemoval;
 }
 
-var _showMarker = function(markerIndex, center){
+var _showMarker = function(markerIndex, center) {
   data.jobsMarkers[markerIndex].openPopup();
-  if(center){
+  if (center) {
     LSetup.map.panTo(data.jobsMarkers[markerIndex].getLatLng());
   }
 }
 
-var _showStart = function(center){
+var _showStart = function(center) {
   data.startMarker.openPopup();
-  if(center){
+  if (center) {
     LSetup.map.panTo(data.startMarker.getLatLng());
   }
 }
 
-var _showEnd = function(center){
+var _showEnd = function(center) {
   data.endMarker.openPopup();
-  if(center){
+  if (center) {
     LSetup.map.panTo(data.endMarker.getLatLng());
   }
 }
 
-var setOutput = function(output){
+var setOutput = function(output) {
   data.output = output;
 }
 
-var getOutput = function(){
+var getOutput = function() {
   return data.output;
 }
 
-var addRoute = function(route){
+var addRoute = function(route) {
   var latlngs = polyUtil.decode(route['geometry']);
 
   var path = new L.Polyline(latlngs, {
@@ -517,9 +513,9 @@ var addRoute = function(route){
 
   var jobRank = 0;
   var totalRank = route.steps.length
-  for(var i = 0; i < totalRank; i++){
+  for (var i = 0; i < totalRank; i++) {
     var step = route.steps[i];
-    if(step.type === "job"){
+    if (step.type === "job") {
       jobRank++;
 
       var jobIndex = step.job;
@@ -539,8 +535,8 @@ var addRoute = function(route){
       row.title = "Click to center the map";
 
       // Hack to make sure the marker index is right.
-      var showCallback = function(index){
-        return function(){_showMarker(index, true);};
+      var showCallback = function(index) {
+        return function() {_showMarker(index, true);};
       }
       row.onclick = showCallback(jobIndex);
 
@@ -560,7 +556,7 @@ var addRoute = function(route){
   routes.push(path);
 }
 
-var animateRoute = function(){
+var animateRoute = function() {
   closeAllPopups();
   routes[0].snakeIn();
 }
@@ -571,21 +567,21 @@ var animateRoute = function(){
 LSetup.map.on('fit', fitView);
 
 // Clear event.
-LSetup.map.on('clear', function(){
+LSetup.map.on('clear', function() {
   // Remove controls.
-  if(LSetup.map.fitControl){
+  if (LSetup.map.fitControl) {
     LSetup.map.removeControl(LSetup.map.fitControl);
   }
-  if(LSetup.map.clearControl){
+  if (LSetup.map.clearControl) {
     LSetup.map.removeControl(LSetup.map.clearControl);
   }
-  if(LSetup.map.solveControl){
+  if (LSetup.map.solveControl) {
     LSetup.map.removeControl(LSetup.map.solveControl);
   }
-  if(LSetup.map.summaryControl){
+  if (LSetup.map.summaryControl) {
     LSetup.map.removeControl(LSetup.map.summaryControl);
   }
-  if(LSetup.map.snakeControl){
+  if (LSetup.map.snakeControl) {
     LSetup.map.removeControl(LSetup.map.snakeControl);
   }
   clearData();
@@ -596,11 +592,11 @@ LSetup.map.on('clear', function(){
 
 LSetup.map.on('animate', animateRoute);
 
-var resetLabels = function(){
+var resetLabels = function() {
   labelgunWrapper.destroy();
 
   var total = data.jobsMarkers.length;
-  for(var i = 0; i < total; i++){
+  for (var i = 0; i < total; i++) {
     var jobRank = parseInt(data.jobsMarkers[i].getTooltip()._content);
     labelgunWrapper.addLabel(data.jobsMarkers[i], jobRank);
   }
@@ -609,8 +605,8 @@ var resetLabels = function(){
 }
 
 LSetup.map.on({
-  zoomend: function(){
-    if(hasSolution()){
+  zoomend: function() {
+    if (hasSolution()) {
       resetLabels();
     }
   }
@@ -618,20 +614,20 @@ LSetup.map.on({
 
 /*** end Events ***/
 
-var setData = function(data){
+var setData = function(data) {
   clearData();
 
   var start = data.vehicles[0].start;
-  if(start){
+  if (start) {
     addStart(L.latLng(start[1], start[0]), data.vehicles[0].startDescription);
   }
 
   var end = data.vehicles[0].end;
-  if(end){
+  if (end) {
     addEnd(L.latLng(end[1], end[0]), data.vehicles[0].endDescription);
   }
 
-  for(var i = 0; i < data.jobs.length; i++){
+  for (var i = 0; i < data.jobs.length; i++) {
     var job = data.jobs[i];
     addJob(L.latLng(job.location[1], job.location[0]),
            job.description,
@@ -642,8 +638,8 @@ var setData = function(data){
   firstPlaceSet();
 }
 
-var setSolution = function(data){
-  if('output' in data){
+var setSolution = function(data) {
+  if ('output' in data) {
     setOutput(data.output);
   }
 }

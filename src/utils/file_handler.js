@@ -10,40 +10,38 @@ var panelControl = require('../controls/panel');
 
 var reader = new FileReader();
 
-reader.onerror = function(event){
+reader.onerror = function(event) {
   alert("File could not be read! Code " + event.target.error.code);
 };
 
-reader.onload = function(event){
+reader.onload = function(event) {
   // We first try parsing the input to determine if the file contains
   // a valid json object with the expected keys.
   var validJsonInput = false;
-  try{
+  try {
     var data = JSON.parse(event.target.result);
     validJsonInput = ('jobs' in data) && ('vehicles' in data);
-  }
-  catch(e){}
+  } catch(e) {}
 
-  if(validJsonInput){
+  if (validJsonInput) {
     panelControl.hideInitDiv();
     dataHandler.setData(data);
     dataHandler.closeAllPopups();
     dataHandler.checkControls();
 
     // Plot solution if current file contains one.
-    if(('output' in data) && ('code' in data['output'])){
+    if (('output' in data) && ('code' in data['output'])) {
       dataHandler.setSolution(data);
       solutionHandler.plotSolution();
     }
 
     dataHandler.fitView();
-  }
-  else{
+  } else {
     // Start line by line parsing.
     var lines = event.target.result.split("\n");
 
     // Strip blank lines from file.
-    while(lines.indexOf("") > -1){
+    while (lines.indexOf("") > -1) {
       lines.splice(lines.indexOf(""), 1);
     }
 
@@ -57,49 +55,48 @@ reader.onload = function(event){
       unfoundLocs: []
     };
 
-    for(var i = 0; i < context.targetLocNumber; ++i){
+    for (var i = 0; i < context.targetLocNumber; ++i) {
       _batchGeocodeAdd(lines[i], context);
     }
   }
 };
 
-var _batchGeocodeAdd = function(query, context){
-  geocoder.defaultGeocoder.geocode(query, function(results){
+var _batchGeocodeAdd = function(query, context) {
+  geocoder.defaultGeocoder.geocode(query, function(results) {
     context.locNumber += 1;
     var r = results[0];
-    if(r){
+    if (r) {
       locationHandler.addPlace(r.center,
                                address.display(r));
-    }
-    else{
+    } else {
       context.unfoundLocs.push(query);
     }
-    if(context.locNumber === context.targetLocNumber){
+    if (context.locNumber === context.targetLocNumber) {
       // Last location have been tried.
       var msg = '';
-      if(context.targetLocNumber < context.totalLocNumber){
+      if (context.targetLocNumber < context.totalLocNumber) {
         msg += 'Warning: only the first '
           + context.targetLocNumber
           + ' locations where used.\n';
       }
-      if(context.unfoundLocs.length > 0){
+      if (context.unfoundLocs.length > 0) {
         msg += 'Unfound location(s):\n';
-        for(var i = 0; i < context.unfoundLocs.length; ++i){
+        for (var i = 0; i < context.unfoundLocs.length; ++i) {
           msg += '- ' + context.unfoundLocs[i] + '\n';
         }
       }
       dataHandler.fitView();
 
-      if(msg.length > 0){
+      if (msg.length > 0) {
         alert(msg);
       }
     }
   }, context);
 };
 
-var setFile = function(){
+var setFile = function() {
   var fileInput = document.getElementById('user-file');
-  fileInput.addEventListener("change", function(event){
+  fileInput.addEventListener("change", function(event) {
     reader.readAsText(fileInput.files[0]);
   }, false);
 }

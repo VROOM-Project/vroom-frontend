@@ -5,12 +5,12 @@ var solveControl = L.Control.extend({
     position: 'topleft'
   },
 
-  onAdd: function (map){
+  onAdd: function (map) {
     // Add reference to map.
     map.solveControl = this;
     this._div = L.DomUtil.create('div', 'custom-control icon-control solve-control');
     this._div.title = 'Solve';
-    this._div.onclick = function(e){
+    this._div.onclick = function(e) {
       L.DomEvent.stopPropagation(e);
       map.removeControl(solveControl);
       document.getElementById('wait-icon').setAttribute('class', 'wait-icon');
@@ -20,7 +20,7 @@ var solveControl = L.Control.extend({
     return this._div;
   },
 
-  onRemove: function (map){
+  onRemove: function (map) {
     // Remove reference from map.
     delete map.solveControl;
   }

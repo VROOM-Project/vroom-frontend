@@ -11,7 +11,7 @@ var initZoom = 13;
 var attribution = 'Routes computed using <a href="http://project-osrm.org/">OSRM</a>'
     + ' | '
     + '&copy; <a href="http://osm.org/copyright">OpenStreetMap</a> contributors';
-if(api.description){
+if (api.description) {
   attribution = 'Demo solver hosted by '
     + api.description
     + ' | ' + attribution;

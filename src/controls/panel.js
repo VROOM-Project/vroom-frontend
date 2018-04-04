@@ -7,7 +7,7 @@ var panelControl = L.Control.extend({
     position: 'topright'
   },
 
-  onAdd: function (map){
+  onAdd: function (map) {
     // Add reference to map.
     map.panelControl = this;
 
@@ -84,64 +84,63 @@ var panelControl = L.Control.extend({
     if (!L.Browser.touch) {
       L.DomEvent.disableClickPropagation(this._div);
       L.DomEvent.on(this._div, 'mousewheel', L.DomEvent.stopPropagation);
-    }
-    else {
+    } else {
       L.DomEvent.on(this._div, 'click', L.DomEvent.stopPropagation);
     }
 
     return this._div;
   },
 
-  onRemove: function(map){
+  onRemove: function(map) {
     // Remove reference from map.
     delete map.panelControl;
   },
 
-  clearJobDisplay: function(){
+  clearJobDisplay: function() {
     // Delete jobs display.
-    for(var i = this._jobTable.rows.length; i > 0; i--){
+    for (var i = this._jobTable.rows.length; i > 0; i--) {
       this._jobTable.deleteRow(i -1);
     }
   },
 
-  clearStartEndDisplay: function(){
+  clearStartEndDisplay: function() {
     // Reset vehicle start/end display.
-    for(var i = this._vehicleTable.rows.length; i > 0; i--){
+    for (var i = this._vehicleTable.rows.length; i > 0; i--) {
       this._vehicleTable.deleteRow(i -1);
     }
     this._vehicleTable.insertRow(0);
     this._vehicleTable.insertRow(1);
   },
 
-  clearDisplay: function(){
+  clearDisplay: function() {
     this.clearJobDisplay();
     this.clearStartEndDisplay();
     this.showInitDiv();
   },
 
-  clearSolutionDisplay: function(){
-    for(var i = this._solutionTable.rows.length; i > 0; i--){
+  clearSolutionDisplay: function() {
+    for (var i = this._solutionTable.rows.length; i > 0; i--) {
       this._solutionTable.deleteRow(i -1);
     }
   },
 
-  hideJobDisplay: function(){
+  hideJobDisplay: function() {
     this._jobTable.style.display = 'none';
   },
 
-  showJobDisplay: function(){
+  showJobDisplay: function() {
     this._jobTable.style.display = 'block';
   },
 
-  hideInitDiv: function(){
+  hideInitDiv: function() {
     this._initDiv.style.display = 'none';
   },
 
-  showInitDiv: function(){
+  showInitDiv: function() {
     this._initDiv.style.display = 'block';
   },
 
-  getWidth: function(){
+  getWidth: function() {
     return this._div.offsetWidth;
   }
 });
