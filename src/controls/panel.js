@@ -44,7 +44,7 @@ var panelControl = L.Control.extend({
     list.appendChild(uploadEl);
 
     var jsonUploadEl = document.createElement('li');
-    jsonUploadEl.innerHTML = 'using a <a href="https://github.com/VROOM-Project/vroom/blob/master/docs/API.md">json-formatted</a> file.';
+    jsonUploadEl.innerHTML = 'using a <a href="https://github.com/VROOM-Project/vroom/blob/v1.1.0/docs/API.md">json-formatted</a> file.';
 
     var fileInput = document.createElement('input');
     fileInput.setAttribute('type', 'file');
