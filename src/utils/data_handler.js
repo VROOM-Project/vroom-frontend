@@ -4,7 +4,7 @@ var LSetup = require('../config/leaflet_setup');
 var api = require('../config/api');
 require('leaflet.polyline.snakeanim');
 
-var polyUtil = require('polyline-encoded');
+var polyUtil = require('@mapbox/polyline');
 var data = require('../data');
 var panelControl = require('../controls/panel');
 var fitControl = require('../controls/fit');
