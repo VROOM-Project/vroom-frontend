@@ -81,12 +81,8 @@ var panelControl = L.Control.extend({
     this._div.appendChild(tableDiv);
 
     // Prevent events on this control to alter the underlying map.
-    if (!L.Browser.touch) {
-      L.DomEvent.disableClickPropagation(this._div);
-      L.DomEvent.on(this._div, 'mousewheel', L.DomEvent.stopPropagation);
-    } else {
-      L.DomEvent.on(this._div, 'click', L.DomEvent.stopPropagation);
-    }
+    L.DomEvent.disableClickPropagation(this._div);
+    L.DomEvent.on(this._div, 'mousewheel', L.DomEvent.stopPropagation);
 
     return this._div;
   },
