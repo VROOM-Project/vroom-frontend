@@ -4,7 +4,8 @@
   "description": "Frontend demo for VROOM",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "build": "sh ./scripts/build.sh"
+    "serve": "./node_modules/.bin/beefy src/map.js --browserify ./node_modules/.bin/browserify --live",
+    "build": "./node_modules/.bin/browserify -d src/map.js -o bundle.raw.js && ./node_modules/.bin/uglifyjs bundle.raw.js -c -m -o bundle.js"
   },
   "keywords": [
     "VROOM",
@@ -19,6 +20,7 @@
   "author": "Julien Coupey",
   "license": "BSD-2-Clause",
   "devDependencies": {
+    "beefy": "^2.1.8",
     "browserify": "^13.3.0",
     "uglify-js": "^2.8.29"
   },
