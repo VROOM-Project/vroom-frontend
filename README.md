@@ -26,9 +26,8 @@ expose VROOM's API over http requests.
 
 # Usage
 
-Serve to your liking, for example on `http://localhost:8000/` by
-running:
+Serve at `http://127.0.0.1:9966` with:
 
 ```bash
-python -m SimpleHTTPServer
+npm run serve
 ```
