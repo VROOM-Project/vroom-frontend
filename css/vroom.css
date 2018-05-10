@@ -89,6 +89,25 @@
     background-image: url("../images/fa-icons/play-circled.svg");
 }
 
+.collapse-control{
+    background-repeat: no-repeat;
+    background-size: auto auto;
+    background-position: center;
+    width: 13px;
+    height: 13px;
+    margin-top: 0;
+    padding: 8px 8px;
+    cursor: pointer;
+}
+
+.collapse-control-right{
+    background-image: url("../images/fa-icons/chevron-right.svg");
+}
+
+.collapse-control-left{
+    background-image: url("../images/fa-icons/chevron-left.svg");
+}
+
 .summary-control{
     padding: 0px 5px;
     font-size: 14px;

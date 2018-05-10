@@ -136,8 +136,20 @@ var panelControl = L.Control.extend({
     this._initDiv.style.display = 'block';
   },
 
+  toggle: function() {
+    if (this._div.style.visibility == 'hidden') {
+      this._div.style.visibility = 'visible';
+    } else {
+      this._div.style.visibility = 'hidden';
+    }
+  },
+
   getWidth: function() {
-    return this._div.offsetWidth;
+    var width = this._div.offsetWidth;
+    if (this._div.style.visibility == 'hidden') {
+      width = 0;
+    }
+    return width;
   }
 });
 

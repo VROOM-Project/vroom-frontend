@@ -7,6 +7,7 @@ require('leaflet.polyline.snakeanim');
 var polyUtil = require('@mapbox/polyline');
 var data = require('../data');
 var panelControl = require('../controls/panel');
+var collapseControl = require('../controls/collapse');
 var fitControl = require('../controls/fit');
 var clearControl = require('../controls/clear');
 var solveControl = require('../controls/solve');
@@ -591,6 +592,12 @@ LSetup.map.on('clear', function() {
 });
 
 LSetup.map.on('animate', animateRoute);
+
+// Collapse panel.
+LSetup.map.on('collapse', function() {
+  LSetup.map.collapseControl.toggle();
+  LSetup.map.panelControl.toggle();
+});
 
 var resetLabels = function() {
   labelgunWrapper.destroy();
