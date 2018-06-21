@@ -20,7 +20,7 @@ var addPlace = function(latlng, name) {
 
     var addVechicleWithName = function(name) {
       var v = {
-        'id': 0,
+        'id': dataHandler.getNextJobId(),
         'start': [latlng.lng,latlng.lat],
         'startDescription': name,
         'end': [latlng.lng,latlng.lat],
@@ -46,7 +46,7 @@ var addPlace = function(latlng, name) {
     // Add regular job.
     var addJobWithName = function(name) {
       var j = {
-        'id': dataHandler.getJobsSize(),
+        'id': dataHandler.getNextJobId(),
         'description': name,
         'location': [latlng.lng,latlng.lat]
       };

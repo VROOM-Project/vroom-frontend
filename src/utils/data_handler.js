@@ -29,6 +29,14 @@ var getJobsSize = function() {
   return data.jobs.length;
 }
 
+var getNextJobId = function() {
+  return data.maxJobId + 1;
+}
+
+var getNextVehicleId = function() {
+  return data.maxVehicleId + 1;
+}
+
 var getVehiclesSize = function() {
   return data.vehicles.length;
 }
@@ -288,6 +296,8 @@ var addVehicle = function(v) {
   _clearSolution();
   data.vehicles.push(v);
 
+  data.maxVehicleId = Math.max(data.maxVehicleId, j.id);
+
   if (v.start) {
     _pushToBounds(v.start);
     _setStart(v);
@@ -394,6 +404,7 @@ var addJob = function(j) {
   _clearSolution();
   _pushToBounds(j.location);
 
+  data.maxJobId = Math.max(data.maxJobId, j.id);
   data.jobs.push(j);
   data.jobsMarkers[j.id.toString()]
     = L.marker([j.location[1], j.location[0]])
@@ -653,6 +664,8 @@ module.exports = {
   getOutput: getOutput,
   addRoute: addRoute,
   getJobsSize: getJobsSize,
+  getNextJobId: getNextJobId,
+  getNextVehicleId: getNextVehicleId,
   closeAllPopups: closeAllPopups,
   isFirstPlace: isFirstPlace,
   firstPlaceSet: firstPlaceSet,
