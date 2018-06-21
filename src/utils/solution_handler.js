@@ -13,14 +13,6 @@ var solve = function() {
       "g": true
     }
   };
-  var markers = dataHandler.getJobsMarkers();
-  for (var i = 0; i < input.jobs.length; i++) {
-    // Job id is simply its rank in data.jobs. Remembering this rank
-    // for markers too as it is required for further sorting according
-    // to the solution order.
-    input.jobs[i].id = i;
-    markers[i].id = i;
-  }
 
   var xhttp = new XMLHttpRequest();
   xhttp.onreadystatechange = function() {
