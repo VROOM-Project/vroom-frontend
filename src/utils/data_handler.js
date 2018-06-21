@@ -140,7 +140,9 @@ var _clearSolution = function() {
     routes = [];
     // Remove all numbered tooltips.
     for (var k in data.jobsMarkers) {
-      LSetup.map.removeLayer(data.jobsMarkers[k].getTooltip());
+      if (data.jobsMarkers[k].getTooltip()) {
+        LSetup.map.removeLayer(data.jobsMarkers[k].getTooltip());
+      }
     }
     // Remove query output for this solution.
     delete data.output;
@@ -617,8 +619,10 @@ var resetLabels = function() {
   labelgunWrapper.destroy();
 
   for (var k in data.jobsMarkers) {
-    var jobRank = parseInt(data.jobsMarkers[k].getTooltip()._content);
-    labelgunWrapper.addLabel(data.jobsMarkers[k], jobRank);
+    if (data.jobsMarkers[k].getTooltip()) {
+      var jobRank = parseInt(data.jobsMarkers[k].getTooltip()._content);
+      labelgunWrapper.addLabel(data.jobsMarkers[k], jobRank);
+    }
   }
 
   labelgunWrapper.update();
