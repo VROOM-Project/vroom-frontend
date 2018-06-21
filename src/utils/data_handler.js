@@ -221,9 +221,14 @@ var _setStart = function(v) {
 
   // Marker and popup.
   data.vehiclesMarkers[v.id.toString() + '_start']
-    = L.marker([v.start[1], v.start[0]])
-    .addTo(LSetup.map)
-    .setIcon(LSetup.startIcon);
+    = L.circleMarker([v.start[1], v.start[0]],
+                     {
+                       radius: 8,
+                       weight: 3,
+                       fillOpacity: 0.4,
+                       color: '#48b605'
+                     })
+    .addTo(LSetup.map);
 
   var popupDiv = document.createElement('div');
   var par = document.createElement('p');
@@ -276,9 +281,14 @@ var _setEnd = function(v) {
 
   // Marker and popup.
   data.vehiclesMarkers[v.id.toString() + '_end']
-    = L.marker([v.end[1], v.end[0]])
-    .addTo(LSetup.map)
-    .setIcon(LSetup.endIcon);
+    = L.circleMarker([v.end[1], v.end[0]],
+                     {
+                       radius: 8,
+                       weight: 3,
+                       fillOpacity: 0.4,
+                       color: '#e9130a'
+                     })
+    .addTo(LSetup.map);
 
   var popupDiv = document.createElement('div');
   var par = document.createElement('p');
@@ -298,7 +308,7 @@ var addVehicle = function(v) {
   _clearSolution();
   data.vehicles.push(v);
 
-  data.maxVehicleId = Math.max(data.maxVehicleId, j.id);
+  data.maxVehicleId = Math.max(data.maxVehicleId, v.id);
 
   if (v.start) {
     _pushToBounds(v.start);
@@ -343,34 +353,24 @@ var _jobDisplay = function(j) {
   };
   // Callbacks to replace current start or end by this job.
   var setAsStart = function() {
-    for (var i = 0; i < data.vehicles.length; i++) {
-      if (data.vehicles[i].id == 0) {
-        var marker = data.vehicles[i].id.toString() + '_start';
-        LSetup.map.removeLayer(data.vehiclesMarkers[marker]);
-        delete data.vehiclesMarkers[marker];
-        data.vehicles[i].start = j.location;
-        data.vehicles[i].startDescription = j.description;
-        _setStart(data.vehicles[i]);
-        break;
-      }
-    }
+    var marker = data.vehicles[0].id.toString() + '_start';
+    LSetup.map.removeLayer(data.vehiclesMarkers[marker]);
+    delete data.vehiclesMarkers[marker];
+    data.vehicles[0].start = j.location;
+    data.vehicles[0].startDescription = j.description;
+    _setStart(data.vehicles[0]);
 
     _removeJob(j);
     panelList.deleteRow(row.rowIndex);
     checkControls();
   }
   var setAsEnd = function() {
-    for (var i = 0; i < data.vehicles.length; i++) {
-      if (data.vehicles[i].id == 0) {
-        var marker = data.vehicles[i].id.toString() + '_end';
-        LSetup.map.removeLayer(data.vehiclesMarkers[marker]);
-        delete data.vehiclesMarkers[marker];
-        data.vehicles[i].end = j.location;
-        data.vehicles[i].endDescription = j.description;
-        _setEnd(data.vehicles[i]);
-        break;
-      }
-    }
+    var marker = data.vehicles[0].id.toString() + '_end';
+    LSetup.map.removeLayer(data.vehiclesMarkers[marker]);
+    delete data.vehiclesMarkers[marker];
+    data.vehicles[0].end = j.location;
+    data.vehicles[0].endDescription = j.description;
+    _setEnd(data.vehicles[0]);
 
     _removeJob(j);
     panelList.deleteRow(row.rowIndex);
@@ -409,9 +409,13 @@ var addJob = function(j) {
   data.maxJobId = Math.max(data.maxJobId, j.id);
   data.jobs.push(j);
   data.jobsMarkers[j.id.toString()]
-    = L.marker([j.location[1], j.location[0]])
-    .addTo(LSetup.map)
-    .setIcon(LSetup.jobIcon);
+    = L.circleMarker([j.location[1], j.location[0]],
+                     {
+                       radius: 6,
+                       weight: 3,
+                       fillOpacity: 0.4
+                     })
+    .addTo(LSetup.map);
 
   // Handle display stuff.
   _jobDisplay(j);
