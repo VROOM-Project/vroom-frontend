@@ -13,7 +13,6 @@ var clearControl = require('../controls/clear');
 var solveControl = require('../controls/solve');
 var summaryControl = require('../controls/summary');
 var snakeControl = require('../controls/snake');
-var labelgunWrapper = require('./labelgun_wrapper');
 
 var routes = [];
 
@@ -146,12 +145,7 @@ var _clearSolution = function() {
     LSetup.map.removeControl(snakeControl);
 
     routes = [];
-    // Remove all numbered tooltips.
-    for (var k in data.jobsMarkers) {
-      if (data.jobsMarkers[k].getTooltip()) {
-        LSetup.map.removeLayer(data.jobsMarkers[k].getTooltip());
-      }
-    }
+
     // Remove query output for this solution.
     delete data.output;
   }
@@ -606,16 +600,6 @@ var _addRoute = function(route) {
 
       data.jobsMarkers[jobId].setStyle({color: routeColor});
 
-      // Set numbered label on marker.
-      data.jobsMarkers[jobId].bindTooltip(jobRank.toString(),{
-        direction: 'auto',
-        permanent: true,
-        opacity: LSetup.labelOpacity,
-        className: 'rank'
-      }).openTooltip();
-
-      labelgunWrapper.addLabel(data.jobsMarkers[jobId], jobRank);
-
       // Add to solution display
       var nb_rows = solutionList.rows.length;
       var row = solutionList.insertRow(nb_rows);
@@ -643,14 +627,11 @@ var _addRoute = function(route) {
 }
 
 var addRoutes = function(routes) {
-  labelgunWrapper.destroy();
-
   for (var i = 0; i < routes.length; ++i) {
     _addRoute(routes[i]);
   }
 
   fitView();
-  labelgunWrapper.update();
 }
 
 var animateRoute = function() {
@@ -695,27 +676,6 @@ LSetup.map.on('animate', animateRoute);
 LSetup.map.on('collapse', function() {
   LSetup.map.collapseControl.toggle();
   LSetup.map.panelControl.toggle();
-});
-
-var resetLabels = function() {
-  labelgunWrapper.destroy();
-
-  for (var k in data.jobsMarkers) {
-    if (data.jobsMarkers[k].getTooltip()) {
-      var jobRank = parseInt(data.jobsMarkers[k].getTooltip()._content);
-      labelgunWrapper.addLabel(data.jobsMarkers[k], jobRank);
-    }
-  }
-
-  labelgunWrapper.update();
-}
-
-LSetup.map.on({
-  zoomend: function() {
-    if (hasSolution()) {
-      resetLabels();
-    }
-  }
 });
 
 /*** end Events ***/
