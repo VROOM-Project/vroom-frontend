@@ -466,7 +466,7 @@ var _removeJob = function(j) {
 }
 
 var _removeStart = function(v) {
-  var allowRemoval = v.end;
+  var allowRemoval = (data.vehicles.length > 1) || v.end;
   if (allowRemoval) {
     _clearSolution();
 
@@ -475,22 +475,26 @@ var _removeStart = function(v) {
 
     for (var i = 0; i < data.vehicles.length; i++) {
       if (data.vehicles[i].id == v.id) {
-        console.log('remove start');
         delete data.vehicles[i].start;
         delete data.vehicles[i].startDescription;
+        if (!v.end) {
+          var vTable = document.getElementById('panel-vehicles-' + v.id.toString());
+          vTable.parentNode.removeChild(vTable);
+          data.vehicles.splice(i, 1);
+        }
         break;
       }
     }
 
     _recomputeBounds();
   } else {
-    alert('Can\'t delete both start and end.');
+    alert('Can\'t delete both start and end with a single vehicle.');
   }
   return allowRemoval;
 }
 
 var _removeEnd = function(v) {
-  var allowRemoval = v.start;
+  var allowRemoval = (data.vehicles.length > 1) || v.start;
   if (allowRemoval) {
     _clearSolution();
 
@@ -501,13 +505,18 @@ var _removeEnd = function(v) {
       if (data.vehicles[i].id == v.id) {
         delete data.vehicles[i].end;
         delete data.vehicles[i].endDescription;
+        if (!v.start) {
+          var vTable = document.getElementById('panel-vehicles-' + v.id.toString());
+          vTable.parentNode.removeChild(vTable);
+          data.vehicles.splice(i, 1);
+        }
         break;
       }
     }
 
     _recomputeBounds();
   } else {
-    alert('Can\'t delete both start and end.');
+    alert('Can\'t delete both start and end with a single vehicle.');
   }
   return allowRemoval;
 }
