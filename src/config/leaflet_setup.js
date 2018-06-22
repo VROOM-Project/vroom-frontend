@@ -60,7 +60,6 @@ module.exports = {
   opacity: 0.6,
   labelOpacity: 0.9,
   weight: 8,
-  snakingSpeed: 800,
   routeColors: routeColors,
   startColor: '#48b605',
   endColor: '#e9130a',

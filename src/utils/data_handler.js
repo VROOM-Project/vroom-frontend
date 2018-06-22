@@ -2,7 +2,6 @@
 
 var LSetup = require('../config/leaflet_setup');
 var api = require('../config/api');
-require('leaflet.polyline.snakeanim');
 
 var polyUtil = require('@mapbox/polyline');
 var data = require('../data');
@@ -12,7 +11,6 @@ var fitControl = require('../controls/fit');
 var clearControl = require('../controls/clear');
 var solveControl = require('../controls/solve');
 var summaryControl = require('../controls/summary');
-var snakeControl = require('../controls/snake');
 
 var routes = [];
 
@@ -66,7 +64,6 @@ var checkControls = function() {
   if (hasSolution()) {
     LSetup.map.removeControl(solveControl);
     LSetup.map.addControl(summaryControl);
-    LSetup.map.addControl(snakeControl);
   }
 }
 
@@ -142,7 +139,6 @@ var _clearSolution = function() {
       });
     }
     LSetup.map.removeControl(summaryControl);
-    LSetup.map.removeControl(snakeControl);
 
     routes = [];
 
@@ -556,8 +552,7 @@ var _addRoute = function(route) {
   var path = new L.Polyline(latlngs, {
     opacity: LSetup.opacity,
     weight: LSetup.weight,
-    color: routeColor,
-    snakingSpeed: LSetup.snakingSpeed}).addTo(LSetup.map);
+    color: routeColor}).addTo(LSetup.map);
   path.bindPopup('Vehicle ' + route.vehicle.toString());
 
   data.bounds.extend(latlngs);
@@ -634,13 +629,6 @@ var addRoutes = function(routes) {
   fitView();
 }
 
-var animateRoute = function() {
-  closeAllPopups();
-  for (var i = 0; i < routes.length; ++i) {
-    routes[i].snakeIn();
-  }
-}
-
 /*** Events ***/
 
 // Fit event.
@@ -661,16 +649,11 @@ LSetup.map.on('clear', function() {
   if (LSetup.map.summaryControl) {
     LSetup.map.removeControl(LSetup.map.summaryControl);
   }
-  if (LSetup.map.snakeControl) {
-    LSetup.map.removeControl(LSetup.map.snakeControl);
-  }
   clearData();
 
   // Delete locations display in the right panel.
   LSetup.map.panelControl.clearDisplay();
 });
-
-LSetup.map.on('animate', animateRoute);
 
 // Collapse panel.
 LSetup.map.on('collapse', function() {
@@ -719,7 +702,6 @@ module.exports = {
   markUnassigned: markUnassigned,
   addJob: addJob,
   checkControls: checkControls,
-  animateRoute: animateRoute,
   setData: setData,
   setSolution: setSolution
 };
