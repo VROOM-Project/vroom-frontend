@@ -133,7 +133,15 @@ var _clearSolution = function() {
     panelControl.clearSolutionDisplay();
     panelControl.showJobDisplay();
 
-    LSetup.map.removeLayer(routes[0]);
+    for (var i = 0; i < routes.length; ++i) {
+      LSetup.map.removeLayer(routes[i]);
+    }
+    for (var k in data.jobsMarkers) {
+      data.jobsMarkers[k].setStyle({
+        color: LSetup.jobColor,
+        radius: LSetup.jobRadius,
+      });
+    }
     LSetup.map.removeControl(summaryControl);
     LSetup.map.removeControl(snakeControl);
 
@@ -189,6 +197,7 @@ var _setStart = function(v) {
 
   vTable.deleteRow(1);
   var row = vTable.insertRow(1);
+  row.setAttribute('class', 'panel-table');
   var idCell = row.insertCell(0);
 
   var remove = function() {
@@ -203,17 +212,17 @@ var _setStart = function(v) {
     }
   }
   idCell.setAttribute('class', 'delete-location');
-  idCell.title = "Click to delete";
+  idCell.title = 'Click to delete';
   idCell.onclick = remove;
 
   // Required when parsing json files with no start description.
   if (!v.startDescription) {
-    v.startDescription = "Start";
+    v.startDescription = 'Start';
   }
 
   var nameCell = row.insertCell(1);
-  nameCell.title = "Click to center the map";
-  nameCell.setAttribute("class", "vehicle-start");
+  nameCell.title = 'Click to center the map';
+  nameCell.setAttribute('class', 'vehicle-start');
   nameCell.appendChild(document.createTextNode(v.startDescription));
   nameCell.onclick = function() {
     _showStart(v, true);
@@ -226,13 +235,13 @@ var _setStart = function(v) {
                        radius: 8,
                        weight: 3,
                        fillOpacity: 0.4,
-                       color: '#48b605'
+                       color: LSetup.startColor
                      })
     .addTo(LSetup.map);
 
   var popupDiv = document.createElement('div');
   var par = document.createElement('p');
-  par.innerHTML = "<b>Vehicle " + v.id.toString() + ": </b>" + v.startDescription;
+  par.innerHTML = '<b>Vehicle ' + v.id.toString() + ': </b>' + v.startDescription;
   var deleteButton = document.createElement('button');
   deleteButton.innerHTML = 'Delete start';
   deleteButton.onclick = remove;
@@ -249,6 +258,7 @@ var _setEnd = function(v) {
 
   vTable.deleteRow(2);
   var row = vTable.insertRow(2);
+  row.setAttribute('class', 'panel-table');
   var idCell = row.insertCell(0);
 
   var remove = function() {
@@ -263,17 +273,17 @@ var _setEnd = function(v) {
     }
   }
   idCell.setAttribute('class', 'delete-location');
-  idCell.title = "Click to delete";
+  idCell.title = 'Click to delete';
   idCell.onclick = remove;
 
   // Required when parsing json files with no end description.
   if (!v.endDescription) {
-    v.endDescription = "End";
+    v.endDescription = 'End';
   }
 
   var nameCell = row.insertCell(1);
-  nameCell.title = "Click to center the map";
-  nameCell.setAttribute("class", "vehicle-end");
+  nameCell.title = 'Click to center the map';
+  nameCell.setAttribute('class', 'vehicle-end');
   nameCell.appendChild(document.createTextNode(v.endDescription));
   nameCell.onclick = function() {
     _showEnd(v, true);
@@ -286,13 +296,13 @@ var _setEnd = function(v) {
                        radius: 8,
                        weight: 3,
                        fillOpacity: 0.4,
-                       color: '#e9130a'
+                       color: LSetup.endColor
                      })
     .addTo(LSetup.map);
 
   var popupDiv = document.createElement('div');
   var par = document.createElement('p');
-  par.innerHTML =  "<b>Vehicle " + v.id.toString() + ": </b>" + v.endDescription;
+  par.innerHTML =  '<b>Vehicle ' + v.id.toString() + ': </b>' + v.endDescription;
   var deleteButton = document.createElement('button');
   deleteButton.innerHTML = 'Delete end';
   deleteButton.onclick = remove;
@@ -321,9 +331,9 @@ var addVehicle = function(v) {
     var row = vTable.insertRow(0);
 
     var titleCell = row.insertCell(0);
-    titleCell.setAttribute("class", "vehicle-title");
-    titleCell.setAttribute("colspan", 2);
-    titleCell.appendChild(document.createTextNode("Vehicle " + v.id.toString()));
+    titleCell.setAttribute('class', 'vehicle-title');
+    titleCell.setAttribute('colspan', 2);
+    titleCell.appendChild(document.createTextNode('Vehicle ' + v.id.toString()));
 
     vTable.insertRow(1);
     vTable.insertRow(2);
@@ -356,17 +366,17 @@ var _jobDisplay = function(j) {
     checkControls();
   }
   idCell.setAttribute('class', 'delete-location');
-  idCell.title = "Click to delete";
+  idCell.title = 'Click to delete';
   idCell.onclick = remove;
 
   // Required when parsing json files containing jobs with no
   // description.
   if (!j.description) {
-    j.description = "No description";
+    j.description = 'No description';
   }
 
   var nameCell = row.insertCell(1);
-  nameCell.title = "Click to center the map";
+  nameCell.title = 'Click to center the map';
   nameCell.appendChild(document.createTextNode(j.description));
   nameCell.onclick = function() {
     _showMarker(j, true);
@@ -431,9 +441,10 @@ var addJob = function(j) {
   data.jobsMarkers[j.id.toString()]
     = L.circleMarker([j.location[1], j.location[0]],
                      {
-                       radius: 6,
+                       radius: LSetup.jobRadius,
                        weight: 3,
-                       fillOpacity: 0.4
+                       fillOpacity: 0.4,
+                       color: LSetup.jobColor
                      })
     .addTo(LSetup.map);
 
@@ -464,15 +475,16 @@ var _removeStart = function(v) {
 
     for (var i = 0; i < data.vehicles.length; i++) {
       if (data.vehicles[i].id == v.id) {
-        delete data.vehicles.start;
-        delete data.vehicles.startDescription;
+        console.log('remove start');
+        delete data.vehicles[i].start;
+        delete data.vehicles[i].startDescription;
         break;
       }
     }
 
     _recomputeBounds();
   } else {
-    alert("Can't delete both start and end.");
+    alert('Can\'t delete both start and end.');
   }
   return allowRemoval;
 }
@@ -495,7 +507,7 @@ var _removeEnd = function(v) {
 
     _recomputeBounds();
   } else {
-    alert("Can't delete both start and end.");
+    alert('Can\'t delete both start and end.');
   }
   return allowRemoval;
 }
@@ -532,21 +544,52 @@ var getOutput = function() {
   return data.output;
 }
 
-var addRoute = function(route) {
+var markUnassigned = function(unassigned) {
+  for (var i = 0; i < unassigned.length; ++i) {
+    data.jobsMarkers[unassigned[i].id.toString()]
+      .setStyle({
+        color: LSetup.unassignedColor,
+        radius: LSetup.unassignedRadius,
+      });
+  }
+}
+
+var _addRoute = function(route) {
   var latlngs = polyUtil.decode(route['geometry']);
+
+  var routeColor = LSetup.routeColors[route.vehicle % LSetup.routeColors.length];
 
   var path = new L.Polyline(latlngs, {
     opacity: LSetup.opacity,
     weight: LSetup.weight,
+    color: routeColor,
     snakingSpeed: LSetup.snakingSpeed}).addTo(LSetup.map);
+  path.bindPopup('Vehicle ' + route.vehicle.toString());
 
   data.bounds.extend(latlngs);
-  fitView();
 
   // Hide input job display.
   panelControl.hideJobDisplay();
 
   var solutionList = document.getElementById('panel-solution');
+
+  // Add vehicle to solution display
+  var nb_rows = solutionList.rows.length;
+  var row = solutionList.insertRow(nb_rows);
+  row.title = 'Click to center the map';
+
+  row.onclick = function() {
+    path.openPopup()
+    LSetup.map.fitBounds(L.latLngBounds(latlngs), {
+      paddingBottomRight: [panelControl.getWidth(), 0],
+      paddingTopLeft: [50, 0],
+    });
+  }
+
+  var vCell = row.insertCell(0);
+  vCell.setAttribute('class', 'vehicle-title');
+  vCell.setAttribute('colspan', 2);
+  vCell.appendChild(document.createTextNode('Vehicle ' + route.vehicle.toString()));
 
   var jobIdToRank = {}
   for (var i = 0; i < data.jobs.length; i++) {
@@ -556,10 +599,13 @@ var addRoute = function(route) {
   var jobRank = 0;
   for (var i = 0; i < route.steps.length; i++) {
     var step = route.steps[i];
-    if (step.type === "job") {
+    if (step.type === 'job') {
       jobRank++;
 
       var jobId = step.job.toString();
+
+      data.jobsMarkers[jobId].setStyle({color: routeColor});
+
       // Set numbered label on marker.
       data.jobsMarkers[jobId].bindTooltip(jobRank.toString(),{
         direction: 'auto',
@@ -573,7 +619,7 @@ var addRoute = function(route) {
       // Add to solution display
       var nb_rows = solutionList.rows.length;
       var row = solutionList.insertRow(nb_rows);
-      row.title = "Click to center the map";
+      row.title = 'Click to center the map';
 
       // Hack to make sure the marker index is right.
       var showCallback = function(rank) {
@@ -591,15 +637,27 @@ var addRoute = function(route) {
       );
     }
   }
-  labelgunWrapper.update();
 
   // Remember the path. This will cause hasSolution() to return true.
   routes.push(path);
 }
 
+var addRoutes = function(routes) {
+  labelgunWrapper.destroy();
+
+  for (var i = 0; i < routes.length; ++i) {
+    _addRoute(routes[i]);
+  }
+
+  fitView();
+  labelgunWrapper.update();
+}
+
 var animateRoute = function() {
   closeAllPopups();
-  routes[0].snakeIn();
+  for (var i = 0; i < routes.length; ++i) {
+    routes[i].snakeIn();
+  }
 }
 
 /*** Events ***/
@@ -690,7 +748,7 @@ module.exports = {
   getVehicles: getVehicles,
   setOutput: setOutput,
   getOutput: getOutput,
-  addRoute: addRoute,
+  addRoutes: addRoutes,
   getJobsSize: getJobsSize,
   getNextJobId: getNextJobId,
   getNextVehicleId: getNextVehicleId,
@@ -698,6 +756,7 @@ module.exports = {
   isFirstPlace: isFirstPlace,
   firstPlaceSet: firstPlaceSet,
   addVehicle: addVehicle,
+  markUnassigned: markUnassigned,
   addJob: addJob,
   checkControls: checkControls,
   animateRoute: animateRoute,

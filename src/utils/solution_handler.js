@@ -43,7 +43,8 @@ var plotSolution = function() {
     return;
   }
 
-  dataHandler.addRoute(result.routes[0]);
+  dataHandler.markUnassigned(result.unassigned);
+  dataHandler.addRoutes(result.routes);
   dataHandler.checkControls();
   summaryControl.update(result);
 }

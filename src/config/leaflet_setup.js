@@ -31,6 +31,26 @@ var map = L.map('map', {layers: [tileLayer]})
     .setMaxBounds(maxBounds)
     .setMinZoom(minZoom);
 
+// Palette borrowed from https://clrs.cc/
+var routeColors = [
+  '#FF851B',   // orange
+  '#0074D9',   // blue
+  '#B10DC9',   // purple
+  '#2ECC40',   // green
+  // '#111111',   // black
+  '#7FDBFF',   // aqua
+  '#FFDC00',   // yellow
+  '#F012BE',   // fuchsia
+  '#01FF70',   // lime
+  '#AAAAAA',   // gray
+  '#001f3f',   // navy
+  '#FF4136',   // red
+  '#85144b',   // maroon
+  '#3D9970',   // olive
+  '#DDDDDD',   // silver
+  '#39CCCC',   // teal
+];
+
 module.exports = {
   map: map,
   maxBounds: maxBounds,
@@ -40,5 +60,12 @@ module.exports = {
   opacity: 0.6,
   labelOpacity: 0.9,
   weight: 8,
-  snakingSpeed: 800
+  snakingSpeed: 800,
+  routeColors: routeColors,
+  startColor: '#48b605',
+  endColor: '#e9130a',
+  jobColor: '#3388ff',
+  jobRadius: 6,
+  unassignedColor: '#111111',
+  unassignedRadius: 8
 };
