@@ -563,86 +563,83 @@ var markUnassigned = function(unassigned) {
   }
 }
 
-var _addRoute = function(route) {
-  var latlngs = polyUtil.decode(route['geometry']);
+var addRoutes = function(resultRoutes) {
 
-  var routeColor = LSetup.routeColors[route.vehicle % LSetup.routeColors.length];
+  for (var i = 0; i < resultRoutes.length; ++i) {
+    var latlngs = polyUtil.decode(resultRoutes[i]['geometry']);
 
-  var path = new L.Polyline(latlngs, {
-    opacity: LSetup.opacity,
-    weight: LSetup.weight,
-    color: routeColor}).addTo(LSetup.map);
-  path.bindPopup('Vehicle ' + route.vehicle.toString());
+    var routeColor = LSetup.routeColors[i % LSetup.routeColors.length];
 
-  data.bounds.extend(latlngs);
+    var path = new L.Polyline(latlngs, {
+      opacity: LSetup.opacity,
+      weight: LSetup.weight,
+      color: routeColor}).addTo(LSetup.map);
+    path.bindPopup('Vehicle ' + resultRoutes[i].vehicle.toString());
 
-  // Hide input job display.
-  panelControl.hideJobDisplay();
+    data.bounds.extend(latlngs);
 
-  var solutionList = document.getElementById('panel-solution');
+    // Hide input job display.
+    panelControl.hideJobDisplay();
 
-  // Add vehicle to solution display
-  var nb_rows = solutionList.rows.length;
-  var row = solutionList.insertRow(nb_rows);
-  row.title = 'Click to center the map';
+    var solutionList = document.getElementById('panel-solution');
 
-  row.onclick = function() {
-    path.openPopup()
-    LSetup.map.fitBounds(L.latLngBounds(latlngs), {
-      paddingBottomRight: [panelControl.getWidth(), 0],
-      paddingTopLeft: [50, 0],
-    });
-  }
+    // Add vehicle to solution display
+    var nb_rows = solutionList.rows.length;
+    var row = solutionList.insertRow(nb_rows);
+    row.title = 'Click to center the map';
 
-  var vCell = row.insertCell(0);
-  vCell.setAttribute('class', 'vehicle-title');
-  vCell.setAttribute('colspan', 2);
-  vCell.appendChild(document.createTextNode('Vehicle ' + route.vehicle.toString()));
-
-  var jobIdToRank = {}
-  for (var i = 0; i < data.jobs.length; i++) {
-    jobIdToRank[data.jobs[i].id.toString()] = i;
-  }
-
-  var jobRank = 0;
-  for (var i = 0; i < route.steps.length; i++) {
-    var step = route.steps[i];
-    if (step.type === 'job') {
-      jobRank++;
-
-      var jobId = step.job.toString();
-
-      data.jobsMarkers[jobId].setStyle({color: routeColor});
-
-      // Add to solution display
-      var nb_rows = solutionList.rows.length;
-      var row = solutionList.insertRow(nb_rows);
-      row.title = 'Click to center the map';
-
-      // Hack to make sure the marker index is right.
-      var showCallback = function(rank) {
-        return function() {_showMarker(data.jobs[rank], true);};
-      }
-      row.onclick = showCallback(jobIdToRank[jobId]);
-
-      var idCell = row.insertCell(0);
-      idCell.setAttribute('class', 'rank solution-display');
-      idCell.innerHTML = jobRank;
-
-      var nameCell = row.insertCell(1);
-      nameCell.appendChild(
-        document.createTextNode(data.jobs[jobIdToRank[jobId]].description)
-      );
+    row.onclick = function() {
+      path.openPopup()
+      LSetup.map.fitBounds(L.latLngBounds(latlngs), {
+        paddingBottomRight: [panelControl.getWidth(), 0],
+        paddingTopLeft: [50, 0],
+      });
     }
-  }
 
-  // Remember the path. This will cause hasSolution() to return true.
-  routes.push(path);
-}
+    var vCell = row.insertCell(0);
+    vCell.setAttribute('class', 'vehicle-title');
+    vCell.setAttribute('colspan', 2);
+    vCell.appendChild(document.createTextNode('Vehicle ' + resultRoutes[i].vehicle.toString()));
 
-var addRoutes = function(routes) {
-  for (var i = 0; i < routes.length; ++i) {
-    _addRoute(routes[i]);
+    var jobIdToRank = {}
+    for (var j = 0; j < data.jobs.length; j++) {
+      jobIdToRank[data.jobs[j].id.toString()] = j;
+    }
+
+    var jobRank = 0;
+    for (var s = 0; s < resultRoutes[i].steps.length; s++) {
+      var step = resultRoutes[i].steps[s];
+      if (step.type === 'job') {
+        jobRank++;
+
+        var jobId = step.job.toString();
+
+        data.jobsMarkers[jobId].setStyle({color: routeColor});
+
+        // Add to solution display
+        var nb_rows = solutionList.rows.length;
+        var row = solutionList.insertRow(nb_rows);
+        row.title = 'Click to center the map';
+
+        // Hack to make sure the marker index is right.
+        var showCallback = function(rank) {
+          return function() {_showMarker(data.jobs[rank], true);};
+        }
+        row.onclick = showCallback(jobIdToRank[jobId]);
+
+        var idCell = row.insertCell(0);
+        idCell.setAttribute('class', 'rank solution-display');
+        idCell.innerHTML = jobRank;
+
+        var nameCell = row.insertCell(1);
+        nameCell.appendChild(
+          document.createTextNode(data.jobs[jobIdToRank[jobId]].description)
+        );
+      }
+    }
+
+    // Remember the path. This will cause hasSolution() to return true.
+    routes.push(path);
   }
 
   fitView();

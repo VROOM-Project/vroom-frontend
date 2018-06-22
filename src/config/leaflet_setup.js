@@ -33,8 +33,8 @@ var map = L.map('map', {layers: [tileLayer]})
 
 // Palette borrowed from https://clrs.cc/
 var routeColors = [
-  '#FF851B',   // orange
   '#0074D9',   // blue
+  '#FF851B',   // orange
   '#B10DC9',   // purple
   '#2ECC40',   // green
   // '#111111',   // black
