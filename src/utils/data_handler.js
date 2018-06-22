@@ -185,17 +185,17 @@ var closeAllPopups = function() {
 }
 
 var _setStart = function(v) {
-  var panelList = document.getElementById('panel-vehicle');
+  var vTable = document.getElementById('panel-vehicles-' + v.id.toString());
 
-  panelList.deleteRow(0);
-  var row = panelList.insertRow(0);
+  vTable.deleteRow(1);
+  var row = vTable.insertRow(1);
   var idCell = row.insertCell(0);
 
   var remove = function() {
     if (_removeStart(v)) {
       // Reset start row when removing is ok.
-      panelList.deleteRow(0);
-      panelList.insertRow(0);
+      vTable.deleteRow(1);
+      vTable.insertRow(1);
       if (getJobsSize() === 0 && getVehiclesSize() === 0) {
         LSetup.map.removeControl(clearControl);
       }
@@ -232,7 +232,7 @@ var _setStart = function(v) {
 
   var popupDiv = document.createElement('div');
   var par = document.createElement('p');
-  par.innerHTML = v.startDescription;
+  par.innerHTML = "<b>Vehicle " + v.id.toString() + ": </b>" + v.startDescription;
   var deleteButton = document.createElement('button');
   deleteButton.innerHTML = 'Delete start';
   deleteButton.onclick = remove;
@@ -245,17 +245,17 @@ var _setStart = function(v) {
 }
 
 var _setEnd = function(v) {
-  var panelList = document.getElementById('panel-vehicle');
+  var vTable = document.getElementById('panel-vehicles-' + v.id.toString());
 
-  panelList.deleteRow(1);
-  var row = panelList.insertRow(1);
+  vTable.deleteRow(2);
+  var row = vTable.insertRow(2);
   var idCell = row.insertCell(0);
 
   var remove = function() {
     if (_removeEnd(v)) {
       // Reset end row when removing is ok.
-      panelList.deleteRow(1);
-      panelList.insertRow(1);
+      vTable.deleteRow(2);
+      vTable.insertRow(2);
       if (getJobsSize() === 0 && getVehiclesSize() === 0) {
         LSetup.map.removeControl(clearControl);
       }
@@ -292,7 +292,7 @@ var _setEnd = function(v) {
 
   var popupDiv = document.createElement('div');
   var par = document.createElement('p');
-  par.innerHTML = v.endDescription;
+  par.innerHTML =  "<b>Vehicle " + v.id.toString() + ": </b>" + v.endDescription;
   var deleteButton = document.createElement('button');
   deleteButton.innerHTML = 'Delete end';
   deleteButton.onclick = remove;
@@ -309,6 +309,26 @@ var addVehicle = function(v) {
   data.vehicles.push(v);
 
   data.maxVehicleId = Math.max(data.maxVehicleId, v.id);
+
+  var tableId = 'panel-vehicles-' + v.id.toString();
+  var vTable = document.getElementById(tableId);
+  if (!vTable) {
+    // Create new table for current vehicle.
+    vTable = document.createElement('table');
+    vTable.setAttribute('id', tableId);
+
+    // Set title.
+    var row = vTable.insertRow(0);
+
+    var titleCell = row.insertCell(0);
+    titleCell.setAttribute("class", "vehicle-title");
+    titleCell.setAttribute("colspan", 2);
+    titleCell.appendChild(document.createTextNode("Vehicle " + v.id.toString()));
+
+    vTable.insertRow(1);
+    vTable.insertRow(2);
+    document.getElementById('panel-vehicles').appendChild(vTable);
+  }
 
   if (v.start) {
     _pushToBounds(v.start);

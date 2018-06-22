@@ -113,6 +113,11 @@
     font-size: 14px;
 }
 
+.vehicle-title{
+    font-size: 18px;
+    font-weight: bold;
+}
+
 .vehicle-start{
     border-style: solid;
     border-width: 0px 0px 0px 6px;
