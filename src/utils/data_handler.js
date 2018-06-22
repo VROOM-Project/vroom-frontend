@@ -150,6 +150,8 @@ var _clearSolution = function() {
 var clearData = function() {
   // Back to adding a start/end for next place.
   _firstPlace = true;
+  data.maxJobId = 0;
+  data.maxVehicleId = 0;
 
   // Clear all data and markers.
   for (var k in data.jobsMarkers) {
@@ -320,9 +322,17 @@ var addVehicle = function(v) {
     // Set title.
     var row = vTable.insertRow(0);
 
-    var titleCell = row.insertCell(0);
+    var cloneCell = row.insertCell(0);
+    cloneCell.setAttribute('class', 'panel-table clone-vehicle');
+    cloneCell.setAttribute('title', 'Clone this vehicle');
+    cloneCell.onclick = function() {
+      var v_copy = JSON.parse(JSON.stringify(v));
+      v_copy.id = getNextVehicleId();
+      addVehicle(v_copy);
+    }
+
+    var titleCell = row.insertCell(1);
     titleCell.setAttribute('class', 'vehicle-title');
-    titleCell.setAttribute('colspan', 2);
     titleCell.appendChild(document.createTextNode('Vehicle ' + v.id.toString()));
 
     vTable.insertRow(1);
