@@ -588,13 +588,17 @@ var addRoutes = function(resultRoutes) {
     var row = solutionList.insertRow(nb_rows);
     row.title = 'Click to center the map';
 
-    row.onclick = function() {
-      path.openPopup()
-      LSetup.map.fitBounds(L.latLngBounds(latlngs), {
-        paddingBottomRight: [panelControl.getWidth(), 0],
-        paddingTopLeft: [50, 0],
-      });
-    }
+    var showRoute = function (r) {
+      return function() {
+        routes[r].openPopup()
+        LSetup.map.fitBounds(routes[r].getBounds(), {
+          paddingBottomRight: [panelControl.getWidth(), 0],
+          paddingTopLeft: [50, 0],
+        });
+      }
+    };
+
+    row.onclick = showRoute(i);
 
     var vCell = row.insertCell(0);
     vCell.setAttribute('class', 'vehicle-title');
