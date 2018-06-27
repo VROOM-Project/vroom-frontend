@@ -235,7 +235,7 @@ var _setStart = function(v) {
   var par = document.createElement('p');
   par.innerHTML = '<b>Vehicle ' + v.id.toString() + ': </b>' + v.startDescription;
   var deleteButton = document.createElement('button');
-  deleteButton.innerHTML = 'Delete start';
+  deleteButton.innerHTML = 'Delete';
   deleteButton.onclick = remove;
   popupDiv.appendChild(par);
   popupDiv.appendChild(deleteButton);
@@ -296,7 +296,7 @@ var _setEnd = function(v) {
   var par = document.createElement('p');
   par.innerHTML =  '<b>Vehicle ' + v.id.toString() + ': </b>' + v.endDescription;
   var deleteButton = document.createElement('button');
-  deleteButton.innerHTML = 'Delete end';
+  deleteButton.innerHTML = 'Delete';
   deleteButton.onclick = remove;
   popupDiv.appendChild(par);
   popupDiv.appendChild(deleteButton);
@@ -349,6 +349,8 @@ var addVehicle = function(v) {
     _pushToBounds(v.end);
     _setEnd(v);
   }
+
+  _updateAllJobPopups();
 }
 
 var _jobDisplay = function(j) {
@@ -356,19 +358,14 @@ var _jobDisplay = function(j) {
 
   var nb_rows = panelList.rows.length;
   var row = panelList.insertRow(nb_rows);
+  row.setAttribute('id', 'job-' + j.id.toString());
   var idCell = row.insertCell(0);
 
-  var remove = function() {
-    _removeJob(j);
-    panelList.deleteRow(row.rowIndex);
-    if (getJobsSize() === 0 && getVehiclesSize() === 0) {
-      LSetup.map.removeControl(clearControl);
-    }
-    checkControls();
-  }
   idCell.setAttribute('class', 'delete-location');
   idCell.title = 'Click to delete';
-  idCell.onclick = remove;
+  idCell.onclick = function() {
+    _removeJob(j);
+  };
 
   // Required when parsing json files containing jobs with no
   // description.
@@ -380,52 +377,100 @@ var _jobDisplay = function(j) {
   nameCell.title = 'Click to center the map';
   nameCell.appendChild(document.createTextNode(j.description));
   nameCell.onclick = function() {
-    _showMarker(j, true);
+    _openJobPopup(j);
+    _centerJob(j);
   };
-  // Callbacks to replace current start or end by this job.
-  var setAsStart = function() {
-    var marker = data.vehicles[0].id.toString() + '_start';
-    LSetup.map.removeLayer(data.vehiclesMarkers[marker]);
-    delete data.vehiclesMarkers[marker];
-    data.vehicles[0].start = j.location;
-    data.vehicles[0].startDescription = j.description;
-    _setStart(data.vehicles[0]);
 
-    _removeJob(j);
-    panelList.deleteRow(row.rowIndex);
-    checkControls();
-  }
-  var setAsEnd = function() {
-    var marker = data.vehicles[0].id.toString() + '_end';
-    LSetup.map.removeLayer(data.vehiclesMarkers[marker]);
-    delete data.vehiclesMarkers[marker];
-    data.vehicles[0].end = j.location;
-    data.vehicles[0].endDescription = j.description;
-    _setEnd(data.vehicles[0]);
+  _handleJobPopup(j);
+  _openJobPopup(j);
+}
 
-    _removeJob(j);
-    panelList.deleteRow(row.rowIndex);
-    checkControls();
-  }
-  // Add description to job and marker.
+var _setAsStart = function(vRank, j) {
+  var marker = data.vehicles[vRank].id.toString() + '_start';
+  LSetup.map.removeLayer(data.vehiclesMarkers[marker]);
+  delete data.vehiclesMarkers[marker];
+
+  data.vehicles[vRank].start = j.location;
+  data.vehicles[vRank].startDescription = j.description;
+  _setStart(data.vehicles[vRank]);
+
+  _removeJob(j);
+};
+
+var _setAsEnd = function(vRank, j) {
+  var marker = data.vehicles[vRank].id.toString() + '_end';
+  LSetup.map.removeLayer(data.vehiclesMarkers[marker]);
+  delete data.vehiclesMarkers[marker];
+
+  data.vehicles[vRank].end = j.location;
+  data.vehicles[vRank].endDescription = j.description;
+  _setEnd(data.vehicles[vRank]);
+
+  _removeJob(j);
+};
+
+var _handleJobPopup = function(j) {
   var popupDiv = document.createElement('div');
   var par = document.createElement('p');
   par.innerHTML = j.description;
   var deleteButton = document.createElement('button');
   deleteButton.innerHTML = 'Delete';
-  deleteButton.onclick = remove;
-  var asStartButton = document.createElement('button');
-  asStartButton.innerHTML = 'Set as start';
-  asStartButton.onclick = setAsStart;
-  var asEndButton = document.createElement('button');
-  asEndButton.innerHTML = 'Set as end';
-  asEndButton.onclick = setAsEnd;
+  deleteButton.onclick = function() {
+    _removeJob(j);
+  };
+
+  var startSelect = document.createElement('select');
+  var startHeadOption = document.createElement('option');
+  startHeadOption.innerHTML = "Start for vehicle";
+  startHeadOption.selected = true;
+  startHeadOption.disabled = true;
+  startSelect.appendChild(startHeadOption);
+
+  var endSelect = document.createElement('select');
+  var endHeadOption = document.createElement('option');
+  endHeadOption.innerHTML = "End for vehicle";
+  endHeadOption.selected = true;
+  endHeadOption.disabled = true;
+  endSelect.appendChild(endHeadOption);
+
+  for (var v = 0; v < data.vehicles.length; v++) {
+    var startOption = document.createElement('option');
+    startOption.value = v;
+    startOption.innerHTML = data.vehicles[v].id;
+    startSelect.appendChild(startOption);
+
+    var endOption = document.createElement('option');
+    endOption.value = v;
+    endOption.innerHTML = data.vehicles[v].id;
+    endSelect.appendChild(endOption);
+  }
+  startSelect.onchange = function() {
+    _setAsStart(startSelect.options[startSelect.selectedIndex].value, j);
+  }
+  endSelect.onchange = function() {
+    _setAsEnd(endSelect.options[endSelect.selectedIndex].value, j);
+  }
+
   popupDiv.appendChild(par);
-  popupDiv.appendChild(asStartButton);
-  popupDiv.appendChild(asEndButton);
+  popupDiv.appendChild(startSelect);
+  popupDiv.appendChild(endSelect);
   popupDiv.appendChild(deleteButton);
 
-  data.jobsMarkers[j.id.toString()].bindPopup(popupDiv).openPopup();
+  data.jobsMarkers[j.id.toString()].bindPopup(popupDiv);
+}
+
+var _openJobPopup = function(j) {
+  data.jobsMarkers[j.id.toString()].openPopup();
+}
+
+var _updateAllJobPopups = function() {
+  for (var i = 0; i < data.jobs.length; i++) {
+    _handleJobPopup(data.jobs[i]);
+  }
+}
+
+var _centerJob = function(j) {
+  LSetup.map.panTo(data.jobsMarkers[j.id.toString()].getLatLng());
 }
 
 var addJob = function(j) {
@@ -460,6 +505,12 @@ var _removeJob = function(j) {
   for (var i = 0; i < data.jobs.length; i++) {
     if (data.jobs[i].id == j.id) {
       data.jobs.splice(i, 1);
+      var jobRow = document.getElementById('job-' + j.id.toString());
+      jobRow.parentNode.removeChild(jobRow);
+      if (getJobsSize() === 0 && getVehiclesSize() === 0) {
+        LSetup.map.removeControl(clearControl);
+      }
+      checkControls();
       break;
     }
   }
@@ -482,6 +533,7 @@ var _removeStart = function(v) {
           var vTable = document.getElementById('panel-vehicles-' + v.id.toString());
           vTable.parentNode.removeChild(vTable);
           data.vehicles.splice(i, 1);
+          _updateAllJobPopups();
         }
         break;
       }
@@ -510,6 +562,7 @@ var _removeEnd = function(v) {
           var vTable = document.getElementById('panel-vehicles-' + v.id.toString());
           vTable.parentNode.removeChild(vTable);
           data.vehicles.splice(i, 1);
+          _updateAllJobPopups();
         }
         break;
       }
@@ -520,14 +573,6 @@ var _removeEnd = function(v) {
     alert('Can\'t delete both start and end with a single vehicle.');
   }
   return allowRemoval;
-}
-
-var _showMarker = function(j, center) {
-  var k = j.id.toString();
-  data.jobsMarkers[k].openPopup();
-  if (center) {
-    LSetup.map.panTo(data.jobsMarkers[k].getLatLng());
-  }
 }
 
 var _showStart = function(v, center) {
@@ -628,7 +673,10 @@ var addRoutes = function(resultRoutes) {
 
         // Hack to make sure the marker index is right.
         var showCallback = function(rank) {
-          return function() {_showMarker(data.jobs[rank], true);};
+          return function() {
+            _openJobPopup(data.jobs[rank]);
+            _centerJob(data.jobs[rank]);
+          };
         }
         row.onclick = showCallback(jobIdToRank[jobId]);
 
