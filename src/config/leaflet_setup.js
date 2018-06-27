@@ -38,7 +38,7 @@ var routeColors = [
   '#B10DC9',   // purple
   '#2ECC40',   // green
   // '#111111',   // black
-  '#7FDBFF',   // aqua
+  // '#7FDBFF',   // aqua
   '#FFDC00',   // yellow
   '#F012BE',   // fuchsia
   '#01FF70',   // lime

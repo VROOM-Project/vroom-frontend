@@ -235,7 +235,7 @@ var _setStart = function(v) {
   var par = document.createElement('p');
   par.innerHTML = '<b>Vehicle ' + v.id.toString() + ': </b>' + v.startDescription;
   var deleteButton = document.createElement('button');
-  deleteButton.innerHTML = 'Delete';
+  deleteButton.innerHTML = 'Del';
   deleteButton.onclick = remove;
   popupDiv.appendChild(par);
   popupDiv.appendChild(deleteButton);
@@ -296,7 +296,7 @@ var _setEnd = function(v) {
   var par = document.createElement('p');
   par.innerHTML =  '<b>Vehicle ' + v.id.toString() + ': </b>' + v.endDescription;
   var deleteButton = document.createElement('button');
-  deleteButton.innerHTML = 'Delete';
+  deleteButton.innerHTML = 'Del';
   deleteButton.onclick = remove;
   popupDiv.appendChild(par);
   popupDiv.appendChild(deleteButton);
@@ -414,21 +414,21 @@ var _handleJobPopup = function(j) {
   var par = document.createElement('p');
   par.innerHTML = j.description;
   var deleteButton = document.createElement('button');
-  deleteButton.innerHTML = 'Delete';
+  deleteButton.innerHTML = 'Del';
   deleteButton.onclick = function() {
     _removeJob(j);
   };
 
   var startSelect = document.createElement('select');
   var startHeadOption = document.createElement('option');
-  startHeadOption.innerHTML = "Start for vehicle";
+  startHeadOption.innerHTML = "Start";
   startHeadOption.selected = true;
   startHeadOption.disabled = true;
   startSelect.appendChild(startHeadOption);
 
   var endSelect = document.createElement('select');
   var endHeadOption = document.createElement('option');
-  endHeadOption.innerHTML = "End for vehicle";
+  endHeadOption.innerHTML = "End";
   endHeadOption.selected = true;
   endHeadOption.disabled = true;
   endSelect.appendChild(endHeadOption);
@@ -436,12 +436,12 @@ var _handleJobPopup = function(j) {
   for (var v = 0; v < data.vehicles.length; v++) {
     var startOption = document.createElement('option');
     startOption.value = v;
-    startOption.innerHTML = data.vehicles[v].id;
+    startOption.innerHTML = 'v. ' + data.vehicles[v].id.toString();
     startSelect.appendChild(startOption);
 
     var endOption = document.createElement('option');
     endOption.value = v;
-    endOption.innerHTML = data.vehicles[v].id;
+    endOption.innerHTML = 'v. ' + data.vehicles[v].id.toString();
     endSelect.appendChild(endOption);
   }
   startSelect.onchange = function() {
@@ -451,12 +451,33 @@ var _handleJobPopup = function(j) {
     _setAsEnd(endSelect.options[endSelect.selectedIndex].value, j);
   }
 
+  var optionsDiv = document.createElement('div');
+  optionsDiv.appendChild(startSelect);
+  optionsDiv.appendChild(endSelect);
+  optionsDiv.appendChild(deleteButton);
+
+  var optionsTitle = document.createElement('div');
+  optionsTitle.setAttribute('class', 'job-options');
+  optionsTitle.innerHTML = 'Options >>';
+  optionsTitle.onclick = function() {
+    if (optionsDiv.style.display === 'none') {
+      optionsDiv.style.display = 'flex';
+    } else {
+      optionsDiv.style.display = 'none';
+    }
+    _openJobPopup(j);
+  }
+
   popupDiv.appendChild(par);
-  popupDiv.appendChild(startSelect);
-  popupDiv.appendChild(endSelect);
-  popupDiv.appendChild(deleteButton);
+  popupDiv.appendChild(optionsTitle);
+  popupDiv.appendChild(optionsDiv);
+  optionsDiv.style.display = 'none';
 
   data.jobsMarkers[j.id.toString()].bindPopup(popupDiv);
+
+  data.jobsMarkers[j.id.toString()].on('popupclose', function() {
+    optionsDiv.style.display = 'none';
+  });
 }
 
 var _openJobPopup = function(j) {

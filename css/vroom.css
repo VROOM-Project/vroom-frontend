@@ -120,6 +120,11 @@
     font-size: 14px;
 }
 
+.job-options{
+    font-weight: bold;
+    cursor: pointer;
+}
+
 .vehicle-title{
     font-size: 18px;
     font-weight: bold;
