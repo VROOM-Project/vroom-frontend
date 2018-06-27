@@ -329,6 +329,7 @@ var addVehicle = function(v) {
       var v_copy = JSON.parse(JSON.stringify(v));
       v_copy.id = getNextVehicleId();
       addVehicle(v_copy);
+      checkControls();
     }
 
     var titleCell = row.insertCell(1);
