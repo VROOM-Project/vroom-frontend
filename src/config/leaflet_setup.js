@@ -31,23 +31,20 @@ var map = L.map('map', {layers: [tileLayer]})
     .setMaxBounds(maxBounds)
     .setMinZoom(minZoom);
 
-// Palette borrowed from https://clrs.cc/
+// Palette partly borrowed from https://clrs.cc/
 var routeColors = [
   '#0074D9',   // blue
   '#FF851B',   // orange
   '#B10DC9',   // purple
   '#2ECC40',   // green
-  // '#111111',   // black
-  // '#7FDBFF',   // aqua
   '#FFDC00',   // yellow
   '#F012BE',   // fuchsia
   '#01FF70',   // lime
-  '#AAAAAA',   // gray
+  '#999999'    // gray
   '#001f3f',   // navy
   '#FF4136',   // red
   '#85144b',   // maroon
   '#3D9970',   // olive
-  '#DDDDDD',   // silver
   '#39CCCC',   // teal
 ];
 
