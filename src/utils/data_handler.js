@@ -318,23 +318,30 @@ var addVehicle = function(v) {
     // Create new table for current vehicle.
     vTable = document.createElement('table');
     vTable.setAttribute('id', tableId);
+    vTable.setAttribute('class', 'panel-vehicle');
 
     // Set title.
     var row = vTable.insertRow(0);
 
-    var cloneCell = row.insertCell(0);
-    cloneCell.setAttribute('class', 'panel-table clone-vehicle');
-    cloneCell.setAttribute('title', 'Clone this vehicle');
-    cloneCell.onclick = function() {
+    var titleCell = row.insertCell(0);
+    titleCell.setAttribute('colspan', 2);
+
+    var titleName = document.createElement('span');
+    titleName.setAttribute('class', 'vehicle-title');
+    titleName.appendChild(document.createTextNode('Vehicle ' + v.id.toString()));
+
+    var clone = document.createElement('span');
+    clone.setAttribute('class', 'clone-vehicle');
+    clone.appendChild(document.createTextNode('Clone >>'));
+    clone.onclick = function() {
       var v_copy = JSON.parse(JSON.stringify(v));
       v_copy.id = getNextVehicleId();
       addVehicle(v_copy);
       checkControls();
-    }
+    };
 
-    var titleCell = row.insertCell(1);
-    titleCell.setAttribute('class', 'vehicle-title');
-    titleCell.appendChild(document.createTextNode('Vehicle ' + v.id.toString()));
+    titleCell.appendChild(titleName);
+    titleCell.appendChild(clone);
 
     vTable.insertRow(1);
     vTable.insertRow(2);

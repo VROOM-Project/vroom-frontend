@@ -45,6 +45,10 @@
     overflow: auto;
 }
 
+.panel-vehicle{
+    width: 100%;
+}
+
 .delete-location{
     background-repeat: no-repeat;
     background-size: auto auto;
@@ -57,14 +61,10 @@
 }
 
 .clone-vehicle{
-    background-repeat: no-repeat;
-    background-size: auto auto;
-    background-position: center;
-    width: 24px;
-    height: 18px;
-    margin-top: 0;
-    padding: 5px 2px;
-    background-image: url("../images/fa-icons/clone.svg");
+    font-size: 14px;
+    font-weight: bold;
+    float:right;
+    cursor: pointer;
 }
 
 .custom-control{
