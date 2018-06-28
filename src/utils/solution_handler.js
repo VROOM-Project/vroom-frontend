@@ -5,21 +5,24 @@ var api = require('../config/api');
 var summaryControl = require('../controls/summary');
 
 var solve = function() {
-  // Format json input for solving.
+  // Format json input for solving. Use copies as we might want to
+  // update amounts and capacity without messing initial objects.
   var input = {
-    jobs: dataHandler.getJobs(),
-    vehicles: dataHandler.getVehicles(),
+    jobs: JSON.parse(JSON.stringify(dataHandler.getJobs())),
+    vehicles: JSON.parse(JSON.stringify(dataHandler.getVehicles())),
     "options":{
       "g": true
     }
   };
-  var markers = dataHandler.getJobsMarkers();
-  for (var i = 0; i < input.jobs.length; i++) {
-    // Job id is simply its rank in data.jobs. Remembering this rank
-    // for markers too as it is required for further sorting according
-    // to the solution order.
-    input.jobs[i].id = i;
-    markers[i].id = i;
+
+  if (!input.vehicles[0].capacity) {
+    for (var j = 0; j < input.jobs.length; j++) {
+      input.jobs[j].amount = [1];
+    }
+    var C = Math.ceil(1.2 * input.jobs.length / input.vehicles.length);
+    for (var v = 0; v < input.vehicles.length; v++) {
+      input.vehicles[v].capacity = [C];
+    }
   }
 
   var xhttp = new XMLHttpRequest();
@@ -51,7 +54,8 @@ var plotSolution = function() {
     return;
   }
 
-  dataHandler.addRoute(result.routes[0]);
+  dataHandler.markUnassigned(result.unassigned);
+  dataHandler.addRoutes(result.routes);
   dataHandler.checkControls();
   summaryControl.update(result);
 }

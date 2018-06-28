@@ -18,37 +18,52 @@ var addPlace = function(latlng, name) {
     // Add vehicle start/end.
     dataHandler.firstPlaceSet();
 
-    if (name) {
-      // Add start with provided name.
-      dataHandler.addStart(latlng, name);
-      dataHandler.addEnd(latlng, name);
+    var addVechicleWithName = function(name) {
+      var v = {
+        'id': dataHandler.getNextJobId(),
+        'start': [latlng.lng,latlng.lat],
+        'startDescription': name,
+        'end': [latlng.lng,latlng.lat],
+        'endDescription': name
+      };
+      dataHandler.addVehicle(v);
       dataHandler.checkControls();
+    }
+
+    if (name) {
+      // Add vehicle with provided name for start and end.
+      addVechicleWithName(name)
     } else {
       geocoder.defaultGeocoder.reverse(latlng, LSetup.map.options.crs.scale(19), function(results) {
         var r = results[0];
         if (r) {
-          name = address.display(r);
-          // Add start based on geocoding result.
-          dataHandler.addStart(latlng, name);
-          dataHandler.addEnd(latlng, name);
-          dataHandler.checkControls();
+          // Add vehicle based on geocoding result for start and end.
+          addVechicleWithName(address.display(r));
         }
       });
     }
   } else {
     // Add regular job.
+    var addJobWithName = function(name) {
+      var j = {
+        'id': dataHandler.getNextJobId(),
+        'description': name,
+        'location': [latlng.lng,latlng.lat]
+      };
+
+      dataHandler.addJob(j);
+      dataHandler.checkControls();
+    }
+
     if (name) {
       // Add job with provided name.
-      dataHandler.addJob(latlng, name);
-      dataHandler.checkControls();
+      addJobWithName(name);
     } else {
       geocoder.defaultGeocoder.reverse(latlng, LSetup.map.options.crs.scale(19), function(results) {
         var r = results[0];
         if (r) {
-          name = address.display(r);
           // Add job based on geocoding result.
-          dataHandler.addJob(latlng, name);
-          dataHandler.checkControls();
+          addJobWithName(address.display(r));
         }
       });
     }

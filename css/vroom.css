@@ -45,6 +45,10 @@
     overflow: auto;
 }
 
+.panel-vehicle{
+    width: 100%;
+}
+
 .delete-location{
     background-repeat: no-repeat;
     background-size: auto auto;
@@ -54,6 +58,13 @@
     margin-top: 0;
     padding: 0px 0px;
     background-image: url("../images/fa-icons/delete.svg");
+}
+
+.clone-vehicle{
+    font-size: 14px;
+    font-weight: bold;
+    float:right;
+    cursor: pointer;
 }
 
 .custom-control{
@@ -85,10 +96,6 @@
     background-image: url("../images/fa-icons/cog-alt.svg");
 }
 
-.snake-control{
-    background-image: url("../images/fa-icons/play-circled.svg");
-}
-
 .collapse-control{
     background-repeat: no-repeat;
     background-size: auto auto;
@@ -111,6 +118,16 @@
 .summary-control{
     padding: 0px 5px;
     font-size: 14px;
+}
+
+.job-options{
+    font-weight: bold;
+    cursor: pointer;
+}
+
+.vehicle-title{
+    font-size: 18px;
+    font-weight: bold;
 }
 
 .vehicle-start{

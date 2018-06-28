@@ -57,24 +57,23 @@ var panelControl = L.Control.extend({
     this._initDiv.appendChild(list);
     this._div.appendChild(this._initDiv);
 
-    // Table for start/end display.
-    this._vehicleTable = document.createElement('table');
-    this._vehicleTable.setAttribute('id', 'panel-vehicle');
-    this._vehicleTable.insertRow(0);
-    this._vehicleTable.insertRow(1);
+    // Table for vehicles display.
+    this._vehiclesDiv = document.createElement('div');
+    this._vehiclesDiv.setAttribute('id', 'panel-vehicles');
 
     // Table for jobs display.
     this._jobTable = document.createElement('table');
     this._jobTable.setAttribute('id', 'panel-jobs');
+    this._jobTable.setAttribute('class', 'panel-table');
 
     // Table for job-ordered solution display.
     this._solutionTable = document.createElement('table');
     this._solutionTable.setAttribute('id', 'panel-solution');
+    this._solutionTable.setAttribute('class', 'panel-table');
 
     var tableDiv = document.createElement('div');
-    tableDiv.setAttribute('class', 'panel-table');
 
-    tableDiv.appendChild(this._vehicleTable);
+    tableDiv.appendChild(this._vehiclesDiv);
     tableDiv.appendChild(document.createElement('hr'));
     tableDiv.appendChild(this._jobTable);
     tableDiv.appendChild(this._solutionTable);
@@ -99,18 +98,14 @@ var panelControl = L.Control.extend({
     }
   },
 
-  clearStartEndDisplay: function() {
-    // Reset vehicle start/end display.
-    for (var i = this._vehicleTable.rows.length; i > 0; i--) {
-      this._vehicleTable.deleteRow(i -1);
-    }
-    this._vehicleTable.insertRow(0);
-    this._vehicleTable.insertRow(1);
+  clearVehiclesDisplay: function() {
+    // Delete vehicles div.
+    this._vehiclesDiv.innerHTML = "";
   },
 
   clearDisplay: function() {
     this.clearJobDisplay();
-    this.clearStartEndDisplay();
+    this.clearVehiclesDisplay();
     this.showInitDiv();
   },
 
