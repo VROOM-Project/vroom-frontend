@@ -15,7 +15,7 @@ var solve = function() {
     }
   };
 
-  if (!input.vehicles[0].capacity) {
+  if (!dataHandler.hasCapacity() && input.vehicles.length > 1) {
     for (var j = 0; j < input.jobs.length; j++) {
       input.jobs[j].amount = [1];
     }

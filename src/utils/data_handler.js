@@ -123,6 +123,12 @@ var firstPlaceSet = function() {
   _firstPlace = false;
 }
 
+var _hasCapacity = false;
+
+var hasCapacity = function() {
+  return _hasCapacity;
+}
+
 var _clearSolution = function() {
   if (hasSolution()) {
     // Back to input mode.
@@ -357,6 +363,12 @@ var addVehicle = function(v) {
     _setEnd(v);
   }
 
+  if (_firstPlace) {
+    _hasCapacity = ('capacity' in v);
+  } else {
+    _hasCapacity &= ('capacity' in v);
+  }
+
   _updateAllJobPopups();
 }
 
@@ -505,6 +517,12 @@ var addJob = function(j) {
   if (getJobsSize() >= api.maxJobNumber) {
     alert('Number of jobs can\'t exceed ' + api.maxJobNumber + '.');
     return;
+  }
+
+  if (_firstPlace) {
+    _hasCapacity = ('amount' in j);
+  } else {
+    _hasCapacity &= ('amount' in j);
   }
 
   _clearSolution();
@@ -794,6 +812,7 @@ module.exports = {
   getNextVehicleId: getNextVehicleId,
   closeAllPopups: closeAllPopups,
   isFirstPlace: isFirstPlace,
+  hasCapacity: hasCapacity,
   firstPlaceSet: firstPlaceSet,
   addVehicle: addVehicle,
   markUnassigned: markUnassigned,
