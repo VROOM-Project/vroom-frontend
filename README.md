@@ -9,7 +9,6 @@ Clone the repo and install dependencies using `npm`:
 git clone https://github.com/VROOM-Project/vroom-frontend.git
 cd vroom-frontend
 npm install
-npm run build
 ```
 
 # Requirements
