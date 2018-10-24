@@ -18,7 +18,7 @@ var addPlace = function(latlng, name) {
     // Add vehicle start/end.
     dataHandler.firstPlaceSet();
 
-    var addVechicleWithName = function(name) {
+    var addVechicleWithName = function(name, center) {
       var v = {
         'id': dataHandler.getNextJobId(),
         'start': [latlng.lng,latlng.lat],
@@ -28,23 +28,26 @@ var addPlace = function(latlng, name) {
       };
       dataHandler.addVehicle(v);
       dataHandler.checkControls();
+      if (center) {
+        dataHandler.showStart(v, center);
+      }
     }
 
     if (name) {
       // Add vehicle with provided name for start and end.
-      addVechicleWithName(name)
+      addVechicleWithName(name, true)
     } else {
       geocoder.defaultGeocoder.reverse(latlng, LSetup.map.options.crs.scale(19), function(results) {
         var r = results[0];
         if (r) {
           // Add vehicle based on geocoding result for start and end.
-          addVechicleWithName(address.display(r));
+          addVechicleWithName(address.display(r), false);
         }
       });
     }
   } else {
     // Add regular job.
-    var addJobWithName = function(name) {
+    var addJobWithName = function(name, center) {
       var j = {
         'id': dataHandler.getNextJobId(),
         'description': name,
@@ -53,17 +56,20 @@ var addPlace = function(latlng, name) {
 
       dataHandler.addJob(j);
       dataHandler.checkControls();
+      if (center) {
+        dataHandler.centerJob(j);
+      }
     }
 
     if (name) {
       // Add job with provided name.
-      addJobWithName(name);
+      addJobWithName(name, true);
     } else {
       geocoder.defaultGeocoder.reverse(latlng, LSetup.map.options.crs.scale(19), function(results) {
         var r = results[0];
         if (r) {
           // Add job based on geocoding result.
-          addJobWithName(address.display(r));
+          addJobWithName(address.display(r), false);
         }
       });
     }

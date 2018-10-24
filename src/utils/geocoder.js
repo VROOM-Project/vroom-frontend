@@ -6,7 +6,7 @@ var defaultGeocoder = L.Control.Geocoder.nominatim();
 
 var control = L.Control.geocoder({
   geocoder: defaultGeocoder,
-  collapsed: false,
+  collapsed: true,
   position: 'topleft'
 });
 

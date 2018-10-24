@@ -224,7 +224,7 @@ var _setStart = function(v) {
   nameCell.setAttribute('class', 'vehicle-start');
   nameCell.appendChild(document.createTextNode(v.startDescription));
   nameCell.onclick = function() {
-    _showStart(v, true);
+    showStart(v, true);
   };
 
   // Marker and popup.
@@ -285,7 +285,7 @@ var _setEnd = function(v) {
   nameCell.setAttribute('class', 'vehicle-end');
   nameCell.appendChild(document.createTextNode(v.endDescription));
   nameCell.onclick = function() {
-    _showEnd(v, true);
+    showEnd(v, true);
   };
 
   // Marker and popup.
@@ -409,7 +409,7 @@ var _jobDisplay = function(j) {
   nameCell.appendChild(document.createTextNode(j.description));
   nameCell.onclick = function() {
     _openJobPopup(j);
-    _centerJob(j);
+    centerJob(j);
   };
 
   _handleJobPopup(j);
@@ -521,7 +521,7 @@ var _updateAllJobPopups = function() {
   }
 }
 
-var _centerJob = function(j) {
+var centerJob = function(j) {
   LSetup.map.panTo(data.jobsMarkers[j.id.toString()].getLatLng());
 }
 
@@ -634,7 +634,7 @@ var _removeEnd = function(v) {
   return allowRemoval;
 }
 
-var _showStart = function(v, center) {
+var showStart = function(v, center) {
   var k = v.id.toString() + '_start';
   data.vehiclesMarkers[k].openPopup();
   if (center) {
@@ -642,7 +642,7 @@ var _showStart = function(v, center) {
   }
 }
 
-var _showEnd = function(v, center) {
+var showEnd = function(v, center) {
   var k = v.id.toString() + '_end';
   data.vehiclesMarkers[k].openPopup();
   if (center) {
@@ -734,7 +734,7 @@ var addRoutes = function(resultRoutes) {
         var showCallback = function(rank) {
           return function() {
             _openJobPopup(data.jobs[rank]);
-            _centerJob(data.jobs[rank]);
+            centerJob(data.jobs[rank]);
           };
         }
         row.onclick = showCallback(jobIdToRank[jobId]);
@@ -817,6 +817,7 @@ module.exports = {
   clearData: clearData,
   getJobs: getJobs,
   getVehicles: getVehicles,
+  showStart: showStart,
   setOutput: setOutput,
   getOutput: getOutput,
   addRoutes: addRoutes,
@@ -829,6 +830,7 @@ module.exports = {
   firstPlaceSet: firstPlaceSet,
   addVehicle: addVehicle,
   markUnassigned: markUnassigned,
+  centerJob: centerJob,
   addJob: addJob,
   checkControls: checkControls,
   setData: setData,
