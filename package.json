@@ -5,7 +5,8 @@
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "serve": "./node_modules/.bin/beefy src/map.js --browserify ./node_modules/.bin/browserify --live",
-    "build": "./node_modules/.bin/browserify -d src/map.js -o bundle.raw.js && ./node_modules/.bin/uglifyjs bundle.raw.js -c -m -o bundle.js"
+    "build": "./node_modules/.bin/browserify -d src/map.js -o bundle.raw.js && ./node_modules/.bin/uglifyjs bundle.raw.js -c -m -o bundle.js",
+    "dist": "./scripts/dist.sh"
   },
   "keywords": [
     "VROOM",
