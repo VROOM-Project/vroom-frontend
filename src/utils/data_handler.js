@@ -123,6 +123,12 @@ var firstPlaceSet = function() {
   _firstPlace = false;
 }
 
+var _hasCapacity = true;
+
+var hasCapacity = function() {
+  return _hasCapacity;
+}
+
 var _clearSolution = function() {
   if (hasSolution()) {
     // Back to input mode.
@@ -150,6 +156,7 @@ var _clearSolution = function() {
 var clearData = function() {
   // Back to adding a start/end for next place.
   _firstPlace = true;
+  _hasCapacity = true;
   data.maxJobId = 0;
   data.maxVehicleId = 0;
 
@@ -306,6 +313,16 @@ var _setEnd = function(v) {
     .openPopup();
 }
 
+var _deleteAmounts = function() {
+  for (var v = 0; v < data.vehicles.length; v++) {
+    delete data.vehicles[v].capacity;
+  }
+  for (var j = 0; j < data.jobs.length; j++) {
+    delete data.jobs[j].amount;
+  }
+  alert("All capacity/amounts constraints have been removed.")
+}
+
 var addVehicle = function(v) {
   _clearSolution();
   data.vehicles.push(v);
@@ -355,6 +372,13 @@ var addVehicle = function(v) {
   if (v.end) {
     _pushToBounds(v.end);
     _setEnd(v);
+  }
+
+  if (_hasCapacity && !('capacity' in v)) {
+    _hasCapacity = false;
+    if (getVehiclesSize() + getJobsSize() > 1) {
+      _deleteAmounts();
+    }
   }
 
   _updateAllJobPopups();
@@ -505,6 +529,13 @@ var addJob = function(j) {
   if (getJobsSize() >= api.maxJobNumber) {
     alert('Number of jobs can\'t exceed ' + api.maxJobNumber + '.');
     return;
+  }
+
+  if (_hasCapacity && !('amount' in j)) {
+    _hasCapacity = false;
+    if (getVehiclesSize() + getJobsSize() > 1) {
+      _deleteAmounts();
+    }
   }
 
   _clearSolution();
@@ -794,6 +825,7 @@ module.exports = {
   getNextVehicleId: getNextVehicleId,
   closeAllPopups: closeAllPopups,
   isFirstPlace: isFirstPlace,
+  hasCapacity: hasCapacity,
   firstPlaceSet: firstPlaceSet,
   addVehicle: addVehicle,
   markUnassigned: markUnassigned,
