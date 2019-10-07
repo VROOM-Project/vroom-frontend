@@ -695,6 +695,20 @@ var addRoutes = function(resultRoutes) {
 
     var showRoute = function (r) {
       return function() {
+        // Increase this route's opacity while decreasing opacity of all others
+        for (var k = 0; k < routes.length; k) {
+          if (k == r) {
+            routes[k].setStyle({opacity: 1});
+          } else {
+            routes[k].setStyle({opacity: .25});
+          }
+        }
+        for (var jobMarker in data.jobsMarkers) {
+          if (data.jobsMarkers.hasOwnProperty(jobMarker)) {
+            data.jobsMarkers[jobMarker].setStyle({opacity: .25});
+          }
+        }
+
         routes[r].openPopup()
         LSetup.map.fitBounds(routes[r].getBounds(), {
           paddingBottomRight: [panelControl.getWidth(), 0],
@@ -703,6 +717,9 @@ var addRoutes = function(resultRoutes) {
       }
     };
 
+    path.on({
+      click: showRoute(i)
+    });
     row.onclick = showRoute(i);
 
     var vCell = row.insertCell(0);
