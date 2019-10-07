@@ -706,7 +706,7 @@ var addRoutes = function(resultRoutes) {
     row.title = 'Click to center the map';
 
     var updateRouteOpacities = function (r, highOpacity, lowOpacity) {
-      for (var k = 0; k < routes.length; k) {
+      for (var k = 0; k < routes.length; k++) {
         if (k == r) {
           routes[k].setStyle({opacity: highOpacity});
         } else {
