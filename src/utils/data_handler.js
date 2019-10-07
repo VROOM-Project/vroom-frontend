@@ -705,22 +705,29 @@ var addRoutes = function(resultRoutes) {
     var row = solutionList.insertRow(nb_rows);
     row.title = 'Click to center the map';
 
+    var updateRouteOpacities = function (r, highOpacity, lowOpacity) {
+      for (var k = 0; k < routes.length; k) {
+        if (k == r) {
+          routes[k].setStyle({opacity: highOpacity});
+        } else {
+          routes[k].setStyle({opacity: lowOpacity});
+        }
+      }
+      for (var jobMarker in data.jobsMarkers) {
+        if (data.jobsMarkers.hasOwnProperty(jobMarker)) {
+          data.jobsMarkers[jobMarker].setStyle({opacity: lowOpacity});
+        }
+      }
+    }
+
     var showRoute = function (r) {
       return function() {
-        // Increase this route's opacity while decreasing opacity of all others
-        for (var k = 0; k < routes.length; k) {
-          if (k == r) {
-            routes[k].setStyle({opacity: 1});
-          } else {
-            routes[k].setStyle({opacity: .25});
-          }
+        // Either increase this route's opacity and decrease others, or reset
+        if (routes[r].options.opacity == LSetup.opacity) {
+          updateRouteOpacities(r, LSetup.highOpacity, LSetup.lowOpacity);
+        } else {
+          updateRouteOpacities(r, LSetup.opacity, LSetup.opacity);
         }
-        for (var jobMarker in data.jobsMarkers) {
-          if (data.jobsMarkers.hasOwnProperty(jobMarker)) {
-            data.jobsMarkers[jobMarker].setStyle({opacity: .25});
-          }
-        }
-
         routes[r].openPopup()
         LSetup.map.fitBounds(routes[r].getBounds(), {
           paddingBottomRight: [panelControl.getWidth(), 0],

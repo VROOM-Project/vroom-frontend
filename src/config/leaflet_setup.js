@@ -55,6 +55,8 @@ module.exports = {
   initZoom: initZoom,
   tileLayer: tileLayer,
   opacity: 0.6,
+  lowOpacity: 0.25,
+  highOpacity: 1,
   labelOpacity: 0.9,
   weight: 8,
   routeColors: routeColors,
