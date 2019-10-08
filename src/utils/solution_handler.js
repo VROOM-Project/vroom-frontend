@@ -6,7 +6,7 @@ var summaryControl = require('../controls/summary');
 
 var solve = function() {
   // Format json input for solving. Use copies as we might want to
-  // update amounts and capacity without messing initial objects.
+  // update amounts without messing initial objects.
   var input = {
     jobs: JSON.parse(JSON.stringify(dataHandler.getJobs())),
     vehicles: JSON.parse(JSON.stringify(dataHandler.getVehicles())),
@@ -17,7 +17,7 @@ var solve = function() {
 
   if (!dataHandler.hasCapacity() && input.vehicles.length > 1) {
     for (var j = 0; j < input.jobs.length; j++) {
-      input.jobs[j].amount = [1];
+      input.jobs[j].delivery = [1];
     }
     var C = Math.ceil(1.2 * input.jobs.length / input.vehicles.length);
     for (var v = 0; v < input.vehicles.length; v++) {
