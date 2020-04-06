@@ -330,9 +330,10 @@ var _deleteAmounts = function() {
     delete data.vehicles[v].capacity;
   }
   for (var j = 0; j < data.jobs.length; j++) {
-    delete data.jobs[j].amount;
+    delete data.jobs[j].delivery;
+    delete data.jobs[j].pickup;
   }
-  alert("All capacity/amounts constraints have been removed.")
+  alert("All capacity constraints have been removed.")
 }
 
 var addVehicle = function(v) {
@@ -543,7 +544,7 @@ var addJob = function(j) {
     return;
   }
 
-  if (_hasCapacity && !('amount' in j)) {
+  if (_hasCapacity && !('delivery' in j) && !('pickup' in j)) {
     _hasCapacity = false;
     if (getVehiclesSize() + getJobsSize() > 1) {
       _deleteAmounts();
