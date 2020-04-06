@@ -169,6 +169,33 @@ i.wait-icon{
     text-align: right;
 }
 
+.overpass-button {
+    float: right;
+}
+
+.overpass-description {
+    font-weight: bolder;
+}
+
+.overpass-table {
+    margin-top: 4px;
+    overflow: auto;
+    text-align: left;
+    display: table;
+    max-width: 280px;
+    min-width: 180px;
+    width: 90%;
+}
+
+.overpass-tag {
+    width: 40%;
+    min-width: 60px;
+}
+.overpass-value {
+    width: 40%;
+    min-width: 60px;
+}
+
 .leaflet-control-geocoder{
     clear: none;
 }

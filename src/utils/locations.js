@@ -45,6 +45,7 @@ var addPlace = function(latlng, name) {
         }
       });
     }
+    panelControl.showOverpassDisplay();
   } else {
     // Add regular job.
     var addJobWithName = function(name, center) {

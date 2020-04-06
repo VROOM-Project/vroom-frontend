@@ -71,6 +71,13 @@ var panelControl = L.Control.extend({
     this._solutionTable.setAttribute('id', 'panel-solution');
     this._solutionTable.setAttribute('class', 'panel-table');
 
+    // Form for the Overpass query
+    this._overpassDiv = document.createElement('div');
+    this._overpassDiv.setAttribute('id', 'panel-overpass');
+    this._overpassDiv.style.display = 'none';
+
+    this.addOverpassForm(map);
+
     var tableDiv = document.createElement('div');
 
     tableDiv.appendChild(this._vehiclesDiv);
@@ -78,6 +85,7 @@ var panelControl = L.Control.extend({
     tableDiv.appendChild(this._jobTable);
     tableDiv.appendChild(this._solutionTable);
     this._div.appendChild(tableDiv);
+    this._div.appendChild(this._overpassDiv);
 
     // Prevent events on this control to alter the underlying map.
     L.DomEvent.disableClickPropagation(this._div);
@@ -106,6 +114,7 @@ var panelControl = L.Control.extend({
   clearDisplay: function() {
     this.clearJobDisplay();
     this.clearVehiclesDisplay();
+    this.hideOverpassDisplay();
     this.showInitDiv();
   },
 
@@ -129,6 +138,100 @@ var panelControl = L.Control.extend({
 
   showInitDiv: function() {
     this._initDiv.style.display = 'block';
+  },
+
+  hideOverpassDisplay: function() {
+    this._overpassDiv.style.display = 'none';
+  },
+
+  showOverpassDisplay: function() {
+    this._overpassDiv.style.display = 'block';
+  },
+
+  hideOverpassButton: function() {
+    document.getElementById('button-request').style.display = 'none';
+  },
+
+  showOverpassButton: function() {
+    document.getElementById('button-request').style.display = 'block';
+  },
+
+  addOverpassForm: function(map) {
+    var overpassForm = document.createElement('table');
+    overpassForm.setAttribute('id', 'table-overpass');
+
+    // Title
+    var overpassHeading = document.createElement('h2');
+    overpassHeading .innerHTML = 'Generate Jobs';
+    overpassForm.appendChild(overpassHeading);
+
+    // Table containing the Formular
+    var tagTable = document.createElement('table');
+    tagTable.setAttribute('class', 'overpass-table');
+
+    // Subtitle
+    var overpassSubtitle = document.createElement('text');
+    overpassSubtitle .innerHTML = 'Tag OSM';
+    overpassSubtitle.setAttribute('class', 'overpass-description');
+    tagTable.appendChild(overpassSubtitle);
+
+    var newLine = document.createElement ("br");
+    tagTable.appendChild(newLine);
+
+    // Description
+    var overpassDescription = document.createElement('text');
+    var tag_text = 'Tags';
+    var amenity_text = 'amenity'
+    overpassDescription.innerHTML = 'Expected OSM ' +
+      tag_text.link('https://wiki.openstreetmap.org/wiki/Tags') +
+      ' - Find more values associated to the key ' +
+      amenity_text.link('https://wiki.openstreetmap.org/wiki/Key:amenity');
+    tagTable.appendChild(overpassDescription);
+
+    var newLine = document.createElement ("br");
+    tagTable.appendChild(newLine);
+
+    // Formular cells
+    var lineForm = document.createElement('form-inline');
+    lineForm.setAttribute('id', 'tag-table');
+    lineForm.setAttribute('class', 'overpass-tag-table');
+
+    // Key cell
+    var keyelement = document.createElement('input');
+    keyelement.setAttribute('id', 'key-cell');
+    keyelement.setAttribute('class', 'overpass-tag');
+    keyelement.setAttribute('type', 'texte');
+    keyelement.setAttribute('value', 'amenity');
+    lineForm.appendChild(keyelement);
+
+    // Value cell
+    var valueelement = document.createElement('input');
+    valueelement.setAttribute('id', 'value-cell');
+    valueelement.setAttribute('class', 'overpass-value');
+    valueelement.setAttribute('type', 'texte');
+    valueelement.setAttribute('value', 'pharmacy');
+    lineForm.appendChild(valueelement);
+
+    tagTable.appendChild(lineForm);
+
+    // Submit button
+    var submitelement = document.createElement('input');
+    submitelement.setAttribute('id', 'button-request');
+    submitelement.setAttribute('class', 'overpass-button');
+    submitelement.setAttribute('type', 'button');
+    submitelement.setAttribute('value', 'Add nodes');
+
+    // Call overpass
+    submitelement.onclick = function(e) {
+      L.DomEvent.stopPropagation(e);
+      document.getElementById('wait-icon').setAttribute('class', 'wait-icon');
+      panelControl.hideOverpassButton();
+      map.fireEvent('overpass');
+    };
+
+    tagTable.appendChild(submitelement);
+    overpassForm.appendChild(tagTable);
+    this._overpassDiv.appendChild(overpassForm);
   },
 
   toggle: function() {
