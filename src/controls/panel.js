@@ -223,6 +223,10 @@ var panelControl = L.Control.extend({
 
     // Call overpass
     submitelement.onclick = function(e) {
+      if (map.getZoom() < 9) {
+        alert("The area is too large, please zoom in.");
+        return;
+      }
       L.DomEvent.stopPropagation(e);
       document.getElementById('wait-icon').setAttribute('class', 'wait-icon');
       panelControl.hideOverpassButton();
