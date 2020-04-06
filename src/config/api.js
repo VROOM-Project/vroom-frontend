@@ -4,5 +4,6 @@ module.exports = {
   tileLayer: 'http://{s}.tile.osm.org/{z}/{x}/{y}.png',
   host: 'http://localhost',
   port: '3000',
-  maxJobNumber: 100
+  maxJobNumber: 100,
+  overpass_endpoint: 'https://overpass-api.de/api/interpreter'
 };
