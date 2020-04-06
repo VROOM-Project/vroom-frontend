@@ -666,16 +666,8 @@ var setOutput = function(output) {
   data.output = output;
 }
 
-var setOverpassOutput = function(output) {
-  data.overpass = output;
-}
-
 var getOutput = function() {
   return data.output;
-}
-
-var getOverpassOutput = function() {
-  return data.overpass;
 }
 
 var markUnassigned = function(unassigned) {
@@ -870,8 +862,6 @@ module.exports = {
   checkControls: checkControls,
   setData: setData,
   setSolution: setSolution,
-  getOverpassOutput: getOverpassOutput,
   getOverpassQuery: getOverpassQuery,
-  setOverpassData: setOverpassData,
-  setOverpassOutput: setOverpassOutput
+  setOverpassData: setOverpassData
 };

@@ -9,8 +9,6 @@ var jobsMarkers = {};
 // Stored with vehicle id + {_start,_end} as key
 var vehiclesMarkers = {};
 
-var overpass = {};
-
 var maxJobId = 0;
 var maxVehicleId = 0;
 
@@ -20,6 +18,5 @@ module.exports = {
   maxVehicleId: maxVehicleId,
   vehicles: vehicles,
   jobsMarkers: jobsMarkers,
-  vehiclesMarkers: vehiclesMarkers,
-  overpass: overpass
+  vehiclesMarkers: vehiclesMarkers
 };

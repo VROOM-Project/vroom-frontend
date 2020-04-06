@@ -9,8 +9,7 @@ var query = function() {
   xhttp.onreadystatechange = function() {
     if (xhttp.readyState == 4) {
       if (xhttp.status == 200) {
-        dataHandler.setOverpassOutput(JSON.parse(xhttp.response));
-        applyResponse();
+        applyResponse(JSON.parse(xhttp.response));
       } else {
         alert('Error: ' + xhttp.status);
       }
@@ -22,8 +21,8 @@ var query = function() {
   dataHandler.closeAllPopups();
 }
 
-var applyResponse = function() {
-  dataHandler.setOverpassData(dataHandler.getOverpassOutput()['elements']);
+var applyResponse = function(response) {
+  dataHandler.setOverpassData(response['elements']);
   dataHandler.checkControls();
   document.getElementById('wait-icon').removeAttribute('class');
 }
