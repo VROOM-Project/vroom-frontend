@@ -186,7 +186,6 @@ var clearData = function() {
   data.vehicles = [];
   data.jobsMarkers = {};
   data.vehiclesMarkers = {};
-  data.overpass = {};
 
   // Reset bounds.
   delete data.bounds;

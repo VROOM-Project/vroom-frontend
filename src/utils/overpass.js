@@ -15,7 +15,7 @@ var query = function() {
       }
     }
   };
-  xhttp.open('POST', api.overpass_endpoint, false);
+  xhttp.open('POST', api.overpassEndpoint, false);
   xhttp.setRequestHeader('Content-Type', 'application/json');
   xhttp.send(request);
   dataHandler.closeAllPopups();

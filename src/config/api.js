@@ -5,5 +5,5 @@ module.exports = {
   host: 'http://localhost',
   port: '3000',
   maxJobNumber: 100,
-  overpass_endpoint: 'https://overpass-api.de/api/interpreter'
+  overpassEndpoint: 'https://overpass-api.de/api/interpreter'
 };
