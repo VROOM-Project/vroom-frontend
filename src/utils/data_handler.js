@@ -821,7 +821,7 @@ var setData = function(data) {
 var setOverpassData = function(data) {
   for (var i = 0; i < data.length; i++) {
     if (getJobsSize() >= api.maxJobNumber) {
-      alert('Request answer is too large: Number of jobs can\'t exceed ' + api.maxJobNumber + '. Some jobs may have been filtered.');
+      alert('Request too large: ' + (data.length - i).toString() + ' POI discarded.');
       return;
     }
     var job = {

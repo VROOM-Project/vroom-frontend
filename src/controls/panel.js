@@ -82,10 +82,10 @@ var panelControl = L.Control.extend({
 
     tableDiv.appendChild(this._vehiclesDiv);
     tableDiv.appendChild(document.createElement('hr'));
+    tableDiv.appendChild(this._overpassDiv);
     tableDiv.appendChild(this._jobTable);
     tableDiv.appendChild(this._solutionTable);
     this._div.appendChild(tableDiv);
-    this._div.appendChild(this._overpassDiv);
 
     // Prevent events on this control to alter the underlying map.
     L.DomEvent.disableClickPropagation(this._div);
@@ -162,8 +162,12 @@ var panelControl = L.Control.extend({
 
     // Title
     var overpassHeading = document.createElement('h2');
-    overpassHeading .innerHTML = 'Generate Jobs';
+    overpassHeading.innerHTML = 'Add locations';
     overpassForm.appendChild(overpassHeading);
+    var clickOption = document.createElement('div');
+    clickOption.setAttribute('class', 'overpass-description');
+    clickOption.innerHTML = '- by clicking on the map';
+    overpassForm.appendChild(clickOption);
 
     // Table containing the Formular
     var tagTable = document.createElement('table');
@@ -171,22 +175,10 @@ var panelControl = L.Control.extend({
 
     // Subtitle
     var overpassSubtitle = document.createElement('text');
-    overpassSubtitle .innerHTML = 'Tag OSM';
+    var tagsText = 'tag';
+    overpassSubtitle.innerHTML = '- using OpenStreetMap ' + tagsText.link('https://wiki.openstreetmap.org/wiki/Tags');
     overpassSubtitle.setAttribute('class', 'overpass-description');
     tagTable.appendChild(overpassSubtitle);
-
-    var newLine = document.createElement ("br");
-    tagTable.appendChild(newLine);
-
-    // Description
-    var overpassDescription = document.createElement('text');
-    var tag_text = 'Tags';
-    var amenity_text = 'amenity'
-    overpassDescription.innerHTML = 'Expected OSM ' +
-      tag_text.link('https://wiki.openstreetmap.org/wiki/Tags') +
-      ' - Find more values associated to the key ' +
-      amenity_text.link('https://wiki.openstreetmap.org/wiki/Key:amenity');
-    tagTable.appendChild(overpassDescription);
 
     var newLine = document.createElement ("br");
     tagTable.appendChild(newLine);
@@ -214,12 +206,21 @@ var panelControl = L.Control.extend({
 
     tagTable.appendChild(lineForm);
 
+    // Description
+    var overpassDescription = document.createElement('text');
+    var amenity_text = 'amenity'
+    overpassDescription.innerHTML = 'More values for ' + amenity_text.link('https://wiki.openstreetmap.org/wiki/Key:amenity') + '.';
+    tagTable.appendChild(overpassDescription);
+
+    var newLine = document.createElement ("br");
+    tagTable.appendChild(newLine);
+
     // Submit button
     var submitelement = document.createElement('input');
     submitelement.setAttribute('id', 'button-request');
     submitelement.setAttribute('class', 'overpass-button');
     submitelement.setAttribute('type', 'button');
-    submitelement.setAttribute('value', 'Add nodes');
+    submitelement.setAttribute('value', 'Add');
 
     // Call overpass
     submitelement.onclick = function(e) {
