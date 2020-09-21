@@ -826,7 +826,7 @@ var setOverpassData = function(data) {
     }
     var job = {
       id: data[i]['id'],
-      description: data[i]['tags']['name'] || data[i]['id'],
+      description: data[i]['tags']['name'] || data[i]['id'].toString(),
       location: [data[i]['lon'], data[i]['lat']]
     }
     addJob(job);
