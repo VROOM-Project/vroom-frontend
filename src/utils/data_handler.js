@@ -18,6 +18,10 @@ var getJobs = function() {
   return data.jobs;
 }
 
+var getShipments = function() {
+  return data.shipments;
+}
+
 var getVehicles = function() {
   return data.vehicles;
 }
@@ -32,26 +36,26 @@ var getOverpassQuery = function() {
   return query;
 }
 
-var getJobsSize = function() {
-  return data.jobs.length;
+var _getTasksSize = function() {
+  return data.jobs.length + 2 * data.shipments.length;
 }
 
-var getNextJobId = function() {
-  return data.maxJobId + 1;
+var getNextTaskId = function() {
+  return data.maxTaskId + 1;
 }
 
 var getNextVehicleId = function() {
   return data.maxVehicleId + 1;
 }
 
-var getVehiclesSize = function() {
+var _getVehiclesSize = function() {
   return data.vehicles.length;
 }
 
 var checkControls = function() {
-  var hasJobs = getJobsSize() > 0;
-  var hasVehicles = getVehiclesSize() > 0;
-  if (hasJobs || hasVehicles) {
+  var hasTasks = _getTasksSize() > 0;
+  var hasVehicles = _getVehiclesSize() > 0;
+  if (hasTasks || hasVehicles) {
     // Fit and clear controls as soon as we have a location.
     if (!LSetup.map.fitControl) {
       LSetup.map.addControl(fitControl);
@@ -63,11 +67,11 @@ var checkControls = function() {
   if (!LSetup.map.solveControl) {
     // Solve control appears only when there's enough input to fire a
     // solving query.
-    if (hasVehicles && hasJobs) {
+    if (hasVehicles && hasTasks) {
       solveControl.addTo(LSetup.map);
     }
   } else {
-    if (getJobsSize() === 0) {
+    if (_getTasksSize() === 0) {
       LSetup.map.removeControl(solveControl);
     }
   }
@@ -168,7 +172,7 @@ var clearData = function() {
   // Back to adding a start/end for next place.
   _firstPlace = true;
   _hasCapacity = true;
-  data.maxJobId = 0;
+  data.maxTaskId = 0;
   data.maxVehicleId = 0;
 
   // Clear all data and markers.
@@ -215,7 +219,7 @@ var _setStart = function(v) {
       // Reset start row when removing is ok.
       vTable.deleteRow(1);
       vTable.insertRow(1);
-      if (getJobsSize() === 0 && getVehiclesSize() === 0) {
+      if (_getTasksSize() === 0 && _getVehiclesSize() === 0) {
         LSetup.map.removeControl(clearControl);
       }
       checkControls();
@@ -276,7 +280,7 @@ var _setEnd = function(v) {
       // Reset end row when removing is ok.
       vTable.deleteRow(2);
       vTable.insertRow(2);
-      if (getJobsSize() === 0 && getVehiclesSize() === 0) {
+      if (_getTasksSize() === 0 && _getVehiclesSize() === 0) {
         LSetup.map.removeControl(clearControl);
       }
       checkControls();
@@ -388,7 +392,7 @@ var addVehicle = function(v) {
 
   if (_hasCapacity && !('capacity' in v)) {
     _hasCapacity = false;
-    if (getVehiclesSize() + getJobsSize() > 1) {
+    if (_getVehiclesSize() + _getTasksSize() > 1) {
       _deleteAmounts();
     }
   }
@@ -538,14 +542,14 @@ var centerJob = function(j) {
 }
 
 var addJob = function(j) {
-  if (getJobsSize() >= api.maxJobNumber) {
-    alert('Number of jobs can\'t exceed ' + api.maxJobNumber + '.');
+  if (_getTasksSize() >= api.maxTaskNumber) {
+    alert('Number of jobs can\'t exceed ' + api.maxTaskNumber + '.');
     return;
   }
 
   if (_hasCapacity && !('delivery' in j) && !('pickup' in j)) {
     _hasCapacity = false;
-    if (getVehiclesSize() + getJobsSize() > 1) {
+    if (_getVehiclesSize() + _getTasksSize() > 1) {
       _deleteAmounts();
     }
   }
@@ -553,7 +557,7 @@ var addJob = function(j) {
   _clearSolution();
   _pushToBounds(j.location);
 
-  data.maxJobId = Math.max(data.maxJobId, j.id);
+  data.maxTaskId = Math.max(data.maxTaskId, j.id);
   data.jobs.push(j);
   data.jobsMarkers[j.id.toString()]
     = L.circleMarker([j.location[1], j.location[0]],
@@ -578,7 +582,7 @@ var _removeJob = function(j) {
       data.jobs.splice(i, 1);
       var jobRow = document.getElementById('job-' + j.id.toString());
       jobRow.parentNode.removeChild(jobRow);
-      if (getJobsSize() === 0 && getVehiclesSize() === 0) {
+      if (_getTasksSize() === 0 && _getVehiclesSize() === 0) {
         LSetup.map.removeControl(clearControl);
       }
       checkControls();
@@ -820,7 +824,7 @@ var setData = function(data) {
 
 var setOverpassData = function(data) {
   for (var i = 0; i < data.length; i++) {
-    if (getJobsSize() >= api.maxJobNumber) {
+    if (_getTasksSize() >= api.maxTaskNumber) {
       alert('Request too large: ' + (data.length - i).toString() + ' POI discarded.');
       return;
     }
@@ -848,8 +852,7 @@ module.exports = {
   setOutput: setOutput,
   getOutput: getOutput,
   addRoutes: addRoutes,
-  getJobsSize: getJobsSize,
-  getNextJobId: getNextJobId,
+  getNextTaskId: getNextTaskId,
   getNextVehicleId: getNextVehicleId,
   closeAllPopups: closeAllPopups,
   isFirstPlace: isFirstPlace,

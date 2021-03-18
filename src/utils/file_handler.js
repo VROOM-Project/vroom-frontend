@@ -53,7 +53,7 @@ reader.onload = function(event) {
       locNumber: 0,
       // The '1 +' accounts for the first job being actually the
       // start/end.
-      targetLocNumber: Math.min(lines.length, 1 + api.maxJobNumber),
+      targetLocNumber: Math.min(lines.length, 1 + api.maxTaskNumber),
       totalLocNumber: lines.length,
       unfoundLocs: []
     };
