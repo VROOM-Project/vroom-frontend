@@ -33,8 +33,8 @@ reader.onload = function(event) {
     dataHandler.checkControls();
 
     // Plot solution if current file contains one.
-    if (('output' in data) && ('code' in data['output'])) {
-      dataHandler.setSolution(data);
+    if (('solution' in data) && ('code' in data['solution'])) {
+      dataHandler.loadSolution(data);
       solutionHandler.plotSolution();
     }
 

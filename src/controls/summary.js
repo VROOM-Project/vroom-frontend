@@ -19,24 +19,24 @@ var summaryControl = L.Control.extend({
     delete map.summaryControl;
   },
 
-  update: function(output) {
+  update: function(solution) {
     this._div.innerHTML = '';
 
     var displayDuration = document.createElement('p');
     displayDuration.innerHTML = '<b>Trip duration:</b> '
-      + time.format(output['summary']['duration']);
+      + time.format(solution['summary']['duration']);
     this._div.appendChild(displayDuration);
 
     var displayDistance = document.createElement('p');
-    var distance = (output['summary']['distance'] / 1000).toFixed(1);
+    var distance = (solution['summary']['distance'] / 1000).toFixed(1);
     displayDistance.innerHTML = '<b>Trip distance:</b> '
       + distance.toString() + ' km';
     this._div.appendChild(displayDistance);
 
     // Computing time stuff.
-    var CTLoading = output['summary']['computing_times']['loading'];
-    var CTSolving = output['summary']['computing_times']['solving'];
-    var CTRouting =  output['summary']['computing_times']['routing'];
+    var CTLoading = solution['summary']['computing_times']['loading'];
+    var CTSolving = solution['summary']['computing_times']['solving'];
+    var CTRouting = solution['summary']['computing_times']['routing'];
 
     var CTDisplay = document.createElement('p');
     CTDisplay.title = 'Loading: ' + CTLoading + ' ms / Solving: '

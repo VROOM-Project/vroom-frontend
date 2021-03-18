@@ -149,20 +149,22 @@ var _clearSolution = function() {
   if (hasSolution()) {
     // Back to input mode.
     panelControl.clearSolutionDisplay();
-    panelControl.showJobDisplay();
+    panelControl.showTaskDisplay();
 
     for (var i = 0; i < routes.length; ++i) {
       LSetup.map.removeLayer(routes[i]);
     }
-    for (var k in data.markers['job']) {
-      data.markers['job'][k].setStyle(LSetup.markerStyle['job']);
+    for (var type in data.markers) {
+      for (var k in data.markers[type]) {
+        data.markers[type][k].setStyle(LSetup.markerStyle[type]);
+      }
     }
     LSetup.map.removeControl(summaryControl);
 
     routes = [];
 
-    // Remove query output for this solution.
-    delete data.output;
+    // Remove query solution.
+    delete data.solution;
   }
 }
 
@@ -174,9 +176,11 @@ var clearData = function() {
   data.maxVehicleId = 0;
 
   // Clear all data and markers.
-  for (var k in data.markers['job']) {
-    LSetup.map.removeLayer(data.markers['job'][k]);
-    delete data.markers['job'][k];
+  for (var type in data.markers) {
+    for (var k in data.markers[type]) {
+      LSetup.map.removeLayer(data.markers[type][k]);
+      delete data.markers[type][k];
+    }
   }
   for (var k in data.vehiclesMarkers) {
     LSetup.map.removeLayer(data.vehiclesMarkers[k]);
@@ -186,7 +190,11 @@ var clearData = function() {
   // Init dataset.
   data.jobs = [];
   data.vehicles = [];
-  data.markers['job'] = {};
+  data.markers = {
+    'job': {},
+    'pickup': {},
+    'delivery': {}
+  };
   data.vehiclesMarkers = {};
 
   // Reset bounds.
@@ -196,8 +204,10 @@ var clearData = function() {
 }
 
 var closeAllPopups = function() {
-  for (var k in data.markers['job']) {
-    data.markers['job'][k].closePopup();
+  for (var type in data.markers) {
+    for (var k in data.markers[type]) {
+      data.markers[type][k].closePopup();
+    }
   }
   for (var k in data.vehiclesMarkers) {
     data.vehiclesMarkers[k].closePopup();
@@ -758,12 +768,12 @@ var showEnd = function(v, center) {
   }
 }
 
-var setOutput = function(output) {
-  data.output = output;
+var setSolution = function(solution) {
+  data.solution = solution;
 }
 
-var getOutput = function() {
-  return data.output;
+var getSolution = function() {
+  return data.solution;
 }
 
 var markUnassigned = function(unassigned) {
@@ -790,8 +800,8 @@ var addRoutes = function(resultRoutes) {
 
     data.bounds.extend(latlngs);
 
-    // Hide input job display.
-    panelControl.hideJobDisplay();
+    // Hide input task display.
+    panelControl.hideTaskDisplay();
 
     var solutionList = document.getElementById('panel-solution');
 
@@ -930,9 +940,9 @@ var setOverpassData = function(data) {
   }
 }
 
-var setSolution = function(data) {
-  if ('output' in data) {
-    setOutput(data.output);
+var loadSolution = function(data) {
+  if ('solution' in data) {
+    setSolution(data.solution);
   }
 }
 
@@ -943,8 +953,8 @@ module.exports = {
   getShipments: getShipments,
   getVehicles: getVehicles,
   showStart: showStart,
-  setOutput: setOutput,
-  getOutput: getOutput,
+  setSolution: setSolution,
+  getSolution: getSolution,
   addRoutes: addRoutes,
   getNextTaskId: getNextTaskId,
   getNextVehicleId: getNextVehicleId,
@@ -958,7 +968,7 @@ module.exports = {
   addJob: addJob,
   checkControls: checkControls,
   setData: setData,
-  setSolution: setSolution,
+  loadSolution: loadSolution,
   getOverpassQuery: getOverpassQuery,
   setOverpassData: setOverpassData
 };

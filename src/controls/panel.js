@@ -61,10 +61,10 @@ var panelControl = L.Control.extend({
     this._vehiclesDiv = document.createElement('div');
     this._vehiclesDiv.setAttribute('id', 'panel-vehicles');
 
-    // Table for jobs display.
-    this._jobTable = document.createElement('table');
-    this._jobTable.setAttribute('id', 'panel-tasks');
-    this._jobTable.setAttribute('class', 'panel-table');
+    // Table for tasks display.
+    this._taskTable = document.createElement('table');
+    this._taskTable.setAttribute('id', 'panel-tasks');
+    this._taskTable.setAttribute('class', 'panel-table');
 
     // Table for task-ordered solution display.
     this._solutionTable = document.createElement('table');
@@ -83,7 +83,7 @@ var panelControl = L.Control.extend({
     tableDiv.appendChild(this._vehiclesDiv);
     tableDiv.appendChild(document.createElement('hr'));
     tableDiv.appendChild(this._overpassDiv);
-    tableDiv.appendChild(this._jobTable);
+    tableDiv.appendChild(this._taskTable);
     tableDiv.appendChild(this._solutionTable);
     this._div.appendChild(tableDiv);
 
@@ -99,10 +99,10 @@ var panelControl = L.Control.extend({
     delete map.panelControl;
   },
 
-  clearJobDisplay: function() {
-    // Delete jobs display.
-    for (var i = this._jobTable.rows.length; i > 0; i--) {
-      this._jobTable.deleteRow(i -1);
+  clearTaskDisplay: function() {
+    // Delete tasks display.
+    for (var i = this._taskTable.rows.length; i > 0; i--) {
+      this._taskTable.deleteRow(i -1);
     }
   },
 
@@ -112,7 +112,7 @@ var panelControl = L.Control.extend({
   },
 
   clearDisplay: function() {
-    this.clearJobDisplay();
+    this.clearTaskDisplay();
     this.clearVehiclesDisplay();
     this.hideOverpassDisplay();
     this.showInitDiv();
@@ -124,12 +124,12 @@ var panelControl = L.Control.extend({
     }
   },
 
-  hideJobDisplay: function() {
-    this._jobTable.style.display = 'none';
+  hideTaskDisplay: function() {
+    this._taskTable.style.display = 'none';
   },
 
-  showJobDisplay: function() {
-    this._jobTable.style.display = 'block';
+  showTaskDisplay: function() {
+    this._taskTable.style.display = 'block';
   },
 
   hideInitDiv: function() {
