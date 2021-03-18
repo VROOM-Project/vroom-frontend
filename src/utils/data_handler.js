@@ -13,6 +13,7 @@ var solveControl = require('../controls/solve');
 var summaryControl = require('../controls/summary');
 
 var routes = [];
+var actualSteps = ['job', 'pickup', 'delivery'];
 
 var getJobs = function() {
   return data.jobs;
@@ -648,7 +649,6 @@ var addShipment = function(s) {
 
     data.maxTaskId = Math.max(data.maxTaskId, s.pickup.id);
     data.maxTaskId = Math.max(data.maxTaskId, s.delivery.id);
-    data.shipments.push(s);
     data.markers[type][s[type].id.toString()]
       = L.circleMarker([s[type].location[1], s[type].location[0]],
                        {
@@ -659,6 +659,7 @@ var addShipment = function(s) {
                        })
       .addTo(LSetup.map);
   }
+  data.shipments.push(s);
 
   // Handle display stuff.
   _shipmentDisplay(s);
@@ -776,7 +777,6 @@ var markUnassigned = function(unassigned) {
 }
 
 var addRoutes = function(resultRoutes) {
-
   for (var i = 0; i < resultRoutes.length; ++i) {
     var latlngs = polyUtil.decode(resultRoutes[i]['geometry']);
 
@@ -817,44 +817,38 @@ var addRoutes = function(resultRoutes) {
     vCell.setAttribute('colspan', 2);
     vCell.appendChild(document.createTextNode('Vehicle ' + resultRoutes[i].vehicle.toString()));
 
-    var jobIdToRank = {}
-    for (var j = 0; j < data.jobs.length; j++) {
-      jobIdToRank[data.jobs[j].id.toString()] = j;
-    }
-
-    var jobRank = 0;
+    var stepRank = 0;
     for (var s = 0; s < resultRoutes[i].steps.length; s++) {
       var step = resultRoutes[i].steps[s];
-      if (step.type === 'job') {
-        jobRank++;
-
-        var jobId = step.job.toString();
-
-        data.markers['job'][jobId].setStyle({color: routeColor});
-
-        // Add to solution display
-        var nb_rows = solutionList.rows.length;
-        var row = solutionList.insertRow(nb_rows);
-        row.title = 'Click to center the map';
-
-        // Hack to make sure the marker index is right.
-        var showCallback = function(rank) {
-          return function() {
-            _openPopup('job', data.jobs[rank].id);
-            centerMarker('job', data.jobs[rank].id);
-          };
-        }
-        row.onclick = showCallback(jobIdToRank[jobId]);
-
-        var idCell = row.insertCell(0);
-        idCell.setAttribute('class', 'rank solution-display');
-        idCell.innerHTML = jobRank;
-
-        var nameCell = row.insertCell(1);
-        nameCell.appendChild(
-          document.createTextNode(data.jobs[jobIdToRank[jobId]].description)
-        );
+      if (!actualSteps.includes(step.type)) {
+        continue;
       }
+      stepRank++;
+
+      var stepId = step.id.toString();
+
+      data.markers[step.type][stepId].setStyle({color: routeColor});
+
+      // Add to solution display
+      var nb_rows = solutionList.rows.length;
+      var row = solutionList.insertRow(nb_rows);
+      row.title = 'Click to center the map';
+
+      // Hack to make sure the marker index is right.
+      var showCallback = function(type, id) {
+        return function() {
+          _openPopup(type, id);
+          centerMarker(type, id);
+        };
+      }
+      row.onclick = showCallback(step.type, stepId);
+
+      var idCell = row.insertCell(0);
+      idCell.setAttribute('class', 'rank solution-display');
+      idCell.innerHTML = stepRank;
+
+      var nameCell = row.insertCell(1);
+      nameCell.appendChild(document.createTextNode(step.description));
     }
 
     // Remember the path. This will cause hasSolution() to return true.
@@ -946,6 +940,7 @@ module.exports = {
   fitView: fitView,
   clearData: clearData,
   getJobs: getJobs,
+  getShipments: getShipments,
   getVehicles: getVehicles,
   showStart: showStart,
   setOutput: setOutput,

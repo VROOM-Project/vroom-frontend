@@ -9,6 +9,7 @@ var solve = function() {
   // update amounts without messing initial objects.
   var input = {
     jobs: JSON.parse(JSON.stringify(dataHandler.getJobs())),
+    shipments: JSON.parse(JSON.stringify(dataHandler.getShipments())),
     vehicles: JSON.parse(JSON.stringify(dataHandler.getVehicles())),
     "options":{
       "g": true
