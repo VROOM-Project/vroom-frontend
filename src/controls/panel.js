@@ -63,10 +63,10 @@ var panelControl = L.Control.extend({
 
     // Table for jobs display.
     this._jobTable = document.createElement('table');
-    this._jobTable.setAttribute('id', 'panel-jobs');
+    this._jobTable.setAttribute('id', 'panel-tasks');
     this._jobTable.setAttribute('class', 'panel-table');
 
-    // Table for job-ordered solution display.
+    // Table for task-ordered solution display.
     this._solutionTable = document.createElement('table');
     this._solutionTable.setAttribute('id', 'panel-solution');
     this._solutionTable.setAttribute('class', 'panel-table');

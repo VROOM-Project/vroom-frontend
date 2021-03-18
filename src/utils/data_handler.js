@@ -401,11 +401,11 @@ var addVehicle = function(v) {
 }
 
 var _jobDisplay = function(j) {
-  var panelList = document.getElementById('panel-jobs');
+  var panelList = document.getElementById('panel-tasks');
 
   var nb_rows = panelList.rows.length;
   var row = panelList.insertRow(nb_rows);
-  row.setAttribute('id', 'job-' + j.id.toString());
+  row.setAttribute('id', 'task-' + j.id.toString());
   var idCell = row.insertCell(0);
 
   idCell.setAttribute('class', 'delete-location');
@@ -430,6 +430,41 @@ var _jobDisplay = function(j) {
 
   _handleJobPopup(j);
   _openJobPopup(j);
+}
+
+var _shipmentDisplay = function(s) {
+  var panelList = document.getElementById('panel-tasks');
+
+  for (var type of ["pickup", "delivery"]) {
+    var nb_rows = panelList.rows.length;
+    var row = panelList.insertRow(nb_rows);
+    row.setAttribute('id', 'task-' + s[type].id.toString());
+    var idCell = row.insertCell(0);
+
+    idCell.setAttribute('class', 'delete-location');
+    idCell.title = 'Click to delete';
+    idCell.onclick = function() {
+      _removeShipment(s);
+    };
+
+    // Required when parsing json files containing jobs with no
+    // description.
+    if (!s[type].description) {
+      s[type].description = 'No description';
+    }
+
+    var nameCell = row.insertCell(1);
+    nameCell.title = 'Click to center the map';
+    nameCell.appendChild(document.createTextNode(s[type].description));
+    nameCell.onclick = function() {
+      _openShipmentPopup(s);
+      centerShipment(s);
+    };
+  }
+
+  // TODO implement and run.
+  // _handleShipmentPopup(s);
+  // _openShipmentPopup(s);
 }
 
 var _setAsStart = function(vRank, j) {
@@ -543,7 +578,7 @@ var centerJob = function(j) {
 
 var addJob = function(j) {
   if (_getTasksSize() >= api.maxTaskNumber) {
-    alert('Number of jobs can\'t exceed ' + api.maxTaskNumber + '.');
+    alert('Number of tasks can\'t exceed ' + api.maxTaskNumber + '.');
     return;
   }
 
@@ -573,6 +608,42 @@ var addJob = function(j) {
   _jobDisplay(j);
 }
 
+var addShipment = function(s) {
+  if (_getTasksSize() >= api.maxTaskNumber) {
+    alert('Number of tasks can\'t exceed ' + api.maxTaskNumber + '.');
+    return;
+  }
+
+  if (_hasCapacity && !('amount' in s)) {
+    _hasCapacity = false;
+    if (_getVehiclesSize() + _getTasksSize() > 1) {
+      _deleteAmounts();
+    }
+  }
+
+  _clearSolution();
+
+  for (var type of ['pickup', 'delivery']) {
+    _pushToBounds(s[type].location);
+
+    data.maxTaskId = Math.max(data.maxTaskId, s.pickup.id);
+    data.maxTaskId = Math.max(data.maxTaskId, s.delivery.id);
+    data.shipments.push(s);
+    data.markers[type][s[type].id.toString()]
+      = L.circleMarker([s.pickup.location[1], s.pickup.location[0]],
+                       {
+                         radius: LSetup.pickupRadius,
+                         weight: 3,
+                         fillOpacity: 0.4,
+                         color: LSetup.pickupColor
+                       })
+      .addTo(LSetup.map);
+  }
+
+  // Handle display stuff.
+  _shipmentDisplay(s);
+}
+
 var _removeJob = function(j) {
   _clearSolution();
   LSetup.map.removeLayer(data.jobsMarkers[j.id.toString()]);
@@ -580,7 +651,7 @@ var _removeJob = function(j) {
   for (var i = 0; i < data.jobs.length; i++) {
     if (data.jobs[i].id == j.id) {
       data.jobs.splice(i, 1);
-      var jobRow = document.getElementById('job-' + j.id.toString());
+      var jobRow = document.getElementById('task-' + j.id.toString());
       jobRow.parentNode.removeChild(jobRow);
       if (_getTasksSize() === 0 && _getVehiclesSize() === 0) {
         LSetup.map.removeControl(clearControl);
@@ -814,8 +885,16 @@ var setData = function(data) {
     addVehicle(data.vehicles[i]);
   }
 
-  for (var i = 0; i < data.jobs.length; i++) {
-    addJob(data.jobs[i]);
+  if ('jobs' in data) {
+    for (var i = 0; i < data.jobs.length; i++) {
+      addJob(data.jobs[i]);
+    }
+  }
+
+  if ('shipments' in data) {
+    for (var i = 0; i < data.shipments.length; i++) {
+      addShipment(data.shipments[i]);
+    }
   }
 
   // Next user input should be a job.

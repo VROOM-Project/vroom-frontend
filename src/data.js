@@ -22,5 +22,7 @@ module.exports = {
   maxVehicleId: maxVehicleId,
   vehicles: vehicles,
   jobsMarkers: jobsMarkers,
+  pickupsMarkers: pickupsMarkers,
+  deliveriesMarkers: deliveriesMarkers,
   vehiclesMarkers: vehiclesMarkers
 };

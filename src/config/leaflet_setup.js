@@ -62,6 +62,10 @@ module.exports = {
   endColor: '#e9130a',
   jobColor: '#3388ff',
   jobRadius: 6,
+  pickupColor: '#FF7900FF',
+  pickupRadius: 7,
+  deliveryColor: '#FF7900FF',
+  deliveryRadius: 5,
   unassignedColor: '#111111',
   unassignedRadius: 8
 };
