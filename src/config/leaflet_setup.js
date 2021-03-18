@@ -55,11 +55,15 @@ var markerStyle = {
   },
   'pickup': {
     'color': '#FF7900FF',
-    'radius': 7
+    'radius': 8
   },
   'delivery': {
     'color': '#FF7900FF',
-    'radius': 5
+    'radius': 4
+  },
+  'unassigned': {
+    'color': '#111111',
+    'radius': 8
   }
 };
 
@@ -75,7 +79,5 @@ module.exports = {
   routeColors: routeColors,
   startColor: '#48b605',
   endColor: '#e9130a',
-  markerStyle: markerStyle,
-  unassignedColor: '#111111',
-  unassignedRadius: 8
+  markerStyle: markerStyle
 };

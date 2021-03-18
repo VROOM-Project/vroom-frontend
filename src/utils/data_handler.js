@@ -778,11 +778,8 @@ var getSolution = function() {
 
 var markUnassigned = function(unassigned) {
   for (var i = 0; i < unassigned.length; ++i) {
-    data.markers['job'][unassigned[i].id.toString()]
-      .setStyle({
-        color: LSetup.unassignedColor,
-        radius: LSetup.unassignedRadius,
-      });
+    data.markers[unassigned[i].type][unassigned[i].id.toString()]
+      .setStyle(LSetup.markerStyle.unassigned);
   }
 }
 
