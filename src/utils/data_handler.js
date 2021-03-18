@@ -422,7 +422,7 @@ var _jobDisplay = function(j) {
   nameCell.appendChild(document.createTextNode(j.description));
   nameCell.onclick = function() {
     _openPopup('job', j.id);
-    centerJob(j);
+    centerMarker('job', j.id);
   };
 
   _handleJobPopup(j);
@@ -455,13 +455,12 @@ var _shipmentDisplay = function(s) {
     nameCell.appendChild(document.createTextNode(s[type].description));
     nameCell.onclick = function() {
       _openPopup(type, s[type].id);
-      centerShipment(s);
+      centerMarker(type, s[type].id);
     };
   }
 
   // TODO implement and run.
   // _handleShipmentPopup(s);
-  // _openShipmentPopup(s);
 }
 
 var _setAsStart = function(vRank, j) {
@@ -569,8 +568,8 @@ var _updateAllJobPopups = function() {
   }
 }
 
-var centerJob = function(j) {
-  LSetup.map.panTo(data.markers['job'][j.id.toString()].getLatLng());
+var centerMarker = function(type, id) {
+  LSetup.map.panTo(data.markers[type][id.toString()].getLatLng());
 }
 
 var addJob = function(j) {
@@ -818,7 +817,7 @@ var addRoutes = function(resultRoutes) {
         var showCallback = function(rank) {
           return function() {
             _openPopup('job', data.jobs[rank].id);
-            centerJob(data.jobs[rank]);
+            centerMarker('job', data.jobs[rank].id);
           };
         }
         row.onclick = showCallback(jobIdToRank[jobId]);
@@ -936,7 +935,7 @@ module.exports = {
   firstPlaceSet: firstPlaceSet,
   addVehicle: addVehicle,
   markUnassigned: markUnassigned,
-  centerJob: centerJob,
+  centerMarker: centerMarker,
   addJob: addJob,
   checkControls: checkControls,
   setData: setData,

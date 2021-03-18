@@ -58,7 +58,7 @@ var addPlace = function(latlng, name) {
       dataHandler.addJob(j);
       dataHandler.checkControls();
       if (center) {
-        dataHandler.centerJob(j);
+        dataHandler.centerMarker('job', j.id);
       }
     }
 
