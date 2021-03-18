@@ -402,7 +402,7 @@ var _jobDisplay = function(j) {
 
   var nb_rows = panelList.rows.length;
   var row = panelList.insertRow(nb_rows);
-  row.setAttribute('id', 'task-' + j.id.toString());
+  row.setAttribute('id', 'job-' + j.id.toString());
   var idCell = row.insertCell(0);
 
   idCell.setAttribute('class', 'delete-location');
@@ -429,38 +429,41 @@ var _jobDisplay = function(j) {
   _openPopup('job', j.id);
 }
 
-var _shipmentDisplay = function(s) {
+var _setPopup = function(s, type) {
   var panelList = document.getElementById('panel-tasks');
 
-  for (var type of ['pickup', 'delivery']) {
-    var nb_rows = panelList.rows.length;
-    var row = panelList.insertRow(nb_rows);
-    row.setAttribute('id', 'task-' + s[type].id.toString());
-    var idCell = row.insertCell(0);
+  var nb_rows = panelList.rows.length;
+  var row = panelList.insertRow(nb_rows);
+  row.setAttribute('id', type + '-' + s[type].id.toString());
+  var idCell = row.insertCell(0);
 
-    idCell.setAttribute('class', 'delete-location');
-    idCell.title = 'Click to delete';
-    idCell.onclick = function() {
-      _removeShipment(s);
-    };
+  idCell.setAttribute('class', 'delete-location');
+  idCell.title = 'Click to delete';
+  idCell.onclick = function() {
+    _removeShipment(s);
+  };
 
-    // Required when parsing json files containing jobs with no
-    // description.
-    if (!s[type].description) {
-      s[type].description = 'No description';
-    }
-
-    var nameCell = row.insertCell(1);
-    nameCell.title = 'Click to center the map';
-    nameCell.appendChild(document.createTextNode(s[type].description));
-    nameCell.onclick = function() {
-      _openPopup(type, s[type].id);
-      centerMarker(type, s[type].id);
-    };
+  // Required when parsing json files containing jobs with no
+  // description.
+  if (!s[type].description) {
+    s[type].description = 'No description';
   }
 
+  var nameCell = row.insertCell(1);
+  nameCell.title = 'Click to center the map';
+  nameCell.appendChild(document.createTextNode(s[type].description));
+  nameCell.onclick = function() {
+    _openPopup(type, s[type].id);
+    centerMarker(type, s[type].id);
+  };
+}
+
+var _shipmentDisplay = function(s) {
+  _setPopup(s, 'pickup');
+  _setPopup(s, 'delivery');
+
   // TODO implement and run.
-  // _handleShipmentPopup(s);
+  _handleShipmentPopup(s);
 }
 
 var _setAsStart = function(vRank, j) {
@@ -558,6 +561,27 @@ var _handleJobPopup = function(j) {
   });
 }
 
+var _handleShipmentPopup = function(s) {
+  for (var type of ['pickup', 'delivery']) {
+    var popupDiv = document.createElement('div');
+    var par = document.createElement('p');
+    par.innerHTML = '<b>' + (type.substring(0, 1)).toUpperCase() +
+      type.substring(1, type.length) + '</b> ' +
+      s[type].id + '<br>' + s[type].description;
+
+    var deleteButton = document.createElement('button');
+    deleteButton.innerHTML = 'Del';
+    deleteButton.onclick = function() {
+      _removeShipment(s);
+    };
+
+    popupDiv.appendChild(par);
+    popupDiv.appendChild(deleteButton);
+
+    data.markers[type][s[type].id.toString()].bindPopup(popupDiv);
+  }
+}
+
 var _openPopup = function(type, id) {
   data.markers[type][id.toString()].openPopup();
 }
@@ -647,7 +671,7 @@ var _removeJob = function(j) {
   for (var i = 0; i < data.jobs.length; i++) {
     if (data.jobs[i].id == j.id) {
       data.jobs.splice(i, 1);
-      var jobRow = document.getElementById('task-' + j.id.toString());
+      var jobRow = document.getElementById('job-' + j.id.toString());
       jobRow.parentNode.removeChild(jobRow);
       if (_getTasksSize() === 0 && _getVehiclesSize() === 0) {
         LSetup.map.removeControl(clearControl);
