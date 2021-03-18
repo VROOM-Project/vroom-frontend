@@ -20,7 +20,10 @@ reader.onload = function(event) {
   var validJsonInput = false;
   try {
     var data = JSON.parse(event.target.result);
-    validJsonInput = ('jobs' in data) && ('vehicles' in data);
+    validJsonInput = 'vehicles' in data && Array.isArray(data.vehicles);
+    hasValidJobs = 'jobs' in data && Array.isArray(data.jobs);
+    hasValidShipments = 'shipments' in data && Array.isArray(data.shipments);
+    validJsonInput &= (hasValidJobs || hasValidShipments);
   } catch(e) {}
 
   if (validJsonInput) {
