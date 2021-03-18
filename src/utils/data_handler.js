@@ -694,6 +694,32 @@ var _removeJob = function(j) {
   _recomputeBounds();
 }
 
+var _removeShipment = function(s) {
+  _clearSolution();
+  for (var type of ['pickup', 'delivery']) {
+    LSetup.map.removeLayer(data.markers[type][s[type].id.toString()]);
+    delete data.markers[type][s[type].id.toString()];
+  }
+  for (var i = 0; i < data.shipments.length; i++) {
+    if (data.shipments[i].pickup.id == s.pickup.id &&
+        data.shipments[i].delivery.id == s.delivery.id) {
+      data.shipments.splice(i, 1);
+
+      var pickupRow = document.getElementById('pickup-' + s.pickup.id.toString());
+      pickupRow.parentNode.removeChild(pickupRow);
+      var deliveryRow = document.getElementById('delivery-' + s.delivery.id.toString());
+      deliveryRow.parentNode.removeChild(deliveryRow);
+
+      if (_getTasksSize() === 0 && _getVehiclesSize() === 0) {
+        LSetup.map.removeControl(clearControl);
+      }
+      checkControls();
+      break;
+    }
+  }
+  _recomputeBounds();
+}
+
 var _removeStart = function(v) {
   var allowRemoval = (data.vehicles.length > 1) || v.end;
   if (allowRemoval) {
