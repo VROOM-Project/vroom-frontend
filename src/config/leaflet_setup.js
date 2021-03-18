@@ -54,11 +54,11 @@ var markerStyle = {
     'radius': 6
   },
   'pickup': {
-    'color': '#FF7900FF',
+    'color': '#FF7900',
     'radius': 8
   },
   'delivery': {
-    'color': '#FF7900FF',
+    'color': '#FF7900',
     'radius': 4
   },
   'unassigned': {
@@ -66,6 +66,12 @@ var markerStyle = {
     'radius': 8
   }
 };
+
+var pdLineStyle = {
+  'color': '#666666',
+  'weight': 4,
+  'opacity': 0.8
+}
 
 module.exports = {
   map: map,
@@ -79,5 +85,6 @@ module.exports = {
   routeColors: routeColors,
   startColor: '#48b605',
   endColor: '#e9130a',
-  markerStyle: markerStyle
+  markerStyle: markerStyle,
+  pdLineStyle: pdLineStyle
 };

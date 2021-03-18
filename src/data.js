@@ -17,6 +17,10 @@ var vehiclesMarkers = {};
 var maxTaskId = 0;
 var maxVehicleId = 0;
 
+// Store segments to match pickup and delivery, indexed in the form
+// 'p.id-d.id'.
+var pdLines = {};
+
 module.exports = {
   jobs: jobs,
   shipments: shipments,
@@ -24,5 +28,6 @@ module.exports = {
   maxVehicleId: maxVehicleId,
   vehicles: vehicles,
   markers: markers,
-  vehiclesMarkers: vehiclesMarkers
+  vehiclesMarkers: vehiclesMarkers,
+  pdLines: pdLines
 };

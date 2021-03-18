@@ -196,6 +196,7 @@ var clearData = function() {
     'delivery': {}
   };
   data.vehiclesMarkers = {};
+  data.pdLines = {};
 
   // Reset bounds.
   delete data.bounds;
@@ -440,7 +441,7 @@ var _jobDisplay = function(j) {
   _openPopup('job', j.id);
 }
 
-var _setPopup = function(s, type) {
+var _setPanelTask = function(s, type) {
   var panelList = document.getElementById('panel-tasks');
 
   var nb_rows = panelList.rows.length;
@@ -470,10 +471,9 @@ var _setPopup = function(s, type) {
 }
 
 var _shipmentDisplay = function(s) {
-  _setPopup(s, 'pickup');
-  _setPopup(s, 'delivery');
+  _setPanelTask(s, 'pickup');
+  _setPanelTask(s, 'delivery');
 
-  // TODO implement and run.
   _handleShipmentPopup(s);
 }
 
@@ -573,6 +573,11 @@ var _handleJobPopup = function(j) {
 }
 
 var _handleShipmentPopup = function(s) {
+  data.pdLines[s.pickup.id + '-' + s.delivery.id]
+    =  L.polyline([[s.pickup.location[1], s.pickup.location[0]],
+                   [s.delivery.location[1], s.delivery.location[0]]],
+                  LSetup.pdLineStyle);
+
   for (var type of ['pickup', 'delivery']) {
     var popupDiv = document.createElement('div');
     var par = document.createElement('p');
@@ -590,6 +595,19 @@ var _handleShipmentPopup = function(s) {
     popupDiv.appendChild(deleteButton);
 
     data.markers[type][s[type].id.toString()].bindPopup(popupDiv);
+
+    data.markers[type][s[type].id.toString()].on('popupopen', function() {
+      data.pdLines[s.pickup.id + '-' + s.delivery.id].addTo(LSetup.map);
+    });
+    data.markers[type][s[type].id.toString()].on('mouseover', function() {
+      data.pdLines[s.pickup.id + '-' + s.delivery.id].addTo(LSetup.map);
+    });
+    data.markers[type][s[type].id.toString()].on('popupclose', function() {
+      LSetup.map.removeLayer(data.pdLines[s.pickup.id + '-' + s.delivery.id]);
+    });
+    data.markers[type][s[type].id.toString()].on('mouseout', function() {
+      LSetup.map.removeLayer(data.pdLines[s.pickup.id + '-' + s.delivery.id]);
+    });
   }
 }
 
@@ -700,6 +718,8 @@ var _removeShipment = function(s) {
     LSetup.map.removeLayer(data.markers[type][s[type].id.toString()]);
     delete data.markers[type][s[type].id.toString()];
   }
+  delete data.pdLines[s.pickup.id + '-' + s.delivery.id];
+
   for (var i = 0; i < data.shipments.length; i++) {
     if (data.shipments[i].pickup.id == s.pickup.id &&
         data.shipments[i].delivery.id == s.delivery.id) {
