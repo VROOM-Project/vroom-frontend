@@ -154,10 +154,7 @@ var _clearSolution = function() {
       LSetup.map.removeLayer(routes[i]);
     }
     for (var k in data.markers['job']) {
-      data.markers['job'][k].setStyle({
-        color: LSetup.jobColor,
-        radius: LSetup.jobRadius,
-      });
+      data.markers['job'][k].setStyle(LSetup.markerStyle['job']);
     }
     LSetup.map.removeControl(summaryControl);
 
@@ -597,10 +594,10 @@ var addJob = function(j) {
   data.markers['job'][j.id.toString()]
     = L.circleMarker([j.location[1], j.location[0]],
                      {
-                       radius: LSetup.jobRadius,
+                       radius: LSetup.markerStyle['job'].radius,
                        weight: 3,
                        fillOpacity: 0.4,
-                       color: LSetup.jobColor
+                       color: LSetup.markerStyle['job'].color
                      })
     .addTo(LSetup.map);
 
@@ -630,12 +627,12 @@ var addShipment = function(s) {
     data.maxTaskId = Math.max(data.maxTaskId, s.delivery.id);
     data.shipments.push(s);
     data.markers[type][s[type].id.toString()]
-      = L.circleMarker([s.pickup.location[1], s.pickup.location[0]],
+      = L.circleMarker([s[type].location[1], s[type].location[0]],
                        {
-                         radius: LSetup.pickupRadius,
+                         radius: LSetup.markerStyle[type].radius,
                          weight: 3,
                          fillOpacity: 0.4,
-                         color: LSetup.pickupColor
+                         color: LSetup.markerStyle[type].color
                        })
       .addTo(LSetup.map);
   }

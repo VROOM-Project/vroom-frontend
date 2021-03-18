@@ -48,6 +48,21 @@ var routeColors = [
   '#39CCCC',   // teal
 ];
 
+var markerStyle = {
+  'job': {
+    'color': '#3388ff',
+    'radius': 6
+  },
+  'pickup': {
+    'color': '#FF7900FF',
+    'radius': 7
+  },
+  'delivery': {
+    'color': '#FF7900FF',
+    'radius': 5
+  }
+};
+
 module.exports = {
   map: map,
   maxBounds: maxBounds,
@@ -60,12 +75,7 @@ module.exports = {
   routeColors: routeColors,
   startColor: '#48b605',
   endColor: '#e9130a',
-  jobColor: '#3388ff',
-  jobRadius: 6,
-  pickupColor: '#FF7900FF',
-  pickupRadius: 7,
-  deliveryColor: '#FF7900FF',
-  deliveryRadius: 5,
+  markerStyle: markerStyle,
   unassignedColor: '#111111',
   unassignedRadius: 8
 };
