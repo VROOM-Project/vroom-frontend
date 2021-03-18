@@ -4,10 +4,12 @@ var jobs = [];
 var shipments = [];
 var vehicles = [];
 
-// Stored with task id as key.
-var jobsMarkers = {};
-var pickupsMarkers = {};
-var deliveriesMarkers = {};
+// Stored with type and task id as key, e.g. markers['job']['14'].
+var markers = {
+  'job': {},
+  'pickup': {},
+  'delivery': {}
+};
 
 // Stored with vehicle id + {_start,_end} as key
 var vehiclesMarkers = {};
@@ -21,8 +23,6 @@ module.exports = {
   maxTaskId: maxTaskId,
   maxVehicleId: maxVehicleId,
   vehicles: vehicles,
-  jobsMarkers: jobsMarkers,
-  pickupsMarkers: pickupsMarkers,
-  deliveriesMarkers: deliveriesMarkers,
+  markers: markers,
   vehiclesMarkers: vehiclesMarkers
 };

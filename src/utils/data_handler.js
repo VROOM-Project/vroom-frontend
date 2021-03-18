@@ -153,8 +153,8 @@ var _clearSolution = function() {
     for (var i = 0; i < routes.length; ++i) {
       LSetup.map.removeLayer(routes[i]);
     }
-    for (var k in data.jobsMarkers) {
-      data.jobsMarkers[k].setStyle({
+    for (var k in data.markers['job']) {
+      data.markers['job'][k].setStyle({
         color: LSetup.jobColor,
         radius: LSetup.jobRadius,
       });
@@ -176,9 +176,9 @@ var clearData = function() {
   data.maxVehicleId = 0;
 
   // Clear all data and markers.
-  for (var k in data.jobsMarkers) {
-    LSetup.map.removeLayer(data.jobsMarkers[k]);
-    delete data.jobsMarkers[k];
+  for (var k in data.markers['job']) {
+    LSetup.map.removeLayer(data.markers['job'][k]);
+    delete data.markers['job'][k];
   }
   for (var k in data.vehiclesMarkers) {
     LSetup.map.removeLayer(data.vehiclesMarkers[k]);
@@ -188,7 +188,7 @@ var clearData = function() {
   // Init dataset.
   data.jobs = [];
   data.vehicles = [];
-  data.jobsMarkers = {};
+  data.markers['job'] = {};
   data.vehiclesMarkers = {};
 
   // Reset bounds.
@@ -198,8 +198,8 @@ var clearData = function() {
 }
 
 var closeAllPopups = function() {
-  for (var k in data.jobsMarkers) {
-    data.jobsMarkers[k].closePopup();
+  for (var k in data.markers['job']) {
+    data.markers['job'][k].closePopup();
   }
   for (var k in data.vehiclesMarkers) {
     data.vehiclesMarkers[k].closePopup();
@@ -424,18 +424,18 @@ var _jobDisplay = function(j) {
   nameCell.title = 'Click to center the map';
   nameCell.appendChild(document.createTextNode(j.description));
   nameCell.onclick = function() {
-    _openJobPopup(j);
+    _openPopup('job', j.id);
     centerJob(j);
   };
 
   _handleJobPopup(j);
-  _openJobPopup(j);
+  _openPopup('job', j.id);
 }
 
 var _shipmentDisplay = function(s) {
   var panelList = document.getElementById('panel-tasks');
 
-  for (var type of ["pickup", "delivery"]) {
+  for (var type of ['pickup', 'delivery']) {
     var nb_rows = panelList.rows.length;
     var row = panelList.insertRow(nb_rows);
     row.setAttribute('id', 'task-' + s[type].id.toString());
@@ -457,7 +457,7 @@ var _shipmentDisplay = function(s) {
     nameCell.title = 'Click to center the map';
     nameCell.appendChild(document.createTextNode(s[type].description));
     nameCell.onclick = function() {
-      _openShipmentPopup(s);
+      _openPopup(type, s[type].id);
       centerShipment(s);
     };
   }
@@ -494,7 +494,7 @@ var _setAsEnd = function(vRank, j) {
 var _handleJobPopup = function(j) {
   var popupDiv = document.createElement('div');
   var par = document.createElement('p');
-  par.innerHTML = j.description;
+  par.innerHTML = '<b>Job </b> ' + j.id + '<br>' + j.description;
   var deleteButton = document.createElement('button');
   deleteButton.innerHTML = 'Del';
   deleteButton.onclick = function() {
@@ -547,7 +547,7 @@ var _handleJobPopup = function(j) {
     } else {
       optionsDiv.style.display = 'none';
     }
-    _openJobPopup(j);
+    _openPopup('job', j.id);
   }
 
   popupDiv.appendChild(par);
@@ -555,15 +555,15 @@ var _handleJobPopup = function(j) {
   popupDiv.appendChild(optionsDiv);
   optionsDiv.style.display = 'none';
 
-  data.jobsMarkers[j.id.toString()].bindPopup(popupDiv);
+  data.markers['job'][j.id.toString()].bindPopup(popupDiv);
 
-  data.jobsMarkers[j.id.toString()].on('popupclose', function() {
+  data.markers['job'][j.id.toString()].on('popupclose', function() {
     optionsDiv.style.display = 'none';
   });
 }
 
-var _openJobPopup = function(j) {
-  data.jobsMarkers[j.id.toString()].openPopup();
+var _openPopup = function(type, id) {
+  data.markers[type][id.toString()].openPopup();
 }
 
 var _updateAllJobPopups = function() {
@@ -573,7 +573,7 @@ var _updateAllJobPopups = function() {
 }
 
 var centerJob = function(j) {
-  LSetup.map.panTo(data.jobsMarkers[j.id.toString()].getLatLng());
+  LSetup.map.panTo(data.markers['job'][j.id.toString()].getLatLng());
 }
 
 var addJob = function(j) {
@@ -594,7 +594,7 @@ var addJob = function(j) {
 
   data.maxTaskId = Math.max(data.maxTaskId, j.id);
   data.jobs.push(j);
-  data.jobsMarkers[j.id.toString()]
+  data.markers['job'][j.id.toString()]
     = L.circleMarker([j.location[1], j.location[0]],
                      {
                        radius: LSetup.jobRadius,
@@ -646,8 +646,8 @@ var addShipment = function(s) {
 
 var _removeJob = function(j) {
   _clearSolution();
-  LSetup.map.removeLayer(data.jobsMarkers[j.id.toString()]);
-  delete data.jobsMarkers[j.id.toString()];
+  LSetup.map.removeLayer(data.markers['job'][j.id.toString()]);
+  delete data.markers['job'][j.id.toString()];
   for (var i = 0; i < data.jobs.length; i++) {
     if (data.jobs[i].id == j.id) {
       data.jobs.splice(i, 1);
@@ -747,7 +747,7 @@ var getOutput = function() {
 
 var markUnassigned = function(unassigned) {
   for (var i = 0; i < unassigned.length; ++i) {
-    data.jobsMarkers[unassigned[i].id.toString()]
+    data.markers['job'][unassigned[i].id.toString()]
       .setStyle({
         color: LSetup.unassignedColor,
         radius: LSetup.unassignedRadius,
@@ -810,7 +810,7 @@ var addRoutes = function(resultRoutes) {
 
         var jobId = step.job.toString();
 
-        data.jobsMarkers[jobId].setStyle({color: routeColor});
+        data.markers['job'][jobId].setStyle({color: routeColor});
 
         // Add to solution display
         var nb_rows = solutionList.rows.length;
@@ -820,7 +820,7 @@ var addRoutes = function(resultRoutes) {
         // Hack to make sure the marker index is right.
         var showCallback = function(rank) {
           return function() {
-            _openJobPopup(data.jobs[rank]);
+            _openPopup('job', data.jobs[rank].id);
             centerJob(data.jobs[rank]);
           };
         }
