@@ -189,6 +189,7 @@ var clearData = function() {
 
   // Init dataset.
   data.jobs = [];
+  data.shipments = [];
   data.vehicles = [];
   data.markers = {
     'job': {},
