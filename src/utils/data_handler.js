@@ -713,11 +713,6 @@ var addRoutes = function(resultRoutes) {
           routes[k].setStyle({opacity: lowOpacity});
         }
       }
-      for (var jobMarker in data.jobsMarkers) {
-        if (data.jobsMarkers.hasOwnProperty(jobMarker)) {
-          data.jobsMarkers[jobMarker].setStyle({opacity: lowOpacity});
-        }
-      }
     }
 
     var showRoute = function (r) {
