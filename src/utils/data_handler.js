@@ -717,14 +717,11 @@ var addRoutes = function(resultRoutes) {
 
     var showRoute = function (r) {
       return function() {
-        // Either increase this route's opacity and decrease others, or reset
-        if (routes[r].options.opacity <= LSetup.opacity) {
-          routes[r].bringToFront();
-          updateRouteOpacities(r, LSetup.highOpacity, LSetup.lowOpacity);
-        } else {
-          updateRouteOpacities(r, LSetup.opacity, LSetup.opacity);
-        }
+        // Increase this route's opacity and decrease others.
         routes[r].openPopup();
+        routes[r].bringToFront();
+        updateRouteOpacities(r, LSetup.highOpacity, LSetup.lowOpacity);
+
         LSetup.map.fitBounds(routes[r].getBounds(), {
           paddingBottomRight: [panelControl.getWidth(), 0],
           paddingTopLeft: [50, 0],
