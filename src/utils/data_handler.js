@@ -13,9 +13,14 @@ var solveControl = require('../controls/solve');
 var summaryControl = require('../controls/summary');
 
 var routes = [];
+var actualSteps = ['job', 'pickup', 'delivery'];
 
 var getJobs = function() {
   return data.jobs;
+}
+
+var getShipments = function() {
+  return data.shipments;
 }
 
 var getVehicles = function() {
@@ -32,26 +37,26 @@ var getOverpassQuery = function() {
   return query;
 }
 
-var getJobsSize = function() {
-  return data.jobs.length;
+var _getTasksSize = function() {
+  return data.jobs.length + 2 * data.shipments.length;
 }
 
-var getNextJobId = function() {
-  return data.maxJobId + 1;
+var getNextTaskId = function() {
+  return data.maxTaskId + 1;
 }
 
 var getNextVehicleId = function() {
   return data.maxVehicleId + 1;
 }
 
-var getVehiclesSize = function() {
+var _getVehiclesSize = function() {
   return data.vehicles.length;
 }
 
 var checkControls = function() {
-  var hasJobs = getJobsSize() > 0;
-  var hasVehicles = getVehiclesSize() > 0;
-  if (hasJobs || hasVehicles) {
+  var hasTasks = _getTasksSize() > 0;
+  var hasVehicles = _getVehiclesSize() > 0;
+  if (hasTasks || hasVehicles) {
     // Fit and clear controls as soon as we have a location.
     if (!LSetup.map.fitControl) {
       LSetup.map.addControl(fitControl);
@@ -63,11 +68,11 @@ var checkControls = function() {
   if (!LSetup.map.solveControl) {
     // Solve control appears only when there's enough input to fire a
     // solving query.
-    if (hasVehicles && hasJobs) {
+    if (hasVehicles && hasTasks) {
       solveControl.addTo(LSetup.map);
     }
   } else {
-    if (getJobsSize() === 0) {
+    if (_getTasksSize() === 0) {
       LSetup.map.removeControl(solveControl);
     }
   }
@@ -144,23 +149,22 @@ var _clearSolution = function() {
   if (hasSolution()) {
     // Back to input mode.
     panelControl.clearSolutionDisplay();
-    panelControl.showJobDisplay();
+    panelControl.showTaskDisplay();
 
     for (var i = 0; i < routes.length; ++i) {
       LSetup.map.removeLayer(routes[i]);
     }
-    for (var k in data.jobsMarkers) {
-      data.jobsMarkers[k].setStyle({
-        color: LSetup.jobColor,
-        radius: LSetup.jobRadius,
-      });
+    for (var type in data.markers) {
+      for (var k in data.markers[type]) {
+        data.markers[type][k].setStyle(LSetup.markerStyle[type]);
+      }
     }
     LSetup.map.removeControl(summaryControl);
 
     routes = [];
 
-    // Remove query output for this solution.
-    delete data.output;
+    // Remove query solution.
+    delete data.solution;
   }
 }
 
@@ -168,13 +172,15 @@ var clearData = function() {
   // Back to adding a start/end for next place.
   _firstPlace = true;
   _hasCapacity = true;
-  data.maxJobId = 0;
+  data.maxTaskId = 0;
   data.maxVehicleId = 0;
 
   // Clear all data and markers.
-  for (var k in data.jobsMarkers) {
-    LSetup.map.removeLayer(data.jobsMarkers[k]);
-    delete data.jobsMarkers[k];
+  for (var type in data.markers) {
+    for (var k in data.markers[type]) {
+      LSetup.map.removeLayer(data.markers[type][k]);
+      delete data.markers[type][k];
+    }
   }
   for (var k in data.vehiclesMarkers) {
     LSetup.map.removeLayer(data.vehiclesMarkers[k]);
@@ -183,9 +189,15 @@ var clearData = function() {
 
   // Init dataset.
   data.jobs = [];
+  data.shipments = [];
   data.vehicles = [];
-  data.jobsMarkers = {};
+  data.markers = {
+    'job': {},
+    'pickup': {},
+    'delivery': {}
+  };
   data.vehiclesMarkers = {};
+  data.pdLines = {};
 
   // Reset bounds.
   delete data.bounds;
@@ -194,8 +206,10 @@ var clearData = function() {
 }
 
 var closeAllPopups = function() {
-  for (var k in data.jobsMarkers) {
-    data.jobsMarkers[k].closePopup();
+  for (var type in data.markers) {
+    for (var k in data.markers[type]) {
+      data.markers[type][k].closePopup();
+    }
   }
   for (var k in data.vehiclesMarkers) {
     data.vehiclesMarkers[k].closePopup();
@@ -215,7 +229,7 @@ var _setStart = function(v) {
       // Reset start row when removing is ok.
       vTable.deleteRow(1);
       vTable.insertRow(1);
-      if (getJobsSize() === 0 && getVehiclesSize() === 0) {
+      if (_getTasksSize() === 0 && _getVehiclesSize() === 0) {
         LSetup.map.removeControl(clearControl);
       }
       checkControls();
@@ -276,7 +290,7 @@ var _setEnd = function(v) {
       // Reset end row when removing is ok.
       vTable.deleteRow(2);
       vTable.insertRow(2);
-      if (getJobsSize() === 0 && getVehiclesSize() === 0) {
+      if (_getTasksSize() === 0 && _getVehiclesSize() === 0) {
         LSetup.map.removeControl(clearControl);
       }
       checkControls();
@@ -388,7 +402,7 @@ var addVehicle = function(v) {
 
   if (_hasCapacity && !('capacity' in v)) {
     _hasCapacity = false;
-    if (getVehiclesSize() + getJobsSize() > 1) {
+    if (_getVehiclesSize() + _getTasksSize() > 1) {
       _deleteAmounts();
     }
   }
@@ -397,7 +411,7 @@ var addVehicle = function(v) {
 }
 
 var _jobDisplay = function(j) {
-  var panelList = document.getElementById('panel-jobs');
+  var panelList = document.getElementById('panel-tasks');
 
   var nb_rows = panelList.rows.length;
   var row = panelList.insertRow(nb_rows);
@@ -420,12 +434,48 @@ var _jobDisplay = function(j) {
   nameCell.title = 'Click to center the map';
   nameCell.appendChild(document.createTextNode(j.description));
   nameCell.onclick = function() {
-    _openJobPopup(j);
-    centerJob(j);
+    _openPopup('job', j.id);
+    centerMarker('job', j.id);
   };
 
   _handleJobPopup(j);
-  _openJobPopup(j);
+  _openPopup('job', j.id);
+}
+
+var _setPanelTask = function(s, type) {
+  var panelList = document.getElementById('panel-tasks');
+
+  var nb_rows = panelList.rows.length;
+  var row = panelList.insertRow(nb_rows);
+  row.setAttribute('id', type + '-' + s[type].id.toString());
+  var idCell = row.insertCell(0);
+
+  idCell.setAttribute('class', 'delete-location');
+  idCell.title = 'Click to delete';
+  idCell.onclick = function() {
+    _removeShipment(s);
+  };
+
+  // Required when parsing json files containing jobs with no
+  // description.
+  if (!s[type].description) {
+    s[type].description = 'No description';
+  }
+
+  var nameCell = row.insertCell(1);
+  nameCell.title = 'Click to center the map';
+  nameCell.appendChild(document.createTextNode(s[type].description));
+  nameCell.onclick = function() {
+    _openPopup(type, s[type].id);
+    centerMarker(type, s[type].id);
+  };
+}
+
+var _shipmentDisplay = function(s) {
+  _setPanelTask(s, 'pickup');
+  _setPanelTask(s, 'delivery');
+
+  _handleShipmentPopup(s);
 }
 
 var _setAsStart = function(vRank, j) {
@@ -455,7 +505,7 @@ var _setAsEnd = function(vRank, j) {
 var _handleJobPopup = function(j) {
   var popupDiv = document.createElement('div');
   var par = document.createElement('p');
-  par.innerHTML = j.description;
+  par.innerHTML = '<b>Job </b> ' + j.id + '<br>' + j.description;
   var deleteButton = document.createElement('button');
   deleteButton.innerHTML = 'Del';
   deleteButton.onclick = function() {
@@ -508,7 +558,7 @@ var _handleJobPopup = function(j) {
     } else {
       optionsDiv.style.display = 'none';
     }
-    _openJobPopup(j);
+    _openPopup('job', j.id);
   }
 
   popupDiv.appendChild(par);
@@ -516,15 +566,54 @@ var _handleJobPopup = function(j) {
   popupDiv.appendChild(optionsDiv);
   optionsDiv.style.display = 'none';
 
-  data.jobsMarkers[j.id.toString()].bindPopup(popupDiv);
+  data.markers['job'][j.id.toString()].bindPopup(popupDiv);
 
-  data.jobsMarkers[j.id.toString()].on('popupclose', function() {
+  data.markers['job'][j.id.toString()].on('popupclose', function() {
     optionsDiv.style.display = 'none';
   });
 }
 
-var _openJobPopup = function(j) {
-  data.jobsMarkers[j.id.toString()].openPopup();
+var _handleShipmentPopup = function(s) {
+  data.pdLines[s.pickup.id + '-' + s.delivery.id]
+    =  L.polyline([[s.pickup.location[1], s.pickup.location[0]],
+                   [s.delivery.location[1], s.delivery.location[0]]],
+                  LSetup.pdLineStyle);
+
+  for (var type of ['pickup', 'delivery']) {
+    var popupDiv = document.createElement('div');
+    var par = document.createElement('p');
+    par.innerHTML = '<b>' + (type.substring(0, 1)).toUpperCase() +
+      type.substring(1, type.length) + '</b> ' +
+      s[type].id + '<br>' + s[type].description;
+
+    var deleteButton = document.createElement('button');
+    deleteButton.innerHTML = 'Del';
+    deleteButton.onclick = function() {
+      _removeShipment(s);
+    };
+
+    popupDiv.appendChild(par);
+    popupDiv.appendChild(deleteButton);
+
+    data.markers[type][s[type].id.toString()].bindPopup(popupDiv);
+
+    data.markers[type][s[type].id.toString()].on('popupopen', function() {
+      data.pdLines[s.pickup.id + '-' + s.delivery.id].addTo(LSetup.map);
+    });
+    data.markers[type][s[type].id.toString()].on('mouseover', function() {
+      data.pdLines[s.pickup.id + '-' + s.delivery.id].addTo(LSetup.map);
+    });
+    data.markers[type][s[type].id.toString()].on('popupclose', function() {
+      LSetup.map.removeLayer(data.pdLines[s.pickup.id + '-' + s.delivery.id]);
+    });
+    data.markers[type][s[type].id.toString()].on('mouseout', function() {
+      LSetup.map.removeLayer(data.pdLines[s.pickup.id + '-' + s.delivery.id]);
+    });
+  }
+}
+
+var _openPopup = function(type, id) {
+  data.markers[type][id.toString()].openPopup();
 }
 
 var _updateAllJobPopups = function() {
@@ -533,19 +622,19 @@ var _updateAllJobPopups = function() {
   }
 }
 
-var centerJob = function(j) {
-  LSetup.map.panTo(data.jobsMarkers[j.id.toString()].getLatLng());
+var centerMarker = function(type, id) {
+  LSetup.map.panTo(data.markers[type][id.toString()].getLatLng());
 }
 
 var addJob = function(j) {
-  if (getJobsSize() >= api.maxJobNumber) {
-    alert('Number of jobs can\'t exceed ' + api.maxJobNumber + '.');
+  if (_getTasksSize() >= api.maxTaskNumber) {
+    alert('Number of tasks can\'t exceed ' + api.maxTaskNumber + '.');
     return;
   }
 
   if (_hasCapacity && !('delivery' in j) && !('pickup' in j)) {
     _hasCapacity = false;
-    if (getVehiclesSize() + getJobsSize() > 1) {
+    if (_getVehiclesSize() + _getTasksSize() > 1) {
       _deleteAmounts();
     }
   }
@@ -553,15 +642,15 @@ var addJob = function(j) {
   _clearSolution();
   _pushToBounds(j.location);
 
-  data.maxJobId = Math.max(data.maxJobId, j.id);
+  data.maxTaskId = Math.max(data.maxTaskId, j.id);
   data.jobs.push(j);
-  data.jobsMarkers[j.id.toString()]
+  data.markers['job'][j.id.toString()]
     = L.circleMarker([j.location[1], j.location[0]],
                      {
-                       radius: LSetup.jobRadius,
+                       radius: LSetup.markerStyle['job'].radius,
                        weight: 3,
                        fillOpacity: 0.4,
-                       color: LSetup.jobColor
+                       color: LSetup.markerStyle['job'].color
                      })
     .addTo(LSetup.map);
 
@@ -569,16 +658,80 @@ var addJob = function(j) {
   _jobDisplay(j);
 }
 
+var addShipment = function(s) {
+  if (_getTasksSize() >= api.maxTaskNumber) {
+    alert('Number of tasks can\'t exceed ' + api.maxTaskNumber + '.');
+    return;
+  }
+
+  if (_hasCapacity && !('amount' in s)) {
+    _hasCapacity = false;
+    if (_getVehiclesSize() + _getTasksSize() > 1) {
+      _deleteAmounts();
+    }
+  }
+
+  _clearSolution();
+
+  for (var type of ['pickup', 'delivery']) {
+    _pushToBounds(s[type].location);
+
+    data.maxTaskId = Math.max(data.maxTaskId, s.pickup.id);
+    data.maxTaskId = Math.max(data.maxTaskId, s.delivery.id);
+    data.markers[type][s[type].id.toString()]
+      = L.circleMarker([s[type].location[1], s[type].location[0]],
+                       {
+                         radius: LSetup.markerStyle[type].radius,
+                         weight: 3,
+                         fillOpacity: 0.4,
+                         color: LSetup.markerStyle[type].color
+                       })
+      .addTo(LSetup.map);
+  }
+  data.shipments.push(s);
+
+  // Handle display stuff.
+  _shipmentDisplay(s);
+}
+
 var _removeJob = function(j) {
   _clearSolution();
-  LSetup.map.removeLayer(data.jobsMarkers[j.id.toString()]);
-  delete data.jobsMarkers[j.id.toString()];
+  LSetup.map.removeLayer(data.markers['job'][j.id.toString()]);
+  delete data.markers['job'][j.id.toString()];
   for (var i = 0; i < data.jobs.length; i++) {
     if (data.jobs[i].id == j.id) {
       data.jobs.splice(i, 1);
       var jobRow = document.getElementById('job-' + j.id.toString());
       jobRow.parentNode.removeChild(jobRow);
-      if (getJobsSize() === 0 && getVehiclesSize() === 0) {
+      if (_getTasksSize() === 0 && _getVehiclesSize() === 0) {
+        LSetup.map.removeControl(clearControl);
+      }
+      checkControls();
+      break;
+    }
+  }
+  _recomputeBounds();
+}
+
+var _removeShipment = function(s) {
+  _clearSolution();
+  for (var type of ['pickup', 'delivery']) {
+    LSetup.map.removeLayer(data.markers[type][s[type].id.toString()]);
+    delete data.markers[type][s[type].id.toString()];
+  }
+  delete data.pdLines[s.pickup.id + '-' + s.delivery.id];
+
+  for (var i = 0; i < data.shipments.length; i++) {
+    if (data.shipments[i].pickup.id == s.pickup.id &&
+        data.shipments[i].delivery.id == s.delivery.id) {
+      data.shipments.splice(i, 1);
+
+      var pickupRow = document.getElementById('pickup-' + s.pickup.id.toString());
+      pickupRow.parentNode.removeChild(pickupRow);
+      var deliveryRow = document.getElementById('delivery-' + s.delivery.id.toString());
+      deliveryRow.parentNode.removeChild(deliveryRow);
+
+      if (_getTasksSize() === 0 && _getVehiclesSize() === 0) {
         LSetup.map.removeControl(clearControl);
       }
       checkControls();
@@ -662,26 +815,22 @@ var showEnd = function(v, center) {
   }
 }
 
-var setOutput = function(output) {
-  data.output = output;
+var setSolution = function(solution) {
+  data.solution = solution;
 }
 
-var getOutput = function() {
-  return data.output;
+var getSolution = function() {
+  return data.solution;
 }
 
 var markUnassigned = function(unassigned) {
   for (var i = 0; i < unassigned.length; ++i) {
-    data.jobsMarkers[unassigned[i].id.toString()]
-      .setStyle({
-        color: LSetup.unassignedColor,
-        radius: LSetup.unassignedRadius,
-      });
+    data.markers[unassigned[i].type][unassigned[i].id.toString()]
+      .setStyle(LSetup.markerStyle.unassigned);
   }
 }
 
 var addRoutes = function(resultRoutes) {
-
   for (var i = 0; i < resultRoutes.length; ++i) {
     var latlngs = polyUtil.decode(resultRoutes[i]['geometry']);
 
@@ -695,8 +844,8 @@ var addRoutes = function(resultRoutes) {
 
     data.bounds.extend(latlngs);
 
-    // Hide input job display.
-    panelControl.hideJobDisplay();
+    // Hide input task display.
+    panelControl.hideTaskDisplay();
 
     var solutionList = document.getElementById('panel-solution');
 
@@ -722,44 +871,38 @@ var addRoutes = function(resultRoutes) {
     vCell.setAttribute('colspan', 2);
     vCell.appendChild(document.createTextNode('Vehicle ' + resultRoutes[i].vehicle.toString()));
 
-    var jobIdToRank = {}
-    for (var j = 0; j < data.jobs.length; j++) {
-      jobIdToRank[data.jobs[j].id.toString()] = j;
-    }
-
-    var jobRank = 0;
+    var stepRank = 0;
     for (var s = 0; s < resultRoutes[i].steps.length; s++) {
       var step = resultRoutes[i].steps[s];
-      if (step.type === 'job') {
-        jobRank++;
-
-        var jobId = step.job.toString();
-
-        data.jobsMarkers[jobId].setStyle({color: routeColor});
-
-        // Add to solution display
-        var nb_rows = solutionList.rows.length;
-        var row = solutionList.insertRow(nb_rows);
-        row.title = 'Click to center the map';
-
-        // Hack to make sure the marker index is right.
-        var showCallback = function(rank) {
-          return function() {
-            _openJobPopup(data.jobs[rank]);
-            centerJob(data.jobs[rank]);
-          };
-        }
-        row.onclick = showCallback(jobIdToRank[jobId]);
-
-        var idCell = row.insertCell(0);
-        idCell.setAttribute('class', 'rank solution-display');
-        idCell.innerHTML = jobRank;
-
-        var nameCell = row.insertCell(1);
-        nameCell.appendChild(
-          document.createTextNode(data.jobs[jobIdToRank[jobId]].description)
-        );
+      if (!actualSteps.includes(step.type)) {
+        continue;
       }
+      stepRank++;
+
+      var stepId = step.id.toString();
+
+      data.markers[step.type][stepId].setStyle({color: routeColor});
+
+      // Add to solution display
+      var nb_rows = solutionList.rows.length;
+      var row = solutionList.insertRow(nb_rows);
+      row.title = 'Click to center the map';
+
+      // Hack to make sure the marker index is right.
+      var showCallback = function(type, id) {
+        return function() {
+          _openPopup(type, id);
+          centerMarker(type, id);
+        };
+      }
+      row.onclick = showCallback(step.type, stepId);
+
+      var idCell = row.insertCell(0);
+      idCell.setAttribute('class', 'rank solution-display');
+      idCell.innerHTML = stepRank;
+
+      var nameCell = row.insertCell(1);
+      nameCell.appendChild(document.createTextNode(step.description));
     }
 
     // Remember the path. This will cause hasSolution() to return true.
@@ -810,8 +953,16 @@ var setData = function(data) {
     addVehicle(data.vehicles[i]);
   }
 
-  for (var i = 0; i < data.jobs.length; i++) {
-    addJob(data.jobs[i]);
+  if ('jobs' in data) {
+    for (var i = 0; i < data.jobs.length; i++) {
+      addJob(data.jobs[i]);
+    }
+  }
+
+  if ('shipments' in data) {
+    for (var i = 0; i < data.shipments.length; i++) {
+      addShipment(data.shipments[i]);
+    }
   }
 
   // Next user input should be a job.
@@ -820,7 +971,7 @@ var setData = function(data) {
 
 var setOverpassData = function(data) {
   for (var i = 0; i < data.length; i++) {
-    if (getJobsSize() >= api.maxJobNumber) {
+    if (_getTasksSize() >= api.maxTaskNumber) {
       alert('Request too large: ' + (data.length - i).toString() + ' POI discarded.');
       return;
     }
@@ -833,9 +984,9 @@ var setOverpassData = function(data) {
   }
 }
 
-var setSolution = function(data) {
-  if ('output' in data) {
-    setOutput(data.output);
+var loadSolution = function(data) {
+  if ('solution' in data) {
+    setSolution(data.solution);
   }
 }
 
@@ -843,13 +994,13 @@ module.exports = {
   fitView: fitView,
   clearData: clearData,
   getJobs: getJobs,
+  getShipments: getShipments,
   getVehicles: getVehicles,
   showStart: showStart,
-  setOutput: setOutput,
-  getOutput: getOutput,
+  setSolution: setSolution,
+  getSolution: getSolution,
   addRoutes: addRoutes,
-  getJobsSize: getJobsSize,
-  getNextJobId: getNextJobId,
+  getNextTaskId: getNextTaskId,
   getNextVehicleId: getNextVehicleId,
   closeAllPopups: closeAllPopups,
   isFirstPlace: isFirstPlace,
@@ -857,11 +1008,11 @@ module.exports = {
   firstPlaceSet: firstPlaceSet,
   addVehicle: addVehicle,
   markUnassigned: markUnassigned,
-  centerJob: centerJob,
+  centerMarker: centerMarker,
   addJob: addJob,
   checkControls: checkControls,
   setData: setData,
-  setSolution: setSolution,
+  loadSolution: loadSolution,
   getOverpassQuery: getOverpassQuery,
   setOverpassData: setOverpassData
 };

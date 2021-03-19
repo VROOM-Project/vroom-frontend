@@ -20,7 +20,10 @@ reader.onload = function(event) {
   var validJsonInput = false;
   try {
     var data = JSON.parse(event.target.result);
-    validJsonInput = ('jobs' in data) && ('vehicles' in data);
+    validJsonInput = 'vehicles' in data && Array.isArray(data.vehicles);
+    hasValidJobs = 'jobs' in data && Array.isArray(data.jobs);
+    hasValidShipments = 'shipments' in data && Array.isArray(data.shipments);
+    validJsonInput &= (hasValidJobs || hasValidShipments);
   } catch(e) {}
 
   if (validJsonInput) {
@@ -30,8 +33,8 @@ reader.onload = function(event) {
     dataHandler.checkControls();
 
     // Plot solution if current file contains one.
-    if (('output' in data) && ('code' in data['output'])) {
-      dataHandler.setSolution(data);
+    if (('solution' in data) && ('code' in data['solution'])) {
+      dataHandler.loadSolution(data);
       solutionHandler.plotSolution();
     }
 
@@ -50,7 +53,7 @@ reader.onload = function(event) {
       locNumber: 0,
       // The '1 +' accounts for the first job being actually the
       // start/end.
-      targetLocNumber: Math.min(lines.length, 1 + api.maxJobNumber),
+      targetLocNumber: Math.min(lines.length, 1 + api.maxTaskNumber),
       totalLocNumber: lines.length,
       unfoundLocs: []
     };

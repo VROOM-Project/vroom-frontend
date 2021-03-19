@@ -9,6 +9,7 @@ var solve = function() {
   // update amounts without messing initial objects.
   var input = {
     jobs: JSON.parse(JSON.stringify(dataHandler.getJobs())),
+    shipments: JSON.parse(JSON.stringify(dataHandler.getShipments())),
     vehicles: JSON.parse(JSON.stringify(dataHandler.getVehicles())),
     "options":{
       "g": true
@@ -30,7 +31,7 @@ var solve = function() {
     if (xhttp.readyState == 4) {
       document.getElementById('wait-icon').removeAttribute('class');
       if (xhttp.status == 200) {
-        dataHandler.setOutput(JSON.parse(xhttp.response));
+        dataHandler.setSolution(JSON.parse(xhttp.response));
         plotSolution();
       } else {
         alert('Error: ' + xhttp.status);
@@ -48,7 +49,7 @@ var solve = function() {
 }
 
 var plotSolution = function() {
-  var result = dataHandler.getOutput();
+  var result = dataHandler.getSolution();
   if (result['code'] !== 0) {
     alert(result['error']);
     return;
