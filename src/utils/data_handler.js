@@ -854,9 +854,23 @@ var addRoutes = function(resultRoutes) {
     var row = solutionList.insertRow(nb_rows);
     row.title = 'Click to center the map';
 
+    var updateRouteOpacities = function (r, highOpacity, lowOpacity) {
+      for (var k = 0; k < routes.length; k++) {
+        if (k == r) {
+          routes[k].setStyle({opacity: highOpacity});
+        } else {
+          routes[k].setStyle({opacity: lowOpacity});
+        }
+      }
+    }
+
     var showRoute = function (r) {
       return function() {
-        routes[r].openPopup()
+        // Increase this route's opacity and decrease others.
+        routes[r].openPopup();
+        routes[r].bringToFront();
+        updateRouteOpacities(r, LSetup.highOpacity, LSetup.lowOpacity);
+
         LSetup.map.fitBounds(routes[r].getBounds(), {
           paddingBottomRight: [panelControl.getWidth(), 0],
           paddingTopLeft: [50, 0],
@@ -864,6 +878,14 @@ var addRoutes = function(resultRoutes) {
       }
     };
 
+    path.on({
+      click: showRoute(i),
+      popupclose: function() {
+        for (var k = 0; k < routes.length; k++) {
+          routes[k].setStyle({opacity: LSetup.opacity});
+        }
+      }
+    });
     row.onclick = showRoute(i);
 
     var vCell = row.insertCell(0);
