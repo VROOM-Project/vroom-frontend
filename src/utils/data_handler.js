@@ -730,7 +730,12 @@ var addRoutes = function(resultRoutes) {
     };
 
     path.on({
-      click: showRoute(i)
+      click: showRoute(i),
+      popupclose: function() {
+        for (var k = 0; k < routes.length; k++) {
+          routes[k].setStyle({opacity: LSetup.opacity});
+        }
+      }
     });
     row.onclick = showRoute(i);
 
