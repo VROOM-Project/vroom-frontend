@@ -4,7 +4,6 @@ var LSetup = require('../config/leaflet_setup');
 var dataHandler = require('./data_handler');
 var geocoder = require('./geocoder');
 var address = require('./address');
-var panelControl = require('../controls/panel');
 
 // Add locations.
 var addPlace = function(latlng, name) {
