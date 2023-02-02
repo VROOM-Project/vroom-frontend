@@ -27,15 +27,6 @@ var getVehicles = function() {
   return data.vehicles;
 }
 
-var getOverpassQuery = function() {
-  var key = document.getElementById('key-cell').value;
-  var value = document.getElementById('value-cell').value;
-  var bounds = LSetup.map.getBounds();
-  var query = '[out:json];node(' + bounds.getSouth() + ',' +
-              bounds.getWest() + ',' + bounds.getNorth() + ','+
-              bounds.getEast() + ')[' + key + '=' + value + '];out;'
-  return query;
-}
 
 var _getTasksSize = function() {
   return data.jobs.length + 2 * data.shipments.length;
@@ -80,7 +71,6 @@ var checkControls = function() {
     LSetup.map.removeControl(solveControl);
     LSetup.map.addControl(summaryControl);
   }
-  panelControl.showOverpassButton();
 }
 
 var _pushToBounds = function(coords) {
@@ -991,21 +981,6 @@ var setData = function(data) {
   firstPlaceSet();
 }
 
-var setOverpassData = function(data) {
-  for (var i = 0; i < data.length; i++) {
-    if (_getTasksSize() >= api.maxTaskNumber) {
-      alert('Request too large: ' + (data.length - i).toString() + ' POI discarded.');
-      return;
-    }
-    var job = {
-      id: data[i]['id'],
-      description: data[i]['tags']['name'] || data[i]['id'].toString(),
-      location: [data[i]['lon'], data[i]['lat']]
-    }
-    addJob(job);
-  }
-}
-
 var loadSolution = function(data) {
   if ('solution' in data) {
     setSolution(data.solution);
@@ -1034,7 +1009,5 @@ module.exports = {
   addJob: addJob,
   checkControls: checkControls,
   setData: setData,
-  loadSolution: loadSolution,
-  getOverpassQuery: getOverpassQuery,
-  setOverpassData: setOverpassData
+  loadSolution: loadSolution
 };

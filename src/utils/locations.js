@@ -12,7 +12,6 @@ var addPlace = function(latlng, name) {
     alert('Sorry, unsupported location. :-(');
     return;
   }
-  panelControl.hideInitDiv();
 
   if (dataHandler.isFirstPlace()) {
     // Add vehicle start/end.
@@ -45,7 +44,6 @@ var addPlace = function(latlng, name) {
         }
       });
     }
-    panelControl.showOverpassDisplay();
   } else {
     // Add regular job.
     var addJobWithName = function(name, center) {
