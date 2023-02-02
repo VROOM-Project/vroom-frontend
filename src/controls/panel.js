@@ -28,6 +28,13 @@ var panelControl = L.Control.extend({
     this._waitDisplayDiv.appendChild(waitIcon);
     this._div.appendChild(this._waitDisplayDiv);
 
+    // Button to load data
+    this._loadButton = document.createElement('button');
+    this._loadButton.setAttribute('type', 'button')
+    this._loadButton.setAttribute('class', 'load-data-button')
+    this._loadButton.innerHTML = "Refresh data"
+    this._loadButton.onclick = this.refreshData
+
     // Table for vehicles display.
     this._vehiclesDiv = document.createElement('div');
     this._vehiclesDiv.setAttribute('id', 'panel-vehicles');
@@ -44,6 +51,7 @@ var panelControl = L.Control.extend({
 
     var tableDiv = document.createElement('div');
 
+    tableDiv.appendChild(this._loadButton)
     tableDiv.appendChild(this._vehiclesDiv);
     tableDiv.appendChild(document.createElement('hr'));
     tableDiv.appendChild(this._taskTable);
@@ -55,6 +63,10 @@ var panelControl = L.Control.extend({
     L.DomEvent.on(this._div, 'mousewheel', L.DomEvent.stopPropagation);
 
     return this._div;
+  },
+
+  refreshData: function() {
+    window.alert('refreshing data!')
   },
 
   onRemove: function(map) {

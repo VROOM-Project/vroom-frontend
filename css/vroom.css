@@ -45,6 +45,11 @@
     overflow: auto;
 }
 
+.load-data-button{
+    width: 80px;
+    height: 40px;
+}
+
 .panel-vehicle{
     width: 100%;
 }
