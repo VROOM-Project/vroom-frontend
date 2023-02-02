@@ -6,7 +6,6 @@ var collapseControl = require('./controls/collapse');
 var locationsHandler = require('./utils/locations');
 var geocoder = require('./utils/geocoder');
 var address = require('./utils/address');
-//var fileHandler = require('./utils/file_handler');
 var solutionHandler = require('./utils/solution_handler');
 
 panelControl.addTo(LSetup.map);
