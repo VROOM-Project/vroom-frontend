@@ -23,6 +23,8 @@ running.
 - [vroom-express](https://github.com/VROOM-Project/vroom-express) to
 expose VROOM's API over http requests.
 
+Alternatively, set the 'host' in src/config/api.js to VROOM's URI
+
 # Usage
 
 Serve at `http://127.0.0.1:9966` with:
